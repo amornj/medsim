@@ -69,7 +69,7 @@ const PRESET_SCENARIOS = [
     },
     equipment: [
       { type: 'cardiac_monitor', settings: { mode: '5-lead ECG' } },
-      { type: 'arterial_line', settings: { continuous BP' } },
+      { type: 'arterial_line', settings: { monitoring: 'continuous BP' } },
       { type: 'iv_pump', settings: { fluid: 'Lactated Ringers', rate: '500ml/hr' } },
       { type: 'syringe_pump', settings: { drug: 'Norepinephrine', rate: '0.1mcg/kg/min' } },
       { type: 'pulse_ox', settings: { continuous: true } },
@@ -95,9 +95,9 @@ const PRESET_SCENARIOS = [
     equipment: [
       { type: 'cardiac_monitor', settings: { mode: '5-lead ECG' } },
       { type: 'iv_pump', settings: { fluid: 'Blood Products', rate: 'rapid' } },
-      { type: 'arterial_line', settings: { continuous monitoring' } },
+      { type: 'arterial_line', settings: { monitoring: 'continuous' } },
       { type: 'ventilator', settings: { mode: 'CMV' } },
-      { type: 'temp_monitor', settings: { active warming' } }
+      { type: 'temp_monitor', settings: { warming: 'active' } }
     ],
     notes: 'ATLS protocol. Massive transfusion protocol. Damage control surgery.'
   },
@@ -117,10 +117,10 @@ const PRESET_SCENARIOS = [
       consciousness: 'Alert, Aphasic'
     },
     equipment: [
-      { type: 'cardiac_monitor', settings: { telemetry' } },
-      { type: 'pulse_ox', settings: { continuous' } },
-      { type: 'arterial_line', settings: { BP control' } },
-      { type: 'iv_pump', settings: { medications' } }
+      { type: 'cardiac_monitor', settings: { mode: 'telemetry' } },
+      { type: 'pulse_ox', settings: { monitoring: 'continuous' } },
+      { type: 'arterial_line', settings: { purpose: 'BP control' } },
+      { type: 'iv_pump', settings: { infusion: 'medications' } }
     ],
     notes: 'NIHSS assessment. CT/CTA protocol. Consider tPA or thrombectomy. Blood pressure management.'
   },
@@ -140,11 +140,11 @@ const PRESET_SCENARIOS = [
       consciousness: 'Anxious'
     },
     equipment: [
-      { type: 'cardiac_monitor', settings: { continuous' } },
-      { type: 'pulse_ox', settings: { continuous' } },
+      { type: 'cardiac_monitor', settings: { monitoring: 'continuous' } },
+      { type: 'pulse_ox', settings: { monitoring: 'continuous' } },
       { type: 'iv_pump', settings: { fluid: 'Normal Saline', rate: 'wide open' } },
       { type: 'syringe_pump', settings: { drug: 'Epinephrine', ready: true } },
-      { type: 'ventilator', settings: { standby' } }
+      { type: 'ventilator', settings: { status: 'standby' } }
     ],
     notes: 'IM Epinephrine 0.3-0.5mg immediately. Aggressive IV fluids. H1/H2 blockers. Steroids.'
   }
