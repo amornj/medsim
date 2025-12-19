@@ -4,12 +4,22 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Responsi
 export default function DrugRadarChart({ drug }) {
   // Calculate scores based on drug properties
   const calculateScores = (drug) => {
-    // Nicheness: how specialized/specific the drug is (0-10)
-    const nicheness = drug.category === 'Vasopressors' ? 8 : 
-                     drug.category === 'Sedatives' ? 6 : 
-                     drug.category === 'Analgesics' ? 5 : 
-                     drug.category === 'Paralytics' ? 9 : 
-                     drug.category === 'Cardiac' ? 7 : 6;
+    // Nicheness: how rarely used/specialized the drug is (0-10, higher = more niche/rare)
+    const nicheness = drug.name.includes('Clozapine') ? 10 :
+                     drug.name.includes('Vecuronium') ? 9 :
+                     drug.name.includes('Cisatracurium') ? 9 :
+                     drug.name.includes('Remifentanil') ? 9 :
+                     drug.name.includes('Milrinone') ? 8 :
+                     drug.name.includes('Vasopressin') ? 8 :
+                     drug.name.includes('Phenylephrine') ? 7 :
+                     drug.name.includes('Dexmedetomidine') ? 7 :
+                     drug.name.includes('Norepinephrine') ? 6 :
+                     drug.name.includes('Ketamine') ? 6 :
+                     drug.name.includes('Propofol') ? 4 :
+                     drug.name.includes('Midazolam') ? 4 :
+                     drug.name.includes('Fentanyl') ? 4 :
+                     drug.name.includes('Morphine') ? 3 :
+                     drug.name.includes('Epinephrine') ? 5 : 5;
 
     // Usefulness: broad applicability (0-10)
     const usefulness = drug.category === 'Vasopressors' ? 9 : 
