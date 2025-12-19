@@ -1,0 +1,243 @@
+import React, { useState } from 'react';
+import { DragDropContext } from '@hello-pangea/dnd';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Save, RotateCcw, FileText, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import ScenarioSelector, { PRESET_SCENARIOS } from '../components/medical/ScenarioSelector';
+import PatientVitals from '../components/medical/PatientVitals';
+import EquipmentPalette from '../components/medical/EquipmentPalette';
+import PatientWorkspace from '../components/medical/PatientWorkspace';
+import EquipmentConfigDialog from '../components/medical/EquipmentConfigDialog';
+
+export default function MedicalScenario() {
+  const [showScenarioSelector, setShowScenarioSelector] = useState(true);
+  const [currentScenario, setCurrentScenario] = useState(null);
+  const [equipment, setEquipment] = useState([]);
+  const [vitals, setVitals] = useState(null);
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState(null);
+  
+  const queryClient = useQueryClient();
+
+  const saveScenarioMutation = useMutation({
+    mutationFn: (scenarioData) => base44.entities.Scenario.create(scenarioData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scenarios'] });
+      toast.success('Scenario saved successfully');
+    },
+    onError: () => {
+      toast.error('Failed to save scenario');
+    }
+  });
+
+  const handleSelectScenario = (scenario) => {
+    setCurrentScenario(scenario);
+    setVitals(scenario.vitals);
+    
+    const equipmentWithIds = scenario.equipment.map((eq, index) => ({
+      id: `${eq.type}-${Date.now()}-${index}`,
+      type: eq.type,
+      settings: eq.settings || {}
+    }));
+    
+    setEquipment(equipmentWithIds);
+    setShowScenarioSelector(false);
+    toast.success(`Loaded: ${scenario.name}`);
+  };
+
+  const handleCreateCustom = () => {
+    setCurrentScenario({
+      id: 'custom',
+      name: 'Custom Scenario',
+      description: 'Build your own medical scenario',
+      vitals: {
+        heart_rate: 80,
+        blood_pressure_systolic: 120,
+        blood_pressure_diastolic: 80,
+        respiratory_rate: 16,
+        spo2: 98,
+        temperature: 37.0,
+        consciousness: 'Alert'
+      }
+    });
+    setVitals({
+      heart_rate: 80,
+      blood_pressure_systolic: 120,
+      blood_pressure_diastolic: 80,
+      respiratory_rate: 16,
+      spo2: 98,
+      temperature: 37.0,
+      consciousness: 'Alert'
+    });
+    setEquipment([]);
+    setShowScenarioSelector(false);
+  };
+
+  const onDragEnd = (result) => {
+    const { source, destination } = result;
+
+    if (!destination) return;
+
+    if (source.droppableId === 'palette' && destination.droppableId === 'workspace') {
+      const equipmentType = result.draggableId.replace('palette-', '').split('-')[0];
+      
+      const newEquipment = {
+        id: `${equipmentType}-${Date.now()}`,
+        type: equipmentType,
+        settings: {}
+      };
+      
+      setEquipment([...equipment, newEquipment]);
+      toast.success('Equipment added');
+    } else if (source.droppableId === 'workspace' && destination.droppableId === 'workspace') {
+      const items = Array.from(equipment);
+      const [reorderedItem] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, reorderedItem);
+      setEquipment(items);
+    }
+  };
+
+  const handleRemoveEquipment = (id) => {
+    setEquipment(equipment.filter(eq => eq.id !== id));
+    toast.info('Equipment removed');
+  };
+
+  const handleConfigureEquipment = (item) => {
+    setSelectedEquipment(item);
+    setConfigDialogOpen(true);
+  };
+
+  const handleSaveConfig = (equipmentId, settings) => {
+    setEquipment(equipment.map(eq => 
+      eq.id === equipmentId ? { ...eq, settings } : eq
+    ));
+    toast.success('Configuration saved');
+  };
+
+  const handleSaveScenario = async () => {
+    const scenarioData = {
+      name: currentScenario.name,
+      description: currentScenario.description,
+      condition: currentScenario.id === 'custom' ? 'custom' : currentScenario.id,
+      patient_vitals: vitals,
+      equipment: equipment.map(eq => ({
+        type: eq.type,
+        settings: eq.settings
+      })),
+      notes: currentScenario.notes || ''
+    };
+
+    saveScenarioMutation.mutate(scenarioData);
+  };
+
+  const handleReset = () => {
+    setShowScenarioSelector(true);
+    setCurrentScenario(null);
+    setEquipment([]);
+    setVitals(null);
+  };
+
+  if (showScenarioSelector) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">
+              Medical Life Support Simulator
+            </h1>
+            <p className="text-slate-600">
+              Configure critical care equipment for various medical emergencies
+            </p>
+          </div>
+          <ScenarioSelector
+            onSelectScenario={handleSelectScenario}
+            onCreateCustom={handleCreateCustom}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-4 md:p-6">
+        <div className="max-w-[1800px] mx-auto">
+          {/* Header */}
+          <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800 mb-1">
+                {currentScenario?.name}
+              </h1>
+              <p className="text-slate-600">{currentScenario?.description}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleReset}
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                New Scenario
+              </Button>
+              <Button
+                onClick={handleSaveScenario}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                disabled={saveScenarioMutation.isPending}
+              >
+                <Save className="w-4 h-4" />
+                Save Scenario
+              </Button>
+            </div>
+          </div>
+
+          {/* Vitals */}
+          <div className="mb-6">
+            <PatientVitals vitals={vitals} />
+          </div>
+
+          {/* Clinical Notes */}
+          {currentScenario?.notes && (
+            <Card className="mb-6 p-4 bg-amber-50 border-amber-200">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-amber-900 mb-1">Clinical Notes</h3>
+                  <p className="text-sm text-amber-800">{currentScenario.notes}</p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Main Workspace */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Equipment Palette */}
+            <div className="lg:col-span-1">
+              <EquipmentPalette />
+            </div>
+
+            {/* Patient Workspace */}
+            <div className="lg:col-span-3">
+              <PatientWorkspace
+                equipment={equipment}
+                onRemoveEquipment={handleRemoveEquipment}
+                onConfigureEquipment={handleConfigureEquipment}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Configuration Dialog */}
+      <EquipmentConfigDialog
+        equipment={selectedEquipment}
+        open={configDialogOpen}
+        onClose={() => setConfigDialogOpen(false)}
+        onSave={handleSaveConfig}
+      />
+    </DragDropContext>
+  );
+}
