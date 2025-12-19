@@ -108,11 +108,21 @@ export default function MedicalScenario() {
     setConfigDialogOpen(true);
   };
 
-  const handleSaveConfig = (equipmentId, settings) => {
+  const handleSaveConfig = (equipmentId, settings, vitalChanges) => {
     setEquipment(equipment.map(eq => 
       eq.id === equipmentId ? { ...eq, settings } : eq
     ));
-    toast.success('Configuration saved');
+    
+    // Apply vital changes if provided (e.g., from defibrillation)
+    if (vitalChanges) {
+      setVitals(prev => ({
+        ...prev,
+        ...vitalChanges
+      }));
+      toast.success('Vitals updated after intervention');
+    } else {
+      toast.success('Configuration saved');
+    }
   };
 
   const handleSaveScenario = async () => {

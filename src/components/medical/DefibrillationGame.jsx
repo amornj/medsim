@@ -71,8 +71,7 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
     if (success) {
       setTimeout(() => {
         onSuccess();
-        onClose();
-      }, 2000);
+      }, 1500);
     }
   };
 

@@ -91,17 +91,30 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
   };
 
   const handleSave = () => {
-    onSave(equipment.id, settings);
+    onSave(equipment.id, settings, null);
     onClose();
   };
 
   const handleDefibrillationSuccess = () => {
-    setSettings({
+    const updatedSettings = {
       ...settings,
       shock_delivered: true,
       energy: settings.energy || '200',
       timestamp: new Date().toISOString()
-    });
+    };
+    setSettings(updatedSettings);
+    
+    // Return vitals to normal after successful defibrillation
+    const vitalChanges = {
+      heart_rate: 85,
+      blood_pressure_systolic: 110,
+      blood_pressure_diastolic: 70,
+      spo2: 95,
+      consciousness: 'Responsive'
+    };
+    
+    onSave(equipment.id, updatedSettings, vitalChanges);
+    onClose();
   };
 
   // Special handling for ECMO
