@@ -16,7 +16,7 @@ import { Heart, Droplets, Wind, Zap, AlertTriangle, CheckCircle2 } from 'lucide-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
-  const [config, setConfig] = useState(initialConfig || {
+  const defaultConfig = {
     mode: 'VV-ECMO',
     cannulation: {
       drainage: 'femoral_vein',
@@ -45,6 +45,16 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
       pressure_low: -50,
       flow_low: 2.0
     }
+  };
+
+  const [config, setConfig] = useState({
+    ...defaultConfig,
+    ...initialConfig,
+    cannulation: { ...defaultConfig.cannulation, ...(initialConfig?.cannulation || {}) },
+    circuit: { ...defaultConfig.circuit, ...(initialConfig?.circuit || {}) },
+    flows: { ...defaultConfig.flows, ...(initialConfig?.flows || {}) },
+    anticoagulation: { ...defaultConfig.anticoagulation, ...(initialConfig?.anticoagulation || {}) },
+    alarms: { ...defaultConfig.alarms, ...(initialConfig?.alarms || {}) }
   });
 
   const [warnings, setWarnings] = useState([]);
