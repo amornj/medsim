@@ -110,6 +110,79 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
 
           {/* Mode Selection */}
           <TabsContent value="mode" className="space-y-4">
+            {/* Quick Presets */}
+            <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+              <Label className="text-base font-semibold mb-3 block">Quick Presets</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfig({
+                    ...config,
+                    mode: 'VV-ECMO',
+                    flows: { blood_flow: 4.5, sweep_gas: 4.0, fio2: 100 }
+                  })}
+                  className="flex flex-col h-auto py-2"
+                >
+                  <span className="font-bold text-xs">VV</span>
+                  <span className="text-xs opacity-75">Respiratory</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfig({
+                    ...config,
+                    mode: 'VA-ECMO',
+                    flows: { blood_flow: 4.0, sweep_gas: 3.5, fio2: 100 }
+                  })}
+                  className="flex flex-col h-auto py-2"
+                >
+                  <span className="font-bold text-xs">VA</span>
+                  <span className="text-xs opacity-75">Cardiac</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfig({
+                    ...config,
+                    mode: 'VAV-ECMO',
+                    cannulation: {
+                      drainage: 'femoral_vein',
+                      return: 'femoral_artery',
+                      return_secondary: 'internal_jugular',
+                      size_drainage: '25Fr',
+                      size_return: '19Fr'
+                    },
+                    flows: { blood_flow: 5.0, sweep_gas: 4.5, fio2: 100 }
+                  })}
+                  className="flex flex-col h-auto py-2"
+                >
+                  <span className="font-bold text-xs">VAV</span>
+                  <span className="text-xs opacity-75">Hybrid</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfig({
+                    ...config,
+                    mode: 'VVA-ECMO',
+                    cannulation: {
+                      drainage: 'femoral_vein',
+                      return: 'internal_jugular',
+                      return_secondary: 'femoral_artery',
+                      size_drainage: '25Fr',
+                      size_return: '21Fr'
+                    },
+                    flows: { blood_flow: 4.8, sweep_gas: 4.2, fio2: 100 }
+                  })}
+                  className="flex flex-col h-auto py-2"
+                >
+                  <span className="font-bold text-xs">VVA</span>
+                  <span className="text-xs opacity-75">Hybrid</span>
+                </Button>
+              </div>
+            </Card>
+
             <Card className="p-4">
               <Label className="text-base font-semibold mb-3 block">ECMO Configuration Mode</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -142,9 +215,39 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                   </span>
                   <Badge className="mt-2" variant="secondary">Cardiogenic Shock</Badge>
                 </Button>
-              </div>
-            </Card>
-          </TabsContent>
+
+                <Button
+                  variant={config.mode === 'VAV-ECMO' ? 'default' : 'outline'}
+                  className="h-auto py-4 flex flex-col items-start"
+                  onClick={() => setConfig({ ...config, mode: 'VAV-ECMO' })}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="w-5 h-5" />
+                    <span className="font-bold">VAV-ECMO</span>
+                  </div>
+                  <span className="text-xs text-left opacity-80">
+                    Veno-Arterial-Venous: Hybrid configuration. VA support with additional venous return for improved upper body oxygenation.
+                  </span>
+                  <Badge className="mt-2" variant="secondary">Harlequin Syndrome</Badge>
+                </Button>
+
+                <Button
+                  variant={config.mode === 'VVA-ECMO' ? 'default' : 'outline'}
+                  className="h-auto py-4 flex flex-col items-start"
+                  onClick={() => setConfig({ ...config, mode: 'VVA-ECMO' })}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="w-5 h-5" />
+                    <span className="font-bold">VVA-ECMO</span>
+                  </div>
+                  <span className="text-xs text-left opacity-80">
+                    Veno-Venous-Arterial: Hybrid for respiratory failure with developing cardiac failure. Transitions from VV to VA support.
+                  </span>
+                  <Badge className="mt-2" variant="secondary">RV Failure on VV</Badge>
+                </Button>
+                </div>
+                </Card>
+                </TabsContent>
 
           {/* Cannulation */}
           <TabsContent value="cannulation" className="space-y-4">
