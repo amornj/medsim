@@ -62,19 +62,19 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
   const validateConfig = () => {
     const newWarnings = [];
     
-    if (config.mode === 'VV-ECMO' && config.flows.blood_flow > 6.0) {
+    if (config?.mode === 'VV-ECMO' && config?.flows?.blood_flow > 6.0) {
       newWarnings.push('High blood flow for VV-ECMO may cause recirculation');
     }
     
-    if (config.mode === 'VA-ECMO' && config.flows.blood_flow < 3.0) {
+    if (config?.mode === 'VA-ECMO' && config?.flows?.blood_flow < 3.0) {
       newWarnings.push('Low blood flow for VA-ECMO - may not provide adequate systemic perfusion');
     }
     
-    if (config.flows.sweep_gas < config.flows.blood_flow * 0.8) {
+    if (config?.flows?.sweep_gas < config?.flows?.blood_flow * 0.8) {
       newWarnings.push('Low sweep gas flow may result in inadequate CO2 removal');
     }
     
-    if (config.cannulation.drainage === config.cannulation.return) {
+    if (config?.cannulation?.drainage && config?.cannulation?.drainage === config?.cannulation?.return) {
       newWarnings.push('Drainage and return sites should be different');
     }
     
@@ -154,7 +154,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Drainage Site</Label>
                   <Select
-                    value={config.cannulation.drainage}
+                    value={config?.cannulation?.drainage || 'femoral_vein'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       cannulation: { ...config.cannulation, drainage: value }
@@ -174,7 +174,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Drainage Cannula Size</Label>
                   <Select
-                    value={config.cannulation.size_drainage}
+                    value={config?.cannulation?.size_drainage || '25Fr'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       cannulation: { ...config.cannulation, size_drainage: value }
@@ -196,7 +196,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Return Site</Label>
                   <Select
-                    value={config.cannulation.return}
+                    value={config?.cannulation?.return || 'internal_jugular'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       cannulation: { ...config.cannulation, return: value }
@@ -206,7 +206,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {config.mode === 'VV-ECMO' ? (
+                      {config?.mode === 'VV-ECMO' ? (
                         <>
                           <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
                           <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
@@ -225,7 +225,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Return Cannula Size</Label>
                   <Select
-                    value={config.cannulation.size_return}
+                    value={config?.cannulation?.size_return || '21Fr'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       cannulation: { ...config.cannulation, size_return: value }
@@ -255,7 +255,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Pump Type</Label>
                   <Select
-                    value={config.circuit.pump_type}
+                    value={config?.circuit?.pump_type || 'centrifugal'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       circuit: { ...config.circuit, pump_type: value }
@@ -274,7 +274,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Oxygenator Type</Label>
                   <Select
-                    value={config.circuit.oxygenator}
+                    value={config?.circuit?.oxygenator || 'PLS'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       circuit: { ...config.circuit, oxygenator: value }
@@ -295,13 +295,13 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                     <Label>Heat Exchanger</Label>
                     <Button
                       size="sm"
-                      variant={config.circuit.heat_exchanger ? 'default' : 'outline'}
+                      variant={config?.circuit?.heat_exchanger ? 'default' : 'outline'}
                       onClick={() => setConfig({
                         ...config,
-                        circuit: { ...config.circuit, heat_exchanger: !config.circuit.heat_exchanger }
+                        circuit: { ...config.circuit, heat_exchanger: !config?.circuit?.heat_exchanger }
                       })}
                     >
-                      {config.circuit.heat_exchanger ? 'Enabled' : 'Disabled'}
+                      {config?.circuit?.heat_exchanger ? 'Enabled' : 'Disabled'}
                     </Button>
                   </div>
                   <p className="text-xs text-slate-600">
@@ -314,13 +314,13 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                     <Label>Inline Hemofilter (CRRT)</Label>
                     <Button
                       size="sm"
-                      variant={config.circuit.hemofilter ? 'default' : 'outline'}
+                      variant={config?.circuit?.hemofilter ? 'default' : 'outline'}
                       onClick={() => setConfig({
                         ...config,
-                        circuit: { ...config.circuit, hemofilter: !config.circuit.hemofilter }
+                        circuit: { ...config.circuit, hemofilter: !config?.circuit?.hemofilter }
                       })}
                     >
-                      {config.circuit.hemofilter ? 'Enabled' : 'Disabled'}
+                      {config?.circuit?.hemofilter ? 'Enabled' : 'Disabled'}
                     </Button>
                   </div>
                   <p className="text-xs text-slate-600">
@@ -339,10 +339,10 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <Label>Blood Flow Rate</Label>
-                    <Badge variant="outline">{config.flows.blood_flow} L/min</Badge>
+                    <Badge variant="outline">{config?.flows?.blood_flow || 4.0} L/min</Badge>
                   </div>
                   <Slider
-                    value={[config.flows.blood_flow]}
+                    value={[config?.flows?.blood_flow || 4.0]}
                     onValueChange={([value]) => setConfig({
                       ...config,
                       flows: { ...config.flows, blood_flow: value }
@@ -353,17 +353,17 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                     className="w-full"
                   />
                   <p className="text-xs text-slate-600">
-                    Target: {config.mode === 'VV-ECMO' ? '60-80% of cardiac output' : '2.5-4.5 L/min/m²'}
+                    Target: {config?.mode === 'VV-ECMO' ? '60-80% of cardiac output' : '2.5-4.5 L/min/m²'}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <Label>Sweep Gas Flow</Label>
-                    <Badge variant="outline">{config.flows.sweep_gas} L/min</Badge>
+                    <Badge variant="outline">{config?.flows?.sweep_gas || 4.0} L/min</Badge>
                   </div>
                   <Slider
-                    value={[config.flows.sweep_gas]}
+                    value={[config?.flows?.sweep_gas || 4.0]}
                     onValueChange={([value]) => setConfig({
                       ...config,
                       flows: { ...config.flows, sweep_gas: value }
@@ -381,10 +381,10 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <Label>FiO2 (Sweep Gas)</Label>
-                    <Badge variant="outline">{config.flows.fio2}%</Badge>
+                    <Badge variant="outline">{config?.flows?.fio2 || 100}%</Badge>
                   </div>
                   <Slider
-                    value={[config.flows.fio2]}
+                    value={[config?.flows?.fio2 || 100]}
                     onValueChange={([value]) => setConfig({
                       ...config,
                       flows: { ...config.flows, fio2: value }
@@ -410,7 +410,7 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                 <div className="space-y-2">
                   <Label>Anticoagulation Type</Label>
                   <Select
-                    value={config.anticoagulation.type}
+                    value={config?.anticoagulation?.type || 'heparin'}
                     onValueChange={(value) => setConfig({
                       ...config,
                       anticoagulation: { ...config.anticoagulation, type: value }
@@ -427,11 +427,11 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                   </Select>
                 </div>
 
-                {config.anticoagulation.type === 'heparin' && (
+                {config?.anticoagulation?.type === 'heparin' && (
                   <div className="space-y-2">
                     <Label>Target ACT Range (seconds)</Label>
                     <Select
-                      value={config.anticoagulation.target_act}
+                      value={config?.anticoagulation?.target_act || '180-220'}
                       onValueChange={(value) => setConfig({
                         ...config,
                         anticoagulation: { ...config.anticoagulation, target_act: value }
