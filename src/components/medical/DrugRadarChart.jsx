@@ -36,10 +36,22 @@ export default function DrugRadarChart({ drug }) {
     const potencyValue = parseFloat(drug.concentration) || 0;
     const potency = Math.min(10, Math.round((potencyValue / 100) * 10)) || 5;
 
-    // Time: speed of onset (0-10, 10 = fastest)
-    const time = drug.category === 'Vasopressors' ? 9 : 
-                drug.category === 'Paralytics' ? 8 : 
-                drug.name === 'Fentanyl' ? 9 : 6;
+    // Time: speed of onset (0-10, 10 = fastest onset)
+    const time = drug.name.includes('Adenosine') ? 10 :
+                drug.name.includes('Succinylcholine') ? 10 :
+                drug.name.includes('Epinephrine') ? 9 :
+                drug.name.includes('Norepinephrine') ? 9 :
+                drug.name.includes('Propofol') ? 9 :
+                drug.name.includes('Ketamine') ? 9 :
+                drug.name.includes('Rocuronium') ? 8 :
+                drug.name.includes('Fentanyl') ? 8 :
+                drug.name.includes('Naloxone') ? 8 :
+                drug.name.includes('Esmolol') ? 8 :
+                drug.name.includes('Midazolam') ? 7 :
+                drug.name.includes('Morphine') ? 6 :
+                drug.name.includes('Vecuronium') ? 6 :
+                drug.name.includes('Vancomycin') ? 2 :
+                drug.name.includes('Warfarin') ? 1 : 5;
 
     return { nicheness, usefulness, effectiveness, potency, time };
   };
