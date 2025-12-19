@@ -358,7 +358,7 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
                               <DrugRadarChart drug={selectedDrug} />
                             </div>
                           )}
-                          <p className="text-sm text-slate-600 mb-2">{drug.description}</p>
+                          <p className="text-sm text-slate-600 mb-2 break-words">{drug.description}</p>
                           <div className="flex gap-4 text-xs text-slate-500">
                             <span>Concentration: {drug.concentration}</span>
                             <span>Dosage: {drug.dosage}</span>

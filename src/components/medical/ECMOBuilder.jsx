@@ -266,10 +266,22 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
-                      <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
-                      <SelectItem value="right_atrium">Right Atrium (central)</SelectItem>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="femoral_vein">
+                        Femoral Vein (Standard - easy access, infection risk)
+                      </SelectItem>
+                      <SelectItem value="internal_jugular">
+                        Internal Jugular (Good flow, higher in chest)
+                      </SelectItem>
+                      <SelectItem value="right_atrium">
+                        Right Atrium - Central (Best flow, surgical access)
+                      </SelectItem>
+                      <SelectItem value="subclavian_vein">
+                        Subclavian Vein (Alternative, stenosis risk)
+                      </SelectItem>
+                      <SelectItem value="bicaval">
+                        Bicaval (Dual-lumen, complex placement)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -308,17 +320,42 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      {config?.mode === 'VV-ECMO' ? (
+                    <SelectContent className="max-h-[300px]">
+                      {config?.mode === 'VV-ECMO' || config?.mode === 'VVA-ECMO' ? (
                         <>
-                          <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
-                          <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
+                          <SelectItem value="internal_jugular">
+                            Internal Jugular (Standard VV)
+                          </SelectItem>
+                          <SelectItem value="femoral_vein">
+                            Femoral Vein (Recirculation risk)
+                          </SelectItem>
+                          <SelectItem value="subclavian_vein">
+                            Subclavian Vein (Upper body access)
+                          </SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value="femoral_artery">Femoral Artery</SelectItem>
-                          <SelectItem value="axillary_artery">Axillary Artery</SelectItem>
-                          <SelectItem value="ascending_aorta">Ascending Aorta (central)</SelectItem>
+                          <SelectItem value="femoral_artery">
+                            Femoral Artery (Standard, limb ischemia risk)
+                          </SelectItem>
+                          <SelectItem value="axillary_artery">
+                            Axillary Artery (Ambulation possible, complex)
+                          </SelectItem>
+                          <SelectItem value="subclavian_artery">
+                            Subclavian Artery (Upper body, stroke risk)
+                          </SelectItem>
+                          <SelectItem value="carotid_artery">
+                            Carotid Artery (Direct cerebral flow, high risk)
+                          </SelectItem>
+                          <SelectItem value="ascending_aorta">
+                            Ascending Aorta - Central (Post-cardiac surgery)
+                          </SelectItem>
+                          <SelectItem value="descending_aorta">
+                            Descending Aorta (Surgical, spinal risk)
+                          </SelectItem>
+                          <SelectItem value="innominate_artery">
+                            Innominate/Brachiocephalic (Cerebral flow)
+                          </SelectItem>
                         </>
                       )}
                     </SelectContent>

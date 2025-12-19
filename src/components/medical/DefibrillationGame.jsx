@@ -148,21 +148,33 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
           <div className="space-y-6 py-4">
             {/* Instructions */}
             <div className="bg-slate-100 p-4 rounded-lg">
-              <p className="text-sm font-semibold text-slate-800 mb-2">
+              <p className="text-sm font-semibold text-slate-800 mb-2 break-words">
                 {mode === 'defibrillation' ? 'Charge the defibrillator:' : 'Perform chest compressions:'}
               </p>
               <ul className="text-sm text-slate-600 space-y-1">
                 {mode === 'defibrillation' ? (
                   <>
-                    <li>• Press SPACEBAR rapidly to charge the pads</li>
-                    <li>• Move your mouse QUICKLY across the screen</li>
-                    <li>• Fill the bar to 100% to deliver shock</li>
+                    <li className="break-words">
+                      • Press SPACEBAR rapidly to charge the pads
+                    </li>
+                    <li className="break-words">
+                      • Move your mouse QUICKLY across the screen
+                    </li>
+                    <li className="break-words">
+                      • Fill the bar to 100% to deliver shock
+                    </li>
                   </>
                 ) : (
                   <>
-                    <li>• Press SPACEBAR rapidly for chest compressions</li>
-                    <li>• Maintain 100-120 compressions per minute</li>
-                    <li>• Fill the bar to 100% for effective CPR</li>
+                    <li className="break-words">
+                      • Press SPACEBAR rapidly for chest compressions
+                    </li>
+                    <li className="break-words">
+                      • Maintain 100-120 compressions per minute
+                    </li>
+                    <li className="break-words">
+                      • Fill the bar to 100% for effective CPR
+                    </li>
                   </>
                 )}
               </ul>
