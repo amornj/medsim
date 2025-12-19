@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search } from 'lucide-react';
+import DrugDatabase from './DrugDatabase';
+import ECMOBuilder from './ECMOBuilder';
 
 const EQUIPMENT_CONFIG_FIELDS = {
   ventilator: [
@@ -66,66 +69,134 @@ const EQUIPMENT_CONFIG_FIELDS = {
 
 export default function EquipmentConfigDialog({ equipment, open, onClose, onSave }) {
   const [settings, setSettings] = useState(equipment?.settings || {});
+  const [drugDialogOpen, setDrugDialogOpen] = useState(false);
+  const [ecmoBuilderOpen, setEcmoBuilderOpen] = useState(false);
 
   const fields = equipment ? EQUIPMENT_CONFIG_FIELDS[equipment.type] || [] : [];
+
+  const handleDrugSelect = (drug) => {
+    setSettings({
+      ...settings,
+      medication: drug.name || settings.medication,
+      drug: drug.name || settings.drug,
+      concentration: drug.concentration,
+      rate: drug.dosage
+    });
+  };
+
+  const handleEcmoSave = (ecmoConfig) => {
+    setSettings(ecmoConfig);
+  };
 
   const handleSave = () => {
     onSave(equipment.id, settings);
     onClose();
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Configure Equipment</DialogTitle>
-          <DialogDescription>
-            Set parameters for {equipment?.type?.replace(/_/g, ' ')}
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4 py-4">
-          {fields.map((field) => (
-            <div key={field.name} className="space-y-2">
-              <Label htmlFor={field.name}>{field.label}</Label>
-              {field.type === 'select' ? (
-                <Select
-                  value={settings[field.name] || ''}
-                  onValueChange={(value) => setSettings({ ...settings, [field.name]: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={`Select ${field.label}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {field.options.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  id={field.name}
-                  type={field.type}
-                  value={settings[field.name] || ''}
-                  onChange={(e) => setSettings({ ...settings, [field.name]: e.target.value })}
-                  placeholder={field.label}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+  // Special handling for ECMO
+  if (equipment?.type === 'ecmo' && ecmoBuilderOpen) {
+    return (
+      <>
+        <ECMOBuilder
+          open={ecmoBuilderOpen}
+          onClose={() => setEcmoBuilderOpen(false)}
+          onSave={handleEcmoSave}
+          initialConfig={settings}
+        />
+      </>
+    );
+  }
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            Save Settings
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Configure Equipment</DialogTitle>
+            <DialogDescription>
+              Set parameters for {equipment?.type?.replace(/_/g, ' ')}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {equipment?.type === 'ecmo' ? (
+            <div className="py-8 text-center">
+              <p className="text-slate-600 mb-4">ECMO requires detailed circuit configuration</p>
+              <Button
+                onClick={() => {
+                  setEcmoBuilderOpen(true);
+                  onClose();
+                }}
+                className="bg-pink-600 hover:bg-pink-700"
+              >
+                Open ECMO Builder
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4 py-4">
+              {fields.map((field) => (
+                <div key={field.name} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor={field.name}>{field.label}</Label>
+                    {(field.name === 'medication' || field.name === 'drug') && 
+                     (equipment?.type === 'iv_pump' || equipment?.type === 'syringe_pump') && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setDrugDialogOpen(true)}
+                        className="h-7"
+                      >
+                        <Search className="w-3 h-3 mr-1" />
+                        Search
+                      </Button>
+                    )}
+                  </div>
+                  {field.type === 'select' ? (
+                    <Select
+                      value={settings[field.name] || ''}
+                      onValueChange={(value) => setSettings({ ...settings, [field.name]: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={`Select ${field.label}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {field.options.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      id={field.name}
+                      type={field.type}
+                      value={settings[field.name] || ''}
+                      onChange={(e) => setSettings({ ...settings, [field.name]: e.target.value })}
+                      placeholder={field.label}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave}>
+              Save Settings
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <DrugDatabase
+        open={drugDialogOpen}
+        onClose={() => setDrugDialogOpen(false)}
+        onSelectDrug={handleDrugSelect}
+        pumpType={equipment?.type}
+      />
+    </>
   );
 }

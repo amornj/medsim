@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus } from 'lucide-react';
+import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles } from 'lucide-react';
+import AIScenarioGenerator from './AIScenarioGenerator';
 
 const PRESET_SCENARIOS = [
   {
@@ -151,19 +152,48 @@ const PRESET_SCENARIOS = [
 ];
 
 export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
+  const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
+
+  // Add randomization to scenarios for dynamic gameplay
+  const randomizeScenario = (scenario) => {
+    return {
+      ...scenario,
+      vitals: {
+        ...scenario.vitals,
+        heart_rate: scenario.vitals.heart_rate + Math.floor(Math.random() * 20 - 10),
+        blood_pressure_systolic: scenario.vitals.blood_pressure_systolic + Math.floor(Math.random() * 20 - 10),
+        blood_pressure_diastolic: scenario.vitals.blood_pressure_diastolic + Math.floor(Math.random() * 10 - 5),
+        respiratory_rate: Math.max(0, scenario.vitals.respiratory_rate + Math.floor(Math.random() * 6 - 3)),
+        spo2: Math.max(0, Math.min(100, scenario.vitals.spo2 + Math.floor(Math.random() * 6 - 3))),
+        temperature: parseFloat((scenario.vitals.temperature + (Math.random() * 0.8 - 0.4)).toFixed(1))
+      }
+    };
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-xl font-bold text-slate-800">Select Emergency Scenario</h2>
-        <Button
-          onClick={onCreateCustom}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Custom Scenario
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setAiGeneratorOpen(true)}
+            variant="default"
+            size="sm"
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI Generate
+          </Button>
+          <Button
+            onClick={onCreateCustom}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Manual Setup
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {PRESET_SCENARIOS.map((scenario) => (
@@ -204,6 +234,7 @@ export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
               <Button
                 className="w-full group-hover:bg-slate-800 transition-colors"
                 size="sm"
+                onClick={() => onSelectScenario(randomizeScenario(scenario))}
               >
                 Load Scenario
               </Button>
@@ -211,6 +242,15 @@ export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
           </Card>
         ))}
       </div>
+
+      <AIScenarioGenerator
+        open={aiGeneratorOpen}
+        onClose={() => setAiGeneratorOpen(false)}
+        onScenarioGenerated={(scenario) => {
+          setAiGeneratorOpen(false);
+          onSelectScenario(scenario);
+        }}
+      />
     </div>
   );
 }

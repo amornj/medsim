@@ -38,15 +38,12 @@ export default function MedicalScenario() {
     setCurrentScenario(scenario);
     setVitals(scenario.vitals);
     
-    const equipmentWithIds = scenario.equipment.map((eq, index) => ({
-      id: `${eq.type}-${Date.now()}-${index}`,
-      type: eq.type,
-      settings: eq.settings || {}
-    }));
-    
-    setEquipment(equipmentWithIds);
+    // Don't auto-load equipment - make it DIY gameplay!
+    setEquipment([]);
     setShowScenarioSelector(false);
-    toast.success(`Loaded: ${scenario.name}`);
+    toast.success(`Scenario loaded: ${scenario.name}`, {
+      description: 'Configure life support equipment yourself!'
+    });
   };
 
   const handleCreateCustom = () => {
