@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search } from 'lucide-react';
 import DrugDatabase from './DrugDatabase';
 import ECMOBuilder from './ECMOBuilder';
+import DefibrillationGame from './DefibrillationGame';
 
 const EQUIPMENT_CONFIG_FIELDS = {
   ventilator: [
@@ -71,6 +72,7 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
   const [settings, setSettings] = useState(equipment?.settings || {});
   const [drugDialogOpen, setDrugDialogOpen] = useState(false);
   const [ecmoBuilderOpen, setEcmoBuilderOpen] = useState(false);
+  const [defibrillationGameOpen, setDefibrillationGameOpen] = useState(false);
 
   const fields = equipment ? EQUIPMENT_CONFIG_FIELDS[equipment.type] || [] : [];
 
@@ -91,6 +93,15 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
   const handleSave = () => {
     onSave(equipment.id, settings);
     onClose();
+  };
+
+  const handleDefibrillationSuccess = () => {
+    setSettings({
+      ...settings,
+      shock_delivered: true,
+      energy: settings.energy || '200',
+      timestamp: new Date().toISOString()
+    });
   };
 
   // Special handling for ECMO
@@ -130,6 +141,60 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
               >
                 Open ECMO Builder
               </Button>
+            </div>
+          ) : equipment?.type === 'defibrillator' ? (
+            <div className="space-y-4 py-4">
+              {fields.map((field) => (
+                <div key={field.name} className="space-y-2">
+                  <Label htmlFor={field.name}>{field.label}</Label>
+                  {field.type === 'select' ? (
+                    <Select
+                      value={settings[field.name] || ''}
+                      onValueChange={(value) => setSettings({ ...settings, [field.name]: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={`Select ${field.label}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {field.options.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      id={field.name}
+                      type={field.type}
+                      value={settings[field.name] || ''}
+                      onChange={(e) => setSettings({ ...settings, [field.name]: e.target.value })}
+                      placeholder={field.label}
+                    />
+                  )}
+                </div>
+              ))}
+              <div className="pt-4 border-t space-y-3">
+                <Button
+                  onClick={() => {
+                    setDefibrillationGameOpen(true);
+                    onClose();
+                  }}
+                  className="w-full bg-orange-600 hover:bg-orange-700"
+                >
+                  ⚡ Deliver Shock (Interactive)
+                </Button>
+                <Button
+                  onClick={() => {
+                    setDefibrillationGameOpen(true);
+                    onClose();
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  💓 Perform CPR (Spacebar)
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="space-y-4 py-4">
@@ -196,6 +261,13 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
         onClose={() => setDrugDialogOpen(false)}
         onSelectDrug={handleDrugSelect}
         pumpType={equipment?.type}
+      />
+
+      <DefibrillationGame
+        open={defibrillationGameOpen}
+        onClose={() => setDefibrillationGameOpen(false)}
+        onSuccess={handleDefibrillationSuccess}
+        mode={settings.mode === 'AED' ? 'defibrillation' : 'cpr'}
       />
     </>
   );
