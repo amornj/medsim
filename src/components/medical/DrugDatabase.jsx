@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Pill } from 'lucide-react';
+import { Search, Pill, BarChart3 } from 'lucide-react';
+import DrugRadarChart from './DrugRadarChart';
 
 const DRUG_CATEGORIES = {
   vasopressors: {
@@ -95,6 +96,7 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDrug, setSelectedDrug] = useState(null);
+  const [showChart, setShowChart] = useState(false);
 
   const handleSelectDrug = (drug, category) => {
     onSelectDrug({
@@ -125,10 +127,23 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Pill className="w-5 h-5" />
-            Drug Database - {pumpType === 'syringe_pump' ? 'Syringe Pump' : 'IV Infusion'}
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <Pill className="w-5 h-5" />
+              Drug Database - {pumpType === 'syringe_pump' ? 'Syringe Pump' : 'IV Infusion'}
+            </DialogTitle>
+            {selectedDrug && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowChart(!showChart)}
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="w-4 h-4" />
+                {showChart ? 'Hide' : 'Show'} Chart
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -150,7 +165,9 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
                 {searchResults.map((drug, idx) => (
                   <div
                     key={idx}
-                    className="p-4 border-2 rounded-lg hover:shadow-md transition-all cursor-pointer"
+                    className={`p-4 border-2 rounded-lg hover:shadow-md transition-all cursor-pointer ${
+                      selectedDrug?.name === drug.name ? 'border-blue-500 bg-blue-50' : ''
+                    }`}
                     onClick={() => setSelectedDrug(drug)}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -170,6 +187,11 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
                         USE
                       </Button>
                     </div>
+                    {selectedDrug?.name === drug.name && showChart && (
+                      <div className="mb-3 bg-white p-3 rounded-lg border">
+                        <DrugRadarChart drug={selectedDrug} />
+                      </div>
+                    )}
                     <p className="text-sm text-slate-600 mb-2">{drug.description}</p>
                     <div className="flex gap-4 text-xs text-slate-500">
                       <span>Concentration: {drug.concentration}</span>
@@ -232,6 +254,11 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
                               USE
                             </Button>
                           </div>
+                          {selectedDrug?.name === drug.name && showChart && (
+                            <div className="mb-3 bg-white p-3 rounded-lg border">
+                              <DrugRadarChart drug={selectedDrug} />
+                            </div>
+                          )}
                           <p className="text-sm text-slate-600 mb-2">{drug.description}</p>
                           <div className="flex gap-4 text-xs text-slate-500">
                             <span>Concentration: {drug.concentration}</span>
