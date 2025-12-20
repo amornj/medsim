@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Heart, Wind, Droplet, Thermometer, Brain } from 'lucide-react';
+import { Activity, Heart, Wind, Droplet, Thermometer, Brain, TrendingUp } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import AdvancedStatsDialog from './AdvancedStatsDialog';
 
 export default function PatientVitals({ vitals: initialVitals, scenario }) {
   const [vitals, setVitals] = useState(initialVitals);
@@ -89,19 +91,31 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
   ];
 
   return (
+    <>
     <Card className="shadow-lg">
       <CardHeader className="pb-3 bg-gradient-to-r from-red-50 to-pink-50 border-b">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Activity className="w-5 h-5 text-red-600" />
-            Patient Vitals
-          </CardTitle>
-          {vitals?.consciousness && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Brain className="w-3 h-3" />
-              {vitals.consciousness}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Activity className="w-5 h-5 text-red-600" />
+              Patient Vitals
+            </CardTitle>
+            {vitals?.consciousness && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Brain className="w-3 h-3" />
+                {vitals.consciousness}
+              </Badge>
+            )}
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setAdvancedStatsOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Advanced Stats
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="p-4">
