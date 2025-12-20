@@ -254,6 +254,12 @@ export default function EquipmentPalette() {
                           <div className="space-y-2 ml-2">
                             {category.equipment.map((equipment) => {
                               const currentIndex = dragIndex++;
+                              const equipmentWithCategory = { 
+                                ...equipment, 
+                                categoryKey, 
+                                categoryName: category.name,
+                                category: category.name 
+                              };
                               return (
                                 <Draggable
                                   key={`${equipment.id}-${currentIndex}`}
