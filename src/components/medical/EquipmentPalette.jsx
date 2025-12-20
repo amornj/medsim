@@ -132,6 +132,15 @@ const EQUIPMENT_CATEGORIES = {
       { id: 'pulse_ox', name: 'Pulse Oximeter', icon: Radio, color: 'bg-green-100 text-green-700 border-green-300', description: 'SpO2 monitoring' },
       { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' }
     ]
+  },
+  temperature_management: {
+    name: '🌡️ Temperature Management',
+    color: 'bg-orange-100 border-orange-300',
+    equipment: [
+      { id: 'warming_blanket', name: 'Warming Blanket (Bair Hugger)', icon: Thermometer, color: 'bg-red-100 text-red-700 border-red-300', description: 'Active warming for hypothermia' },
+      { id: 'cooling_blanket', name: 'Cooling Blanket', icon: Thermometer, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Active cooling for hyperthermia' },
+      { id: 'arctic_sun', name: 'Arctic Sun (Intravascular Cooling)', icon: Thermometer, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Targeted temperature management' }
+    ]
   }
 };
 

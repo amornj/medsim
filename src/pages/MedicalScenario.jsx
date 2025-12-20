@@ -193,6 +193,38 @@ export default function MedicalScenario() {
           }
         }
         
+        // WARMING BLANKET - For hypothermia
+        const warmingBlanket = equipment.find(eq => eq.type === 'warming_blanket');
+        if (warmingBlanket?.settings?.enabled === 'true') {
+          const targetTemp = parseFloat(warmingBlanket.settings.target_temp) || 37;
+          if (prev.temperature < targetTemp) {
+            newVitals.temperature = Math.min(targetTemp, prev.temperature + 0.15);
+          }
+        }
+        
+        // COOLING BLANKET - For hyperthermia
+        const coolingBlanket = equipment.find(eq => eq.type === 'cooling_blanket');
+        if (coolingBlanket?.settings?.enabled === 'true') {
+          const targetTemp = parseFloat(coolingBlanket.settings.target_temp) || 37;
+          if (prev.temperature > targetTemp) {
+            newVitals.temperature = Math.max(targetTemp, prev.temperature - 0.12);
+          }
+        }
+        
+        // ARCTIC SUN - Advanced targeted temperature management
+        const arcticSun = equipment.find(eq => eq.type === 'arctic_sun');
+        if (arcticSun?.settings?.enabled === 'true') {
+          const targetTemp = parseFloat(arcticSun.settings.target_temp) || 33;
+          const coolingRate = parseFloat(arcticSun.settings.cooling_rate) || 1;
+          const ratePerInterval = (coolingRate / 1800) * 2; // Convert °C/hr to per 2 seconds
+          
+          if (prev.temperature > targetTemp) {
+            newVitals.temperature = Math.max(targetTemp, prev.temperature - ratePerInterval);
+          } else if (prev.temperature < targetTemp) {
+            newVitals.temperature = Math.min(targetTemp, prev.temperature + ratePerInterval);
+          }
+        }
+        
         // IV FLUID RESUSCITATION - Rate-dependent effects
         const ivPump = equipment.find(eq => 
           eq.type === 'iv_pump' && 

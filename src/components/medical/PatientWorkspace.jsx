@@ -32,6 +32,9 @@ const EQUIPMENT_ICONS = {
   lucas: Heart,
   aed: Zap,
   pacemaker: Activity,
+  warming_blanket: Thermometer,
+  cooling_blanket: Thermometer,
+  arctic_sun: Thermometer,
   hfnc: Wind,
   bipap: Wind,
   cpap: Wind
@@ -64,6 +67,9 @@ const EQUIPMENT_COLORS = {
   lucas: 'bg-red-100 text-red-700 border-red-300',
   aed: 'bg-yellow-100 text-yellow-700 border-yellow-300',
   pacemaker: 'bg-indigo-100 text-indigo-700 border-indigo-300',
+  warming_blanket: 'bg-red-100 text-red-700 border-red-300',
+  cooling_blanket: 'bg-blue-100 text-blue-700 border-blue-300',
+  arctic_sun: 'bg-cyan-100 text-cyan-700 border-cyan-300',
   hfnc: 'bg-teal-100 text-teal-700 border-teal-300',
   bipap: 'bg-cyan-100 text-cyan-700 border-cyan-300',
   cpap: 'bg-blue-100 text-blue-700 border-blue-300'
@@ -96,6 +102,9 @@ const EQUIPMENT_NAMES = {
   lucas: 'LUCAS CPR Device',
   aed: 'AED',
   pacemaker: 'External Pacemaker',
+  warming_blanket: 'Warming Blanket',
+  cooling_blanket: 'Cooling Blanket',
+  arctic_sun: 'Arctic Sun',
   hfnc: 'HFNC',
   bipap: 'BiPAP',
   cpap: 'CPAP'

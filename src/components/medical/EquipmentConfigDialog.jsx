@@ -79,6 +79,21 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'enabled', label: 'CPR Active', type: 'select', options: ['true', 'false'] },
     { name: 'rate', label: 'Compression Rate (/min)', type: 'number' },
     { name: 'depth', label: 'Compression Depth (cm)', type: 'number' }
+  ],
+  warming_blanket: [
+    { name: 'enabled', label: 'Warming Active', type: 'select', options: ['true', 'false'] },
+    { name: 'temperature', label: 'Blanket Temperature (°C)', type: 'number' },
+    { name: 'target_temp', label: 'Target Patient Temp (°C)', type: 'number' }
+  ],
+  cooling_blanket: [
+    { name: 'enabled', label: 'Cooling Active', type: 'select', options: ['true', 'false'] },
+    { name: 'temperature', label: 'Blanket Temperature (°C)', type: 'number' },
+    { name: 'target_temp', label: 'Target Patient Temp (°C)', type: 'number' }
+  ],
+  arctic_sun: [
+    { name: 'enabled', label: 'System Active', type: 'select', options: ['true', 'false'] },
+    { name: 'target_temp', label: 'Target Temperature (°C)', type: 'number' },
+    { name: 'cooling_rate', label: 'Cooling Rate (°C/hr)', type: 'number' }
   ]
 };
 
