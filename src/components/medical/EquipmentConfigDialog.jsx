@@ -15,6 +15,7 @@ import { Search } from 'lucide-react';
 import DrugDatabase from './DrugDatabase';
 import ECMOBuilder from './ECMOBuilder';
 import DefibrillationGame from './DefibrillationGame';
+import MachineryRadarChart from './MachineryRadarChart';
 
 const EQUIPMENT_CONFIG_FIELDS = {
   ventilator: [
@@ -73,6 +74,7 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
   const [drugDialogOpen, setDrugDialogOpen] = useState(false);
   const [ecmoBuilderOpen, setEcmoBuilderOpen] = useState(false);
   const [defibrillationGameOpen, setDefibrillationGameOpen] = useState(false);
+  const [showChart, setShowChart] = useState(false);
 
   const fields = equipment ? EQUIPMENT_CONFIG_FIELDS[equipment.type] || [] : [];
 
@@ -136,11 +138,28 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Configure Equipment</DialogTitle>
-            <DialogDescription>
-              Set parameters for {equipment?.type?.replace(/_/g, ' ')}
-            </DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Configure Equipment</DialogTitle>
+                <DialogDescription>
+                  Set parameters for {equipment?.type?.replace(/_/g, ' ')}
+                </DialogDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowChart(!showChart)}
+              >
+                {showChart ? 'Hide' : 'Show'} Chart
+              </Button>
+            </div>
           </DialogHeader>
+
+          {showChart && equipment && (
+            <div className="mb-4 bg-slate-50 p-3 rounded-lg border">
+              <MachineryRadarChart equipment={equipment} />
+            </div>
+          )}
           
           {equipment?.type === 'ecmo' ? (
             <div className="py-8 text-center">
