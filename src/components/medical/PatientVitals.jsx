@@ -92,7 +92,7 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
 
   return (
     <>
-    <Card className="shadow-lg">
+      <Card className="shadow-lg">
       <CardHeader className="pb-3 bg-gradient-to-r from-red-50 to-pink-50 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -147,12 +147,12 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
       </CardContent>
     </Card>
 
-    <AdvancedStatsDialog 
-      open={advancedStatsOpen}
-      onClose={() => setAdvancedStatsOpen(false)}
-      vitals={vitals}
-      scenario={scenario}
-    />
+      <AdvancedStatsDialog 
+        open={advancedStatsOpen}
+        onClose={() => setAdvancedStatsOpen(false)}
+        vitals={vitals}
+        scenario={scenario}
+      />
     </>
   );
 }
