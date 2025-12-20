@@ -12,6 +12,8 @@ import PatientVitals from '../components/medical/PatientVitals';
 import EquipmentPalette from '../components/medical/EquipmentPalette';
 import PatientWorkspace from '../components/medical/PatientWorkspace';
 import EquipmentConfigDialog from '../components/medical/EquipmentConfigDialog';
+import HumanAnatomyViewer from '../components/medical/HumanAnatomyViewer';
+import SurgeryMenu from '../components/medical/SurgeryMenu';
 
 export default function MedicalScenario() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(true);
@@ -20,6 +22,8 @@ export default function MedicalScenario() {
   const [vitals, setVitals] = useState(null);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState(null);
+  const [surgeryMenuOpen, setSurgeryMenuOpen] = useState(false);
+  const [showAnatomy, setShowAnatomy] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -184,6 +188,14 @@ export default function MedicalScenario() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={() => setSurgeryMenuOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Surgery
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleReset}
                 className="flex items-center gap-2"
               >
@@ -219,6 +231,24 @@ export default function MedicalScenario() {
             </Card>
           )}
 
+          {/* Anatomy Toggle */}
+          <div className="mb-4 flex items-center gap-2">
+            <Button
+              variant={showAnatomy ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setShowAnatomy(!showAnatomy)}
+            >
+              {showAnatomy ? 'Hide' : 'Show'} Anatomy Viewer
+            </Button>
+          </div>
+
+          {/* Anatomy Viewer */}
+          {showAnatomy && (
+            <div className="mb-6">
+              <HumanAnatomyViewer vitals={vitals} scenario={currentScenario} />
+            </div>
+          )}
+
           {/* Main Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Equipment Palette */}
@@ -244,6 +274,23 @@ export default function MedicalScenario() {
         open={configDialogOpen}
         onClose={() => setConfigDialogOpen(false)}
         onSave={handleSaveConfig}
+      />
+
+      {/* Surgery Menu */}
+      <SurgeryMenu
+        open={surgeryMenuOpen}
+        onClose={() => setSurgeryMenuOpen(false)}
+        onPerformSurgery={(procedureId, success) => {
+          if (success) {
+            // Improve vitals after successful surgery
+            setVitals(prev => ({
+              ...prev,
+              heart_rate: Math.min(100, prev.heart_rate + 10),
+              blood_pressure_systolic: Math.min(120, prev.blood_pressure_systolic + 15),
+              spo2: Math.min(100, prev.spo2 + 5)
+            }));
+          }
+        }}
       />
     </DragDropContext>
   );

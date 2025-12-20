@@ -148,6 +148,96 @@ const PRESET_SCENARIOS = [
       { type: 'ventilator', settings: { status: 'standby' } }
     ],
     notes: 'IM Epinephrine 0.3-0.5mg immediately. Aggressive IV fluids. H1/H2 blockers. Steroids.'
+  },
+  {
+    id: 'pulmonary_embolism',
+    name: 'Massive Pulmonary Embolism',
+    icon: Wind,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Large PE causing RV failure and hemodynamic instability',
+    vitals: {
+      heart_rate: 135,
+      blood_pressure_systolic: 80,
+      blood_pressure_diastolic: 50,
+      respiratory_rate: 32,
+      spo2: 82,
+      temperature: 36.8,
+      consciousness: 'Anxious'
+    },
+    equipment: [],
+    notes: 'Consider thrombolytics or ECMO. Anticoagulation. Urgent CT angiography.'
+  },
+  {
+    id: 'burns',
+    name: 'Major Burn Injury',
+    icon: AlertCircle,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: '40% TBSA burns with inhalation injury',
+    vitals: {
+      heart_rate: 125,
+      blood_pressure_systolic: 95,
+      blood_pressure_diastolic: 60,
+      respiratory_rate: 26,
+      spo2: 91,
+      temperature: 38.5,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'Parkland formula for fluid resuscitation. Airway protection. Escharotomy if needed.'
+  },
+  {
+    id: 'hypothermia',
+    name: 'Severe Hypothermia',
+    icon: Droplets,
+    color: 'bg-cyan-100 border-cyan-300 text-cyan-700',
+    description: 'Core temperature 28°C with cardiac instability',
+    vitals: {
+      heart_rate: 45,
+      blood_pressure_systolic: 75,
+      blood_pressure_diastolic: 45,
+      respiratory_rate: 8,
+      spo2: 88,
+      temperature: 28.0,
+      consciousness: 'Stuporous'
+    },
+    equipment: [],
+    notes: 'Gentle rewarming. ECMO for severe cases. Handle gently - arrhythmia risk.'
+  },
+  {
+    id: 'diabetic_dka',
+    name: 'Diabetic Ketoacidosis',
+    icon: Droplets,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Severe DKA with cerebral edema risk',
+    vitals: {
+      heart_rate: 115,
+      blood_pressure_systolic: 90,
+      blood_pressure_diastolic: 55,
+      respiratory_rate: 28,
+      spo2: 96,
+      temperature: 37.2,
+      consciousness: 'Confused'
+    },
+    equipment: [],
+    notes: 'Insulin drip. Aggressive fluids. Potassium replacement. Monitor for cerebral edema.'
+  },
+  {
+    id: 'tension_pneumothorax',
+    name: 'Tension Pneumothorax',
+    icon: Wind,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Life-threatening air trapping with mediastinal shift',
+    vitals: {
+      heart_rate: 145,
+      blood_pressure_systolic: 70,
+      blood_pressure_diastolic: 40,
+      respiratory_rate: 35,
+      spo2: 80,
+      temperature: 36.9,
+      consciousness: 'Agitated'
+    },
+    equipment: [],
+    notes: 'Immediate needle decompression. Chest tube placement. Do not delay for imaging.'
   }
 ];
 

@@ -165,7 +165,13 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                       <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
                       <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
                       <SelectItem value="right_atrium">Right Atrium</SelectItem>
-                      <SelectItem value="subclavian_vein">Subclavian</SelectItem>
+                      <SelectItem value="subclavian_vein">Subclavian Vein</SelectItem>
+                      <SelectItem value="axillary_vein">Axillary Vein</SelectItem>
+                      <SelectItem value="external_jugular">External Jugular</SelectItem>
+                      <SelectItem value="iliac_vein">Iliac Vein</SelectItem>
+                      <SelectItem value="hepatic_vein">Hepatic Vein</SelectItem>
+                      <SelectItem value="portal_vein">Portal Vein</SelectItem>
+                      <SelectItem value="renal_vein">Renal Vein</SelectItem>
                       <SelectItem value="bicaval">Bicaval</SelectItem>
                     </SelectContent>
                   </Select>
@@ -261,15 +267,22 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
                         <>
                           <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
                           <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
-                          <SelectItem value="subclavian_vein">Subclavian</SelectItem>
+                          <SelectItem value="subclavian_vein">Subclavian Vein</SelectItem>
+                          <SelectItem value="external_jugular">External Jugular</SelectItem>
+                          <SelectItem value="axillary_vein">Axillary Vein</SelectItem>
                         </>
                       ) : (
                         <>
                           <SelectItem value="femoral_artery">Femoral Artery</SelectItem>
                           <SelectItem value="axillary_artery">Axillary Artery</SelectItem>
-                          <SelectItem value="subclavian_artery">Subclavian</SelectItem>
-                          <SelectItem value="carotid_artery">Carotid</SelectItem>
-                          <SelectItem value="ascending_aorta">Asc. Aorta</SelectItem>
+                          <SelectItem value="brachial_artery">Brachial Artery</SelectItem>
+                          <SelectItem value="radial_artery">Radial Artery</SelectItem>
+                          <SelectItem value="subclavian_artery">Subclavian Artery</SelectItem>
+                          <SelectItem value="carotid_artery">Carotid Artery</SelectItem>
+                          <SelectItem value="ascending_aorta">Ascending Aorta</SelectItem>
+                          <SelectItem value="descending_aorta">Descending Aorta</SelectItem>
+                          <SelectItem value="innominate_artery">Innominate Artery</SelectItem>
+                          <SelectItem value="iliac_artery">Iliac Artery</SelectItem>
                         </>
                       )}
                     </SelectContent>
