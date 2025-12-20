@@ -12,8 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Heart, Droplets, Wind, Zap, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Heart, Droplets, Wind, Zap, AlertTriangle, CheckCircle2, ArrowRight, Circle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from 'framer-motion';
 
 export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
   const defaultConfig = {
@@ -89,24 +90,213 @@ export default function ECMOBuilder({ open, onClose, onSave, initialConfig }) {
     }
   };
 
+  const CircuitNode = ({ title, icon: Icon, color, children, position }) => (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: position * 0.1 }}
+      className={`relative bg-white border-2 ${color} rounded-xl p-4 shadow-lg`}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <div className={`w-10 h-10 rounded-lg ${color.replace('border', 'bg')} bg-opacity-20 flex items-center justify-center`}>
+          <Icon className={`w-5 h-5 ${color.replace('border', 'text')}`} />
+        </div>
+        <div className="font-bold text-slate-800">{title}</div>
+      </div>
+      <div className="space-y-2">
+        {children}
+      </div>
+      {/* Connection ports */}
+      <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-blue-500 rounded-full" />
+      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-blue-500 rounded-full" />
+    </motion.div>
+  );
+
+  const FlowLine = () => (
+    <div className="flex items-center justify-center my-4">
+      <div className="h-12 w-0.5 bg-gradient-to-b from-blue-500 to-red-500" />
+      <ArrowRight className="absolute text-blue-500 animate-pulse" />
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Heart className="w-6 h-6 text-pink-600" />
-            ECMO Circuit Builder
+            ECMO Circuit Builder - Visual Designer
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="mode" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="visual" className="w-full">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="visual">Visual</TabsTrigger>
             <TabsTrigger value="mode">Mode</TabsTrigger>
             <TabsTrigger value="cannulation">Cannulation</TabsTrigger>
             <TabsTrigger value="circuit">Circuit</TabsTrigger>
             <TabsTrigger value="flows">Flows</TabsTrigger>
             <TabsTrigger value="safety">Safety</TabsTrigger>
           </TabsList>
+
+          {/* Visual Circuit Designer */}
+          <TabsContent value="visual" className="space-y-4">
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl p-6 min-h-[600px]">
+              <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
+                
+                {/* Patient Drainage */}
+                <CircuitNode 
+                  title="DRAINAGE" 
+                  icon={Droplets} 
+                  color="border-red-500"
+                  position={0}
+                >
+                  <Select
+                    value={config?.cannulation?.drainage || 'femoral_vein'}
+                    onValueChange={(value) => setConfig({
+                      ...config,
+                      cannulation: { ...config.cannulation, drainage: value }
+                    })}
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
+                      <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
+                      <SelectItem value="right_atrium">Right Atrium</SelectItem>
+                      <SelectItem value="subclavian_vein">Subclavian</SelectItem>
+                      <SelectItem value="bicaval">Bicaval</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Badge variant="outline" className="text-xs">
+                    {config?.cannulation?.size_drainage || '25Fr'}
+                  </Badge>
+                </CircuitNode>
+
+                <FlowLine />
+
+                {/* Pump */}
+                <CircuitNode 
+                  title="PUMP" 
+                  icon={Zap} 
+                  color="border-blue-500"
+                  position={1}
+                >
+                  <Select
+                    value={config?.circuit?.pump_type || 'centrifugal'}
+                    onValueChange={(value) => setConfig({
+                      ...config,
+                      circuit: { ...config.circuit, pump_type: value }
+                    })}
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="centrifugal">Centrifugal</SelectItem>
+                      <SelectItem value="roller">Roller</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="text-xs text-slate-600 bg-blue-50 p-2 rounded">
+                    Blood Flow: {config?.flows?.blood_flow || 4.0} L/min
+                  </div>
+                </CircuitNode>
+
+                <FlowLine />
+
+                {/* Oxygenator */}
+                <CircuitNode 
+                  title="OXYGENATOR" 
+                  icon={Wind} 
+                  color="border-green-500"
+                  position={2}
+                >
+                  <Select
+                    value={config?.circuit?.oxygenator || 'PLS'}
+                    onValueChange={(value) => setConfig({
+                      ...config,
+                      circuit: { ...config.circuit, oxygenator: value }
+                    })}
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PLS">PLS Membrane</SelectItem>
+                      <SelectItem value="silicone">Silicone</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-green-50 p-2 rounded">
+                      Sweep: {config?.flows?.sweep_gas || 4.0} L/min
+                    </div>
+                    <div className="bg-green-50 p-2 rounded">
+                      FiO₂: {config?.flows?.fio2 || 100}%
+                    </div>
+                  </div>
+                </CircuitNode>
+
+                <FlowLine />
+
+                {/* Return */}
+                <CircuitNode 
+                  title="RETURN" 
+                  icon={Heart} 
+                  color="border-pink-500"
+                  position={3}
+                >
+                  <Select
+                    value={config?.cannulation?.return || 'internal_jugular'}
+                    onValueChange={(value) => setConfig({
+                      ...config,
+                      cannulation: { ...config.cannulation, return: value }
+                    })}
+                  >
+                    <SelectTrigger className="text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {config?.mode === 'VV-ECMO' || config?.mode === 'VVA-ECMO' ? (
+                        <>
+                          <SelectItem value="internal_jugular">Internal Jugular</SelectItem>
+                          <SelectItem value="femoral_vein">Femoral Vein</SelectItem>
+                          <SelectItem value="subclavian_vein">Subclavian</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="femoral_artery">Femoral Artery</SelectItem>
+                          <SelectItem value="axillary_artery">Axillary Artery</SelectItem>
+                          <SelectItem value="subclavian_artery">Subclavian</SelectItem>
+                          <SelectItem value="carotid_artery">Carotid</SelectItem>
+                          <SelectItem value="ascending_aorta">Asc. Aorta</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <Badge variant="outline" className="text-xs">
+                    {config?.cannulation?.size_return || '21Fr'}
+                  </Badge>
+                </CircuitNode>
+
+              </div>
+
+              {/* Circuit Info Overlay */}
+              <div className="absolute top-6 right-6 bg-slate-800 bg-opacity-90 rounded-lg p-4 border border-slate-600">
+                <div className="text-white space-y-2">
+                  <div className="font-bold text-sm flex items-center gap-2">
+                    <Circle className="w-3 h-3 fill-current" />
+                    {config?.mode || 'VV-ECMO'}
+                  </div>
+                  <div className="text-xs text-slate-300 space-y-1">
+                    <div>Flow: {config?.flows?.blood_flow || 4.0} L/min</div>
+                    <div>Sweep: {config?.flows?.sweep_gas || 4.0} L/min</div>
+                    <div>FiO₂: {config?.flows?.fio2 || 100}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
 
           {/* Mode Selection */}
           <TabsContent value="mode" className="space-y-4">
