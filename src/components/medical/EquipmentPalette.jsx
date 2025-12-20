@@ -163,8 +163,6 @@ export default function EquipmentPalette() {
       )
     : null;
 
-  let dragIndex = 0;
-
   return (
     <Card className="h-full shadow-lg flex flex-col">
       <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-slate-100 border-b">
@@ -190,13 +188,12 @@ export default function EquipmentPalette() {
               >
                 {filteredEquipment ? (
                   // Search results
-                  filteredEquipment.map((equipment) => {
-                    const currentIndex = dragIndex++;
+                  filteredEquipment.map((equipment, index) => {
                     return (
                       <Draggable
-                        key={`${equipment.id}-${currentIndex}`}
-                        draggableId={`palette-${equipment.id}-${currentIndex}`}
-                        index={currentIndex}
+                        key={`search-${equipment.id}-${index}`}
+                        draggableId={`palette-${equipment.id}-${index}`}
+                        index={index}
                       >
                         {(provided, snapshot) => (
                           <>
@@ -242,35 +239,31 @@ export default function EquipmentPalette() {
                   })
                 ) : (
                   // Categorized view
-                  Object.entries(EQUIPMENT_CATEGORIES).map(([categoryKey, category]) => {
-                    const isExpanded = expandedCategories.includes(categoryKey);
-                    return (
-                      <div key={categoryKey} className="space-y-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleCategory(categoryKey)}
-                          className={`w-full justify-start font-bold ${category.color} hover:opacity-80`}
-                        >
-                          {isExpanded ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
-                          {category.name}
-                        </Button>
-                        {isExpanded && (
-                          <div className="space-y-2 ml-2">
-                            {category.equipment.map((equipment) => {
-                              const currentIndex = dragIndex++;
-                              const equipmentWithCategory = { 
-                                ...equipment, 
-                                categoryKey, 
-                                categoryName: category.name,
-                                category: category.name 
-                              };
-                              return (
-                                <Draggable
-                                  key={`${equipment.id}-${currentIndex}`}
-                                  draggableId={`palette-${equipment.id}-${currentIndex}`}
-                                  index={currentIndex}
-                                >
+                  (() => {
+                    let globalIndex = 0;
+                    return Object.entries(EQUIPMENT_CATEGORIES).map(([categoryKey, category]) => {
+                      const isExpanded = expandedCategories.includes(categoryKey);
+                      return (
+                        <div key={categoryKey} className="space-y-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleCategory(categoryKey)}
+                            className={`w-full justify-start font-bold ${category.color} hover:opacity-80`}
+                          >
+                            {isExpanded ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+                            {category.name}
+                          </Button>
+                          {isExpanded && (
+                            <div className="space-y-2 ml-2">
+                              {category.equipment.map((equipment, localIndex) => {
+                                const currentIndex = globalIndex++;
+                                return (
+                                  <Draggable
+                                    key={`${categoryKey}-${equipment.id}-${localIndex}`}
+                                    draggableId={`palette-${equipment.id}-${currentIndex}`}
+                                    index={currentIndex}
+                                  >
                                   {(provided, snapshot) => (
                                     <>
                                       <div
@@ -311,13 +304,14 @@ export default function EquipmentPalette() {
                                     </>
                                   )}
                                 </Draggable>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()
                 )}
                 {provided.placeholder}
               </div>
