@@ -67,6 +67,18 @@ const EQUIPMENT_CONFIG_FIELDS = {
   arterial_line: [
     { name: 'site', label: 'Insertion Site', type: 'select', options: ['Radial', 'Femoral', 'Brachial'] },
     { name: 'transducer_level', label: 'Transducer Level', type: 'select', options: ['Phlebostatic axis', 'Right atrium'] }
+  ],
+  pacemaker: [
+    { name: 'enabled', label: 'Pacing Enabled', type: 'select', options: ['true', 'false'] },
+    { name: 'pacing_mode', label: 'Pacing Mode', type: 'select', options: ['DDD', 'VVI', 'AAI', 'VOO'] },
+    { name: 'pacing_rate', label: 'Pacing Rate (bpm)', type: 'number' },
+    { name: 'output', label: 'Output (mA)', type: 'number' },
+    { name: 'sensitivity', label: 'Sensitivity (mV)', type: 'number' }
+  ],
+  lucas: [
+    { name: 'enabled', label: 'CPR Active', type: 'select', options: ['true', 'false'] },
+    { name: 'rate', label: 'Compression Rate (/min)', type: 'number' },
+    { name: 'depth', label: 'Compression Depth (cm)', type: 'number' }
   ]
 };
 

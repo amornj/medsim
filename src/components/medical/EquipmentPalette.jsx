@@ -92,6 +92,7 @@ const EQUIPMENT_CATEGORIES = {
       { id: 'defibrillator', name: 'Defibrillator', icon: Zap, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Arrhythmia termination' },
       { id: 'aed', name: 'Automated External Defibrillator (AED)', icon: Zap, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Public cardiac arrest' },
       { id: 'lucas', name: 'Mechanical CPR Device (LUCAS)', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'High-quality CPR' },
+      { id: 'pacemaker', name: 'External Pacemaker', icon: Activity, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'Controls heart rate' },
       { id: 'cardiac_monitor', name: 'Cardiac Monitor', icon: Activity, color: 'bg-red-100 text-red-700 border-red-300', description: 'Continuous monitoring' }
     ]
   },

@@ -143,11 +143,43 @@ export default function MedicalScenario() {
           newVitals.spo2 = Math.min(100, prev.spo2 + 0.2);
         }
         
-        // Mechanical CPR
+        // Mechanical CPR - Generates artificial circulation
         const lucas = equipment.find(eq => eq.type === 'lucas');
-        if (lucas && prev.heart_rate === 0) {
-          newVitals.blood_pressure_systolic = Math.min(80, prev.blood_pressure_systolic + 0.8);
-          newVitals.spo2 = Math.min(80, prev.spo2 + 0.3);
+        if (lucas?.settings?.enabled !== false) {
+          if (prev.heart_rate === 0) {
+            // Creates artificial perfusion pressure during cardiac arrest
+            newVitals.blood_pressure_systolic = Math.min(80, prev.blood_pressure_systolic + 2);
+            newVitals.blood_pressure_diastolic = Math.min(50, prev.blood_pressure_diastolic + 1);
+            newVitals.spo2 = Math.min(75, prev.spo2 + 0.5);
+          }
+        }
+        
+        // DEFIBRILLATOR - Successful shock can restart heart
+        const defibrillator = equipment.find(eq => eq.type === 'defibrillator' || eq.type === 'aed');
+        if (defibrillator?.settings?.shock_delivered && prev.heart_rate === 0) {
+          const shockTimestamp = new Date(defibrillator.settings.timestamp).getTime();
+          const now = Date.now();
+          const timeSinceShock = now - shockTimestamp;
+          
+          // Gradual recovery after successful defibrillation (30 seconds)
+          if (timeSinceShock < 30000) {
+            const progress = timeSinceShock / 30000;
+            newVitals.heart_rate = Math.floor(progress * 85);
+            newVitals.blood_pressure_systolic = Math.floor(50 + progress * 60);
+            newVitals.blood_pressure_diastolic = Math.floor(30 + progress * 40);
+          }
+        }
+        
+        // PACEMAKER - Overrides heart rate when active
+        const pacemaker = equipment.find(eq => eq.type === 'pacemaker');
+        if (pacemaker?.settings?.enabled && pacemaker.settings?.pacing_rate) {
+          const pacingRate = parseInt(pacemaker.settings.pacing_rate);
+          // Pacemaker sets the heart rate directly
+          newVitals.heart_rate = pacingRate;
+          // Stable pacing improves perfusion
+          if (prev.blood_pressure_systolic < 90) {
+            newVitals.blood_pressure_systolic = Math.min(100, prev.blood_pressure_systolic + 0.5);
+          }
         }
         
         // Temperature management
@@ -161,15 +193,34 @@ export default function MedicalScenario() {
           }
         }
         
-        // IV fluid resuscitation
+        // IV FLUID RESUSCITATION - Rate-dependent effects
         const ivPump = equipment.find(eq => 
           eq.type === 'iv_pump' && 
-          eq.settings?.rate
+          eq.settings?.rate &&
+          !eq.settings?.drug // Fluid only, not medications
         );
         if (ivPump?.settings?.rate) {
           const rate = parseFloat(ivPump.settings.rate);
-          if (rate > 300) { // Rapid fluid resuscitation
-            newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + 0.3);
+          
+          // Fluid resuscitation effects based on rate
+          if (rate > 500) { // Massive fluid resuscitation (>500 ml/hr)
+            newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + 1.2);
+            newVitals.blood_pressure_diastolic = Math.min(90, prev.blood_pressure_diastolic + 0.8);
+            newVitals.spo2 = Math.min(98, prev.spo2 + 0.3); // Improved perfusion
+          } else if (rate > 300) { // Rapid resuscitation (300-500 ml/hr)
+            newVitals.blood_pressure_systolic = Math.min(130, prev.blood_pressure_systolic + 0.6);
+            newVitals.blood_pressure_diastolic = Math.min(85, prev.blood_pressure_diastolic + 0.4);
+            newVitals.spo2 = Math.min(96, prev.spo2 + 0.2);
+          } else if (rate > 150) { // Maintenance fluids (150-300 ml/hr)
+            newVitals.blood_pressure_systolic = Math.min(120, prev.blood_pressure_systolic + 0.3);
+            newVitals.spo2 = Math.min(95, prev.spo2 + 0.1);
+          }
+          
+          // Fluid overload effects (too much too fast)
+          if (rate > 1000) {
+            // Pulmonary edema risk - decreases oxygenation
+            newVitals.spo2 = Math.max(85, prev.spo2 - 0.5);
+            newVitals.respiratory_rate = Math.min(35, prev.respiratory_rate + 0.2);
           }
         }
         
