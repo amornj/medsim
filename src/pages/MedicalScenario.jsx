@@ -39,27 +39,115 @@ export default function MedicalScenario() {
         
         let newVitals = { ...prev };
         
-        // Check for ventilator and update respiratory rate
+        // VENTILATOR: Direct impact on oxygenation and respiratory rate
         const ventilator = equipment.find(eq => eq.type === 'ventilator');
-        if (ventilator?.settings?.respiratory_rate) {
-          newVitals.respiratory_rate = parseInt(ventilator.settings.respiratory_rate) || prev.respiratory_rate;
-        }
-        
-        // ECMO effects
-        const ecmo = equipment.find(eq => eq.type === 'ecmo' || eq.type === 'va_ecmo' || eq.type === 'vv_ecmo');
-        if (ecmo?.settings) {
-          if (ecmo.settings.flow_rate) {
-            // Improve oxygenation and circulation
+        if (ventilator?.settings) {
+          // Respiratory rate control
+          if (ventilator.settings.respiratory_rate) {
+            newVitals.respiratory_rate = parseInt(ventilator.settings.respiratory_rate);
+          }
+          
+          // FiO2 affects SpO2
+          const fio2 = parseInt(ventilator.settings.fio2) || 21;
+          if (fio2 >= 80) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 1.5);
+          } else if (fio2 >= 60) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 1);
+          } else if (fio2 >= 40) {
             newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
-            newVitals.blood_pressure_systolic = Math.min(120, prev.blood_pressure_systolic + 0.3);
+          }
+          
+          // PEEP affects oxygenation (higher PEEP = better recruitment)
+          const peep = parseInt(ventilator.settings.peep) || 5;
+          if (peep >= 12) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.8);
+          } else if (peep >= 8) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
+          }
+          
+          // Tidal volume too high can cause barotrauma (decrease SpO2)
+          const tidalVolume = parseInt(ventilator.settings.tidal_volume) || 500;
+          if (tidalVolume > 600) {
+            newVitals.spo2 = Math.max(0, prev.spo2 - 0.2);
           }
         }
         
-        // Defibrillator/CPR device effects
-        const cpr = equipment.find(eq => eq.type === 'lucas');
-        if (cpr && prev.heart_rate === 0) {
-          // Mechanical CPR maintains minimal circulation
-          newVitals.blood_pressure_systolic = Math.min(80, prev.blood_pressure_systolic + 0.5);
+        // VASOPRESSOR INFUSIONS: Affect blood pressure
+        const norepinephrine = equipment.find(eq => 
+          eq.type === 'syringe_pump' && 
+          (eq.settings?.drug?.toLowerCase().includes('norepinephrine') || 
+           eq.settings?.drug?.toLowerCase().includes('levophed'))
+        );
+        if (norepinephrine?.settings?.rate) {
+          const rate = parseFloat(norepinephrine.settings.rate);
+          // Norepinephrine increases BP
+          newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.3);
+          newVitals.blood_pressure_diastolic = Math.min(110, prev.blood_pressure_diastolic + rate * 0.2);
+          newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.5); // Reflex bradycardia
+        }
+        
+        // Epinephrine affects HR and BP
+        const epinephrine = equipment.find(eq => 
+          eq.type === 'syringe_pump' && 
+          eq.settings?.drug?.toLowerCase().includes('epinephrine')
+        );
+        if (epinephrine?.settings?.rate) {
+          const rate = parseFloat(epinephrine.settings.rate);
+          newVitals.blood_pressure_systolic = Math.min(200, prev.blood_pressure_systolic + rate * 0.5);
+          newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 2);
+        }
+        
+        // Vasopressin
+        const vasopressin = equipment.find(eq => 
+          eq.type === 'syringe_pump' && 
+          eq.settings?.drug?.toLowerCase().includes('vasopressin')
+        );
+        if (vasopressin?.settings?.rate) {
+          const rate = parseFloat(vasopressin.settings.rate);
+          newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.4);
+        }
+        
+        // Sedatives (Propofol) - decrease BP and HR
+        const propofol = equipment.find(eq => 
+          eq.type === 'syringe_pump' && 
+          eq.settings?.drug?.toLowerCase().includes('propofol')
+        );
+        if (propofol?.settings?.rate) {
+          const rate = parseFloat(propofol.settings.rate);
+          newVitals.blood_pressure_systolic = Math.max(50, prev.blood_pressure_systolic - rate * 0.2);
+          newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.3);
+        }
+        
+        // ECMO effects - powerful support
+        const ecmo = equipment.find(eq => 
+          eq.type === 'ecmo' || eq.type === 'va_ecmo' || eq.type === 'vv_ecmo'
+        );
+        if (ecmo?.settings?.flow_rate) {
+          const flow = parseFloat(ecmo.settings.flow_rate);
+          // VV-ECMO: respiratory support only
+          if (ecmo.type === 'vv_ecmo' || ecmo.type === 'ecmo') {
+            newVitals.spo2 = Math.min(100, prev.spo2 + flow * 0.3);
+          }
+          // VA-ECMO: cardiac + respiratory support
+          if (ecmo.type === 'va_ecmo') {
+            newVitals.spo2 = Math.min(100, prev.spo2 + flow * 0.4);
+            newVitals.blood_pressure_systolic = Math.min(120, prev.blood_pressure_systolic + flow * 0.5);
+            newVitals.blood_pressure_diastolic = Math.min(80, prev.blood_pressure_diastolic + flow * 0.3);
+          }
+        }
+        
+        // IABP - improves cardiac output
+        const iabp = equipment.find(eq => eq.type === 'iabp');
+        if (iabp?.settings?.enabled) {
+          newVitals.blood_pressure_diastolic = Math.min(90, prev.blood_pressure_diastolic + 0.5);
+          newVitals.spo2 = Math.min(100, prev.spo2 + 0.2);
+        }
+        
+        // Mechanical CPR
+        const lucas = equipment.find(eq => eq.type === 'lucas');
+        if (lucas && prev.heart_rate === 0) {
+          newVitals.blood_pressure_systolic = Math.min(80, prev.blood_pressure_systolic + 0.8);
+          newVitals.spo2 = Math.min(80, prev.spo2 + 0.3);
         }
         
         // Temperature management
@@ -70,6 +158,18 @@ export default function MedicalScenario() {
             newVitals.temperature = Math.min(target, prev.temperature + 0.05);
           } else if (prev.temperature > target) {
             newVitals.temperature = Math.max(target, prev.temperature - 0.05);
+          }
+        }
+        
+        // IV fluid resuscitation
+        const ivPump = equipment.find(eq => 
+          eq.type === 'iv_pump' && 
+          eq.settings?.rate
+        );
+        if (ivPump?.settings?.rate) {
+          const rate = parseFloat(ivPump.settings.rate);
+          if (rate > 300) { // Rapid fluid resuscitation
+            newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + 0.3);
           }
         }
         

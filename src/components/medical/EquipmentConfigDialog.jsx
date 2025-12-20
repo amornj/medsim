@@ -16,6 +16,7 @@ import DrugDatabase from './DrugDatabase';
 import ECMOBuilder from './ECMOBuilder';
 import DefibrillationGame from './DefibrillationGame';
 import MachineryRadarChart from './MachineryRadarChart';
+import MedicationTitrator from './MedicationTitrator';
 
 const EQUIPMENT_CONFIG_FIELDS = {
   ventilator: [
@@ -225,6 +226,27 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
                   className="w-full"
                 >
                   💓 Perform CPR (Spacebar)
+                </Button>
+              </div>
+            </div>
+          ) : (equipment?.type === 'syringe_pump' || equipment?.type === 'iv_pump') && settings.drug ? (
+            <div className="space-y-4 py-4">
+              <MedicationTitrator
+                drug={settings.drug || settings.medication || 'Unknown Drug'}
+                concentration={settings.concentration || 'N/A'}
+                currentRate={parseFloat(settings.rate) || 0}
+                onRateChange={(newRate) => setSettings({ ...settings, rate: newRate.toString() })}
+              />
+
+              <div className="pt-4 border-t space-y-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setDrugDialogOpen(true)}
+                  className="w-full"
+                >
+                  <Search className="w-4 h-4 mr-2" />
+                  Change Drug
                 </Button>
               </div>
             </div>
