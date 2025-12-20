@@ -148,7 +148,12 @@ export default function EquipmentPalette() {
 
   // Flatten equipment for search
   const allEquipment = Object.entries(EQUIPMENT_CATEGORIES).flatMap(([catKey, category]) =>
-    category.equipment.map(eq => ({ ...eq, categoryKey, categoryName: category.name }))
+    category.equipment.map(eq => ({ 
+      ...eq, 
+      categoryKey: catKey, 
+      categoryName: category.name,
+      category: category.name 
+    }))
   );
 
   const filteredEquipment = searchQuery.trim()
