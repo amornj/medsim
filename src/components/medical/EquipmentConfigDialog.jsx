@@ -75,11 +75,8 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'output', label: 'Output (mA)', type: 'number' },
     { name: 'sensitivity', label: 'Sensitivity (mV)', type: 'number' }
   ],
-  lucas: [
-    { name: 'enabled', label: 'CPR Active', type: 'select', options: ['true', 'false'] },
-    { name: 'rate', label: 'Compression Rate (/min)', type: 'number' },
-    { name: 'depth', label: 'Compression Depth (cm)', type: 'number' }
-  ],
+  lucas: [],
+  aed: [],
   warming_blanket: [
     { name: 'enabled', label: 'Warming Active', type: 'select', options: ['true', 'false'] },
     { name: 'temperature', label: 'Blanket Temperature (°C)', type: 'number' },
@@ -102,9 +99,22 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
   const [drugDialogOpen, setDrugDialogOpen] = useState(false);
   const [ecmoBuilderOpen, setEcmoBuilderOpen] = useState(false);
   const [defibrillationGameOpen, setDefibrillationGameOpen] = useState(false);
+  const [cprGameOpen, setCprGameOpen] = useState(false);
   const [showChart, setShowChart] = useState(false);
 
   const fields = equipment ? EQUIPMENT_CONFIG_FIELDS[equipment.type] || [] : [];
+  
+  const handleCprSuccess = () => {
+    const updatedSettings = {
+      ...settings,
+      enabled: 'true',
+      rate: 100,
+      depth: 5
+    };
+    
+    onSave(equipment.id, updatedSettings, null);
+    setCprGameOpen(false);
+  };
 
   const handleDrugSelect = (drug) => {
     setSettings({
@@ -132,7 +142,6 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
       energy: settings.energy || '200',
       timestamp: new Date().toISOString()
     };
-    setSettings(updatedSettings);
     
     // Return vitals to normal after successful defibrillation
     const vitalChanges = {
@@ -144,7 +153,7 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
     };
     
     onSave(equipment.id, updatedSettings, vitalChanges);
-    onClose();
+    setDefibrillationGameOpen(false);
   };
 
   // Special handling for ECMO
@@ -235,26 +244,27 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
                 </div>
               ))}
               <div className="pt-4 border-t space-y-3">
-                <Button
-                  onClick={() => {
-                    setDefibrillationGameOpen(true);
-                    onClose();
-                  }}
-                  className="w-full bg-orange-600 hover:bg-orange-700"
-                >
-                  ⚡ Deliver Shock (Interactive)
-                </Button>
-                <Button
-                  onClick={() => {
-                    setDefibrillationGameOpen(true);
-                    onClose();
-                  }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  💓 Perform CPR (Spacebar)
-                </Button>
+               <Button
+                 onClick={() => setDefibrillationGameOpen(true)}
+                 className="w-full bg-orange-600 hover:bg-orange-700"
+               >
+                 ⚡ Deliver Shock (Interactive)
+               </Button>
               </div>
+            </div>
+          ) : equipment?.type === 'lucas' || equipment?.type === 'aed' ? (
+            <div className="py-8 text-center space-y-4">
+              <p className="text-slate-600 mb-4">
+                {equipment.type === 'lucas' 
+                  ? 'Perform CPR using the interactive minigame' 
+                  : 'AED mode - perform CPR between shocks'}
+              </p>
+              <Button
+                onClick={() => setCprGameOpen(true)}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                💓 Start CPR Minigame
+              </Button>
             </div>
           ) : (equipment?.type === 'syringe_pump' || equipment?.type === 'iv_pump') && settings.drug ? (
             <div className="space-y-4 py-4">
@@ -348,7 +358,14 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
         open={defibrillationGameOpen}
         onClose={() => setDefibrillationGameOpen(false)}
         onSuccess={handleDefibrillationSuccess}
-        mode={settings.mode === 'AED' ? 'defibrillation' : 'cpr'}
+        mode="defibrillation"
+      />
+      
+      <DefibrillationGame
+        open={cprGameOpen}
+        onClose={() => setCprGameOpen(false)}
+        onSuccess={handleCprSuccess}
+        mode="cpr"
       />
     </>
   );
