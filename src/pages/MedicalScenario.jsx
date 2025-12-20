@@ -14,6 +14,7 @@ import PatientWorkspace from '../components/medical/PatientWorkspace';
 import EquipmentConfigDialog from '../components/medical/EquipmentConfigDialog';
 import HumanAnatomyViewer from '../components/medical/HumanAnatomyViewer';
 import SurgeryMenu from '../components/medical/SurgeryMenu';
+import DeathImminentWarning from '../components/medical/DeathImminentWarning';
 
 export default function MedicalScenario() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(true);
@@ -24,8 +25,60 @@ export default function MedicalScenario() {
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [surgeryMenuOpen, setSurgeryMenuOpen] = useState(false);
   const [showAnatomy, setShowAnatomy] = useState(false);
+  const [patientDead, setPatientDead] = useState(false);
   
   const queryClient = useQueryClient();
+
+  // Dynamic equipment effects on vitals
+  useEffect(() => {
+    if (!vitals || patientDead) return;
+
+    const interval = setInterval(() => {
+      setVitals(prev => {
+        if (!prev) return prev;
+        
+        let newVitals = { ...prev };
+        
+        // Check for ventilator and update respiratory rate
+        const ventilator = equipment.find(eq => eq.type === 'ventilator');
+        if (ventilator?.settings?.respiratory_rate) {
+          newVitals.respiratory_rate = parseInt(ventilator.settings.respiratory_rate) || prev.respiratory_rate;
+        }
+        
+        // ECMO effects
+        const ecmo = equipment.find(eq => eq.type === 'ecmo' || eq.type === 'va_ecmo' || eq.type === 'vv_ecmo');
+        if (ecmo?.settings) {
+          if (ecmo.settings.flow_rate) {
+            // Improve oxygenation and circulation
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
+            newVitals.blood_pressure_systolic = Math.min(120, prev.blood_pressure_systolic + 0.3);
+          }
+        }
+        
+        // Defibrillator/CPR device effects
+        const cpr = equipment.find(eq => eq.type === 'lucas');
+        if (cpr && prev.heart_rate === 0) {
+          // Mechanical CPR maintains minimal circulation
+          newVitals.blood_pressure_systolic = Math.min(80, prev.blood_pressure_systolic + 0.5);
+        }
+        
+        // Temperature management
+        const tempMonitor = equipment.find(eq => eq.type === 'temp_monitor');
+        if (tempMonitor?.settings?.target_temp) {
+          const target = parseFloat(tempMonitor.settings.target_temp);
+          if (prev.temperature < target) {
+            newVitals.temperature = Math.min(target, prev.temperature + 0.05);
+          } else if (prev.temperature > target) {
+            newVitals.temperature = Math.max(target, prev.temperature - 0.05);
+          }
+        }
+        
+        return newVitals;
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [equipment, vitals, patientDead]);
 
   const saveScenarioMutation = useMutation({
     mutationFn: (scenarioData) => base44.entities.Scenario.create(scenarioData),
@@ -212,6 +265,18 @@ export default function MedicalScenario() {
               </Button>
             </div>
           </div>
+
+          {/* Death Warning */}
+          <DeathImminentWarning 
+            vitals={vitals} 
+            onDeath={(reason) => {
+              setPatientDead(true);
+              toast.error(`Patient has died: ${reason.replace(/_/g, ' ').toUpperCase()}`, {
+                duration: 10000,
+                description: 'Scenario failed. Reset to try again.'
+              });
+            }}
+          />
 
           {/* Vitals */}
           <div className="mb-6">

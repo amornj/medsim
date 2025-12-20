@@ -12,10 +12,28 @@ const EQUIPMENT_ICONS = {
   iv_pump: Droplets,
   syringe_pump: Syringe,
   ecmo: Heart,
+  va_ecmo: Heart,
+  vv_ecmo: Heart,
+  vav_ecmo: Heart,
+  lava_ecmo: Heart,
+  ecpella: Heart,
+  iabp: Activity,
+  impella_cp: Heart,
+  impella_5: Heart,
+  impella_rp: Heart,
+  tandem_heart: Heart,
+  heartmate_3: Heart,
+  centrimag: Heart,
   dialysis: Droplets,
+  crrt: Droplets,
   pulse_ox: Radio,
   temp_monitor: Thermometer,
-  arterial_line: Activity
+  arterial_line: Activity,
+  lucas: Heart,
+  aed: Zap,
+  hfnc: Wind,
+  bipap: Wind,
+  cpap: Wind
 };
 
 const EQUIPMENT_COLORS = {
@@ -25,10 +43,28 @@ const EQUIPMENT_COLORS = {
   iv_pump: 'bg-purple-100 text-purple-700 border-purple-300',
   syringe_pump: 'bg-indigo-100 text-indigo-700 border-indigo-300',
   ecmo: 'bg-pink-100 text-pink-700 border-pink-300',
+  va_ecmo: 'bg-red-100 text-red-700 border-red-300',
+  vv_ecmo: 'bg-blue-100 text-blue-700 border-blue-300',
+  vav_ecmo: 'bg-purple-100 text-purple-700 border-purple-300',
+  lava_ecmo: 'bg-rose-100 text-rose-700 border-rose-300',
+  ecpella: 'bg-pink-200 text-pink-800 border-pink-400',
+  iabp: 'bg-orange-100 text-orange-700 border-orange-300',
+  impella_cp: 'bg-red-100 text-red-700 border-red-300',
+  impella_5: 'bg-red-200 text-red-800 border-red-400',
+  impella_rp: 'bg-sky-100 text-sky-700 border-sky-300',
+  tandem_heart: 'bg-pink-100 text-pink-700 border-pink-300',
+  heartmate_3: 'bg-rose-200 text-rose-800 border-rose-400',
+  centrimag: 'bg-indigo-100 text-indigo-700 border-indigo-300',
   dialysis: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+  crrt: 'bg-cyan-100 text-cyan-700 border-cyan-300',
   pulse_ox: 'bg-green-100 text-green-700 border-green-300',
   temp_monitor: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-  arterial_line: 'bg-rose-100 text-rose-700 border-rose-300'
+  arterial_line: 'bg-rose-100 text-rose-700 border-rose-300',
+  lucas: 'bg-red-100 text-red-700 border-red-300',
+  aed: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+  hfnc: 'bg-teal-100 text-teal-700 border-teal-300',
+  bipap: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+  cpap: 'bg-blue-100 text-blue-700 border-blue-300'
 };
 
 const EQUIPMENT_NAMES = {
@@ -37,11 +73,29 @@ const EQUIPMENT_NAMES = {
   defibrillator: 'Defibrillator',
   iv_pump: 'IV Infusion Pump',
   syringe_pump: 'Syringe Pump',
-  ecmo: 'ECMO Machine',
-  dialysis: 'Dialysis Machine',
+  ecmo: 'ECMO',
+  va_ecmo: 'VA-ECMO',
+  vv_ecmo: 'VV-ECMO',
+  vav_ecmo: 'V-AV ECMO',
+  lava_ecmo: 'LAVA-ECMO',
+  ecpella: 'ECPELLA',
+  iabp: 'IABP',
+  impella_cp: 'Impella CP',
+  impella_5: 'Impella 5.0',
+  impella_rp: 'Impella RP',
+  tandem_heart: 'TandemHeart',
+  heartmate_3: 'HeartMate 3',
+  centrimag: 'CentriMag',
+  dialysis: 'Dialysis',
+  crrt: 'CRRT',
   pulse_ox: 'Pulse Oximeter',
   temp_monitor: 'Temperature Monitor',
-  arterial_line: 'Arterial Line Monitor'
+  arterial_line: 'Arterial Line',
+  lucas: 'LUCAS CPR Device',
+  aed: 'AED',
+  hfnc: 'HFNC',
+  bipap: 'BiPAP',
+  cpap: 'CPAP'
 };
 
 export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfigureEquipment }) {

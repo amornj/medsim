@@ -18,6 +18,9 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
   const [gameActive, setGameActive] = useState(false);
   const [result, setResult] = useState(null);
   const [timeLeft, setTimeLeft] = useState(10);
+  const [cprBPM, setCprBPM] = useState(0);
+  const [lastPressTime, setLastPressTime] = useState(null);
+  const [bpmHistory, setBpmHistory] = useState([]);
   
   const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
   const mouseSpeedDecayInterval = useRef(null);
@@ -30,7 +33,10 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
       setMouseSpeed(0);
       setGameActive(true);
       setResult(null);
-      setTimeLeft(mode === 'defibrillation' ? 10 : 15);
+      setTimeLeft(mode === 'defibrillation' ? 15 : 20);
+      setCprBPM(0);
+      setLastPressTime(null);
+      setBpmHistory([]);
     }
   }, [open, mode]);
 
@@ -48,14 +54,20 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
       });
     }, 100);
 
-    // Mouse speed decay
+    // Mouse speed decay (faster decay for more difficulty)
     mouseSpeedDecayInterval.current = setInterval(() => {
-      setMouseSpeed((prev) => Math.max(0, prev - 2));
+      setMouseSpeed((prev) => Math.max(0, prev - 5));
+    }, 100);
+    
+    // Progress decay (resistance)
+    const progressDecayInterval = setInterval(() => {
+      setProgress((prev) => Math.max(0, prev - 0.5));
     }, 100);
 
     return () => {
       if (gameTimerInterval.current) clearInterval(gameTimerInterval.current);
       if (mouseSpeedDecayInterval.current) clearInterval(mouseSpeedDecayInterval.current);
+      clearInterval(progressDecayInterval);
     };
   }, [gameActive]);
 
@@ -83,11 +95,36 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
       setSpacebarPresses((prev) => prev + 1);
       
       if (mode === 'cpr') {
-        // CPR mode: spacebar only
-        setProgress((prev) => Math.min(100, prev + 3));
+        // Calculate BPM for CPR
+        const now = Date.now();
+        if (lastPressTime) {
+          const timeDiff = (now - lastPressTime) / 1000 / 60; // in minutes
+          const currentBPM = Math.round(1 / timeDiff);
+          setCprBPM(currentBPM);
+          
+          // Keep history of last 5 presses
+          setBpmHistory(prev => [...prev.slice(-4), currentBPM]);
+          
+          // Calculate average BPM
+          const avgBPM = bpmHistory.length > 0 
+            ? bpmHistory.reduce((a, b) => a + b, 0) / bpmHistory.length 
+            : currentBPM;
+          
+          // Only add progress if BPM is between 100-110
+          if (avgBPM >= 100 && avgBPM <= 110) {
+            setProgress((prev) => Math.min(100, prev + 4));
+          } else if (avgBPM >= 95 && avgBPM <= 115) {
+            // Partial credit for close range
+            setProgress((prev) => Math.min(100, prev + 2));
+          } else {
+            // Penalty for wrong tempo
+            setProgress((prev) => Math.max(0, prev - 1));
+          }
+        }
+        setLastPressTime(now);
       } else {
-        // Defibrillation mode: spacebar contributes less
-        setProgress((prev) => Math.min(100, prev + 1));
+        // Defibrillation mode: spacebar contributes less with resistance
+        setProgress((prev) => Math.min(100, prev + 0.8));
       }
     }
   };
@@ -108,8 +145,8 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
       const scaledSpeed = Math.min(100, speed / 10);
       setMouseSpeed(scaledSpeed);
       
-      // Add to progress based on mouse speed
-      setProgress((prev) => Math.min(100, prev + scaledSpeed / 50));
+      // Add to progress based on mouse speed (reduced for more difficulty)
+      setProgress((prev) => Math.min(100, prev + scaledSpeed / 80));
     }
     
     lastMousePos.current = { x: e.clientX, y: e.clientY, time: now };
@@ -167,10 +204,13 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
                 ) : (
                   <>
                     <li className="break-words">
-                      • Press SPACEBAR rapidly for chest compressions
+                      • Press SPACEBAR at steady rhythm for chest compressions
                     </li>
                     <li className="break-words">
-                      • Maintain 100-120 compressions per minute
+                      • CRITICAL: Maintain EXACTLY 100-110 compressions per minute
+                    </li>
+                    <li className="break-words">
+                      • Too fast or too slow = PENALTY to progress
                     </li>
                     <li className="break-words">
                       • Fill the bar to 100% for effective CPR
@@ -181,13 +221,27 @@ export default function DefibrillationGame({ open, onClose, onSuccess, mode = 'd
             </div>
 
             {/* Timer */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <Badge variant="outline" className="text-lg px-4 py-2">
                 Time: {timeLeft.toFixed(1)}s
               </Badge>
               {mode === 'defibrillation' && (
                 <Badge variant="outline" className="text-lg px-4 py-2">
                   Mouse Speed: {mouseSpeed.toFixed(0)}%
+                </Badge>
+              )}
+              {mode === 'cpr' && (
+                <Badge 
+                  variant="outline" 
+                  className={`text-lg px-4 py-2 ${
+                    cprBPM >= 100 && cprBPM <= 110 
+                      ? 'bg-green-100 border-green-500 text-green-800' 
+                      : cprBPM > 0 
+                      ? 'bg-red-100 border-red-500 text-red-800' 
+                      : ''
+                  }`}
+                >
+                  CPR Rate: {cprBPM} BPM (Target: 100-110)
                 </Badge>
               )}
             </div>
