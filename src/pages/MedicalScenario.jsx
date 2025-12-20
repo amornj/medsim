@@ -215,7 +215,7 @@ export default function MedicalScenario() {
 
           {/* Vitals */}
           <div className="mb-6">
-            <PatientVitals vitals={vitals} />
+            <PatientVitals vitals={vitals} scenario={currentScenario} />
           </div>
 
           {/* Clinical Notes */}

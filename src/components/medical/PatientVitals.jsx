@@ -3,7 +3,33 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Activity, Heart, Wind, Droplet, Thermometer, Brain } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 
-export default function PatientVitals({ vitals }) {
+export default function PatientVitals({ vitals: initialVitals, scenario }) {
+  const [vitals, setVitals] = useState(initialVitals);
+  const [advancedStatsOpen, setAdvancedStatsOpen] = useState(false);
+
+  // Update vitals when initialVitals change
+  useEffect(() => {
+    setVitals(initialVitals);
+  }, [initialVitals]);
+
+  // Dynamic vitals - subtle changes every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVitals(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          heart_rate: Math.max(0, prev.heart_rate + Math.floor(Math.random() * 5 - 2)),
+          blood_pressure_systolic: Math.max(0, prev.blood_pressure_systolic + Math.floor(Math.random() * 4 - 2)),
+          blood_pressure_diastolic: Math.max(0, prev.blood_pressure_diastolic + Math.floor(Math.random() * 3 - 1)),
+          spo2: Math.max(0, Math.min(100, prev.spo2 + Math.floor(Math.random() * 3 - 1))),
+          respiratory_rate: Math.max(0, prev.respiratory_rate + Math.floor(Math.random() * 3 - 1)),
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
   const getStatusColor = (vital, value) => {
     switch (vital) {
       case 'heart_rate':
@@ -106,5 +132,13 @@ export default function PatientVitals({ vitals }) {
         </div>
       </CardContent>
     </Card>
+
+    <AdvancedStatsDialog 
+      open={advancedStatsOpen}
+      onClose={() => setAdvancedStatsOpen(false)}
+      vitals={vitals}
+      scenario={scenario}
+    />
+    </>
   );
 }
