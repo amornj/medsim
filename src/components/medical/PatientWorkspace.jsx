@@ -180,20 +180,23 @@ export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfi
                             
                             {item.settings && Object.keys(item.settings).length > 0 && (
                               <div className="space-y-1 mb-3">
-                                {Object.entries(item.settings).slice(0, 3).map(([key, value]) => {
-                                  // Skip rendering nested objects (like ECMO config)
-                                  if (typeof value === 'object' && value !== null) {
-                                    return null;
-                                  }
-                                  return (
+                                {Object.entries(item.settings)
+                                  .filter(([key, value]) => {
+                                    // Skip nested objects and non-relevant fields
+                                    if (typeof value === 'object' && value !== null) return false;
+                                    // Skip timestamp and shock_delivered from other equipment
+                                    if (key === 'timestamp' || key === 'shock_delivered') return false;
+                                    return true;
+                                  })
+                                  .slice(0, 3)
+                                  .map(([key, value]) => (
                                     <div key={key} className="text-xs flex justify-between">
                                       <span className="opacity-75 capitalize">
                                         {key.replace(/_/g, ' ')}:
                                       </span>
                                       <span className="font-medium">{String(value)}</span>
                                     </div>
-                                  );
-                                })}
+                                  ))}
                               </div>
                             )}
                             
