@@ -481,6 +481,106 @@ const PRESET_SCENARIOS = [
     equipment: [],
     notes: 'Immediate needle decompression. Chest tube placement. Do not delay for imaging.'
   },
+  {
+    id: 'minor_flu',
+    name: 'Minor Flu',
+    icon: Thermometer,
+    color: 'bg-blue-100 border-blue-300 text-blue-700',
+    description: 'Basic flu requiring supportive care and antibiotics',
+    difficulty: 1,
+    difficultyLabel: 'Very Easy',
+    vitals: {
+      heart_rate: 88,
+      blood_pressure_systolic: 118,
+      blood_pressure_diastolic: 76,
+      respiratory_rate: 18,
+      spo2: 96,
+      temperature: 38.5,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'Supportive care. Antipyretics. Consider antibiotics if bacterial superinfection suspected.'
+  },
+  {
+    id: 'chronic_migraine',
+    name: 'Chronic Migraine',
+    icon: Brain,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Migraine that simply won\'t go away. May need surgery.',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: {
+      heart_rate: 78,
+      blood_pressure_systolic: 135,
+      blood_pressure_diastolic: 88,
+      respiratory_rate: 16,
+      spo2: 98,
+      temperature: 37.0,
+      consciousness: 'Alert, in severe pain'
+    },
+    equipment: [],
+    notes: 'Triptans, NSAIDs, antiemetics. Consider IV DHE or nerve blocks. Evaluate for secondary causes.'
+  },
+  {
+    id: 'severe_hyperthermia_burns',
+    name: 'Severe Hyperthermia and Burns',
+    icon: Thermometer,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Severe burns and hyperthermia reaching 40°C',
+    difficulty: 5,
+    difficultyLabel: 'Critical',
+    vitals: {
+      heart_rate: 135,
+      blood_pressure_systolic: 98,
+      blood_pressure_diastolic: 62,
+      respiratory_rate: 28,
+      spo2: 91,
+      temperature: 40.2,
+      consciousness: 'Confused'
+    },
+    equipment: [],
+    notes: 'Aggressive cooling. Fluid resuscitation. Escharotomy if circumferential burns. Parkland formula.'
+  },
+  {
+    id: 'severe_lung_puncture',
+    name: 'Severe Lung Puncture',
+    icon: Wind,
+    color: 'bg-red-200 border-red-400 text-red-800',
+    description: 'Large yet life-threatening lung puncture requiring surgery',
+    difficulty: 6,
+    difficultyLabel: 'Life-Threatening',
+    vitals: {
+      heart_rate: 152,
+      blood_pressure_systolic: 72,
+      blood_pressure_diastolic: 45,
+      respiratory_rate: 38,
+      spo2: 75,
+      temperature: 36.3,
+      consciousness: 'Lethargic'
+    },
+    equipment: [],
+    notes: 'Emergency thoracotomy. Lung parenchyma repair. Massive hemorrhage protocol. Blood products.'
+  },
+  {
+    id: 'acute_brain_aneurysm',
+    name: 'Acute Brain Aneurysm',
+    icon: Brain,
+    color: 'bg-red-200 border-red-400 text-red-800',
+    description: 'Ruptured cerebral aneurysm with subarachnoid hemorrhage',
+    difficulty: 6,
+    difficultyLabel: 'Life-Threatening',
+    vitals: {
+      heart_rate: 118,
+      blood_pressure_systolic: 195,
+      blood_pressure_diastolic: 112,
+      respiratory_rate: 22,
+      spo2: 94,
+      temperature: 37.4,
+      consciousness: 'Stuporous'
+    },
+    equipment: [],
+    notes: 'Emergent craniotomy or endovascular coiling. BP control but maintain CPP. Nimodipine for vasospasm prevention. Neurosurgery consult STAT.'
+  },
   
   // MORE CRITICAL SCENARIOS
   {

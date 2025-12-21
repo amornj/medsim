@@ -257,7 +257,10 @@ export default function MedicalScenario() {
             if (rate === 0) return; // Skip if not running
 
             // Check for drug allergies with game mode severity
-            if (patientHistory?.allergies?.some(allergy => drugName.includes(allergy.toLowerCase().split(' ')[0]))) {
+            if (patientHistory?.allergies?.some(allergy => {
+              const allergenBase = allergy.toLowerCase().split(' ')[0];
+              return drugName.includes(allergenBase);
+            })) {
               let severity = 1;
               if (gameMode?.allergies === 'complications') severity = 2;
               if (gameMode?.allergies === 'deadly') severity = 3;
@@ -298,32 +301,57 @@ export default function MedicalScenario() {
               newVitals.blood_pressure_systolic = Math.min(170, prev.blood_pressure_systolic + rate * 0.4);
               newVitals.heart_rate = Math.max(45, prev.heart_rate - rate * 0.4);
             }
-            
+
             // Dopamine
             if (drugName.includes('dopamine')) {
               newVitals.blood_pressure_systolic = Math.min(160, prev.blood_pressure_systolic + rate * 0.35);
               newVitals.heart_rate = Math.min(150, prev.heart_rate + rate * 1.5);
             }
-            
+
             // Dobutamine
             if (drugName.includes('dobutamine')) {
               newVitals.heart_rate = Math.min(140, prev.heart_rate + rate * 1.8);
               newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + rate * 0.2);
             }
-            
+
+            // Beta Blockers - Rate and BP reduction
+            if (drugName.includes('metoprolol') || drugName.includes('lopressor') || 
+                drugName.includes('propranolol') || drugName.includes('inderal') ||
+                drugName.includes('esmolol') || drugName.includes('atenolol') ||
+                drugName.includes('carvedilol')) {
+              newVitals.heart_rate = Math.max(50, prev.heart_rate - rate * 0.8);
+              newVitals.blood_pressure_systolic = Math.max(85, prev.blood_pressure_systolic - rate * 0.3);
+            }
+
+            // Calcium Channel Blockers
+            if (drugName.includes('diltiazem') || drugName.includes('cardizem') ||
+                drugName.includes('verapamil')) {
+              newVitals.heart_rate = Math.max(55, prev.heart_rate - rate * 0.6);
+              newVitals.blood_pressure_systolic = Math.max(90, prev.blood_pressure_systolic - rate * 0.25);
+            }
+
             // Fentanyl
             if (drugName.includes('fentanyl')) {
               newVitals.respiratory_rate = Math.max(6, prev.respiratory_rate - rate * 0.3);
               newVitals.heart_rate = Math.max(50, prev.heart_rate - rate * 0.2);
             }
-            
+
             // Midazolam
             if (drugName.includes('midazolam') || drugName.includes('versed')) {
               newVitals.respiratory_rate = Math.max(8, prev.respiratory_rate - rate * 0.2);
               newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.15);
             }
-          }
-        });
+
+            // Antibiotics - slight temperature reduction
+            if (drugName.includes('vancomycin') || drugName.includes('zosyn') ||
+                drugName.includes('meropenem') || drugName.includes('ceftriaxone') ||
+                drugName.includes('cefepime') || drugName.includes('azithromycin')) {
+              if (prev.temperature > 38) {
+                newVitals.temperature = Math.max(37.5, prev.temperature - 0.02);
+              }
+            }
+            }
+            });
         
         // CARDIOPULMONARY BYPASS - Blood pressure regulation only
         const cpb = equipment.find(eq => eq.type === 'cpb');

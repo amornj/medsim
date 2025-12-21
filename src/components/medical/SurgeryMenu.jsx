@@ -72,6 +72,66 @@ const SURGICAL_PROCEDURES = [
     difficulty: 'Advanced',
     description: 'Emergency surgical airway through cricothyroid membrane',
     indications: ['Cannot intubate, cannot ventilate', 'Severe facial trauma']
+  },
+  {
+    id: 'laparotomy',
+    name: 'Emergency Laparotomy',
+    icon: Scissors,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '30-60 min',
+    difficulty: 'Expert',
+    description: 'Open abdominal exploration for trauma or bleeding',
+    indications: ['Abdominal trauma', 'Peritonitis', 'Uncontrolled hemorrhage']
+  },
+  {
+    id: 'fasciotomy',
+    name: 'Fasciotomy',
+    icon: Scissors,
+    color: 'bg-orange-200 text-orange-800 border-orange-400',
+    duration: '15-25 min',
+    difficulty: 'Advanced',
+    description: 'Release compartment pressure in extremities',
+    indications: ['Compartment syndrome', 'Crush injury', 'Vascular injury']
+  },
+  {
+    id: 'ventriculostomy',
+    name: 'External Ventricular Drain (EVD)',
+    icon: Brain,
+    color: 'bg-violet-100 text-violet-700 border-violet-300',
+    duration: '10-15 min',
+    difficulty: 'Expert',
+    description: 'Drain CSF and monitor ICP',
+    indications: ['Hydrocephalus', 'ICP monitoring', 'Intraventricular hemorrhage']
+  },
+  {
+    id: 'escharotomy',
+    name: 'Escharotomy',
+    icon: Zap,
+    color: 'bg-amber-100 text-amber-700 border-amber-300',
+    duration: '10-20 min',
+    difficulty: 'Advanced',
+    description: 'Incise burned tissue to restore circulation/ventilation',
+    indications: ['Circumferential burns', 'Compartment syndrome from burns']
+  },
+  {
+    id: 'craniotomy',
+    name: 'Emergency Craniotomy',
+    icon: Brain,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '60-90 min',
+    difficulty: 'Expert',
+    description: 'Remove skull section for mass effect or hematoma evacuation',
+    indications: ['Brain aneurysm', 'Large hematoma', 'Mass effect']
+  },
+  {
+    id: 'lung_repair',
+    name: 'Lung Parenchyma Repair',
+    icon: Activity,
+    color: 'bg-red-100 text-red-700 border-red-300',
+    duration: '45-90 min',
+    difficulty: 'Expert',
+    description: 'Surgical repair of lung puncture or laceration',
+    indications: ['Lung puncture', 'Penetrating chest trauma', 'Persistent air leak']
   }
 ];
 

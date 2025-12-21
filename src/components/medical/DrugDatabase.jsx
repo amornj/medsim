@@ -83,8 +83,11 @@ const DRUG_CATEGORIES = {
       { name: 'Esmolol', concentration: '10mg/ml', dosage: '50-300mcg/kg/min', description: 'Ultra-short-acting beta-blocker. Rapid rate control. Half-life of 9 minutes.' },
       { name: 'Metoprolol (Lopressor)', concentration: '1mg/ml', dosage: '2.5-5mg IV q2-5min', description: 'Beta-1 selective blocker. Rate control, ACS, hypertension.' },
       { name: 'Propranolol (Inderal)', concentration: '1mg/ml', dosage: '1-3mg IV slowly', description: 'Non-selective beta blocker. Tremor, HTN, thyroid storm, esophageal varices.' },
+      { name: 'Atenolol (Tenormin)', concentration: 'PO', dosage: '25-100mg PO daily', description: 'Beta-1 selective blocker. Long-acting. HTN, angina, post-MI.' },
+      { name: 'Carvedilol (Coreg)', concentration: 'PO', dosage: '3.125-25mg PO BID', description: 'Alpha and beta blocker. Heart failure, HTN. Fewer side effects.' },
       { name: 'Diltiazem (Cardizem)', concentration: '5mg/ml', dosage: '5-15mg/hr', description: 'Calcium channel blocker. Rate control for atrial fibrillation/flutter.' },
-      { name: 'Adenosine', concentration: '3mg/ml', dosage: '6mg rapid IV push', description: 'Terminates SVT. Extremely short half-life (<10 seconds). Flush rapidly.' }
+      { name: 'Adenosine', concentration: '3mg/ml', dosage: '6mg rapid IV push', description: 'Terminates SVT. Extremely short half-life (<10 seconds). Flush rapidly.' },
+      { name: 'Verapamil', concentration: '2.5mg/ml', dosage: '5-10mg IV over 2min', description: 'Calcium channel blocker. SVT termination, rate control. Negative inotrope.' }
     ]
   },
   antibiotics: {
@@ -98,9 +101,14 @@ const DRUG_CATEGORIES = {
       { name: 'Cefepime', concentration: 'varies', dosage: '1-2g q8-12h', description: 'Fourth-gen cephalosporin. Pseudomonas coverage. Febrile neutropenia.' },
       { name: 'Azithromycin (Z-pack)', concentration: 'varies', dosage: '500mg IV/PO q24h', description: 'Macrolide for atypical pneumonia. QT prolongation risk.' },
       { name: 'Levofloxacin (Levaquin)', concentration: 'varies', dosage: '750mg IV/PO q24h', description: 'Fluoroquinolone. Broad spectrum. Tendon rupture, QT prolongation risks.' },
+      { name: 'Ciprofloxacin (Cipro)', concentration: '2mg/ml', dosage: '400mg IV q8-12h', description: 'Fluoroquinolone. UTI, respiratory, GI infections. Good bioavailability.' },
+      { name: 'Amoxicillin-Clavulanate (Augmentin)', concentration: 'PO', dosage: '875mg PO q12h', description: 'Broad-spectrum penicillin. Sinusitis, pneumonia, UTI. Well tolerated.' },
       { name: 'Metronidazole (Flagyl)', concentration: '5mg/ml', dosage: '500mg IV q8h', description: 'Anaerobic coverage. C. diff, aspiration pneumonia, intra-abdominal infections.' },
       { name: 'Linezolid (Zyvox)', concentration: '2mg/ml', dosage: '600mg IV/PO q12h', description: 'For VRE and MRSA. Serotonin syndrome risk. Thrombocytopenia with prolonged use.' },
-      { name: 'Doxycycline (Doxy)', concentration: 'PO', dosage: '100mg PO q12h', description: 'Tetracycline. Atypicals, tick-borne diseases, acne. Photosensitivity.' }
+      { name: 'Doxycycline (Doxy)', concentration: 'PO', dosage: '100mg PO q12h', description: 'Tetracycline. Atypicals, tick-borne diseases, acne. Photosensitivity.' },
+      { name: 'Clindamycin', concentration: '150mg/ml', dosage: '600-900mg IV q8h', description: 'Anaerobe coverage. Skin infections, aspiration. C. diff risk.' },
+      { name: 'Gentamicin', concentration: '10mg/ml', dosage: '5-7mg/kg IV q24h', description: 'Aminoglycoside. Gram-negative coverage. Nephrotoxic, ototoxic. Monitor levels.' },
+      { name: 'Acyclovir', concentration: '50mg/ml', dosage: '5-10mg/kg IV q8h', description: 'Antiviral for HSV, VZV encephalitis. Requires hydration to prevent crystalluria.' }
     ]
   },
   fluids: {
@@ -164,7 +172,10 @@ const DRUG_CATEGORIES = {
       { name: 'Omeprazole (Prilosec)', concentration: 'PO', dosage: '20-40mg PO daily', description: 'PPI for GERD, PUD. Take 30 minutes before meal.' },
       { name: 'Famotidine (Pepcid)', concentration: '10mg/ml', dosage: '20mg IV q12h', description: 'H2 blocker for stress ulcer prophylaxis. Less effective than PPIs.' },
       { name: 'Ondansetron (Zofran)', concentration: '2mg/ml', dosage: '4-8mg IV q8h', description: 'Antiemetic. Blocks 5-HT3 receptors. QT prolongation risk.' },
-      { name: 'Metoclopramide (Reglan)', concentration: '5mg/ml', dosage: '10mg IV q6h', description: 'Prokinetic antiemetic. Extrapyramidal side effects. Contraindicated in bowel obstruction.' }
+      { name: 'Metoclopramide (Reglan)', concentration: '5mg/ml', dosage: '10mg IV q6h', description: 'Prokinetic antiemetic. Extrapyramidal side effects. Contraindicated in bowel obstruction.' },
+      { name: 'Promethazine (Phenergan)', concentration: '25mg/ml', dosage: '12.5-25mg IV q4-6h', description: 'Antihistamine antiemetic. Sedating. Avoid extravasation (tissue necrosis).' },
+      { name: 'Prochlorperazine (Compazine)', concentration: '5mg/ml', dosage: '5-10mg IV q6h', description: 'Dopamine antagonist. Nausea, vertigo. Extrapyramidal effects.' },
+      { name: 'Octreotide', concentration: '100mcg/ml', dosage: '25-50mcg/hr infusion', description: 'Somatostatin analog. Variceal bleeding, carcinoid syndrome, acromegaly.' }
     ]
   },
   neuro: {
