@@ -17,6 +17,8 @@ import SurgeryMenu from '../components/medical/SurgeryMenu';
 import DeathImminentWarning from '../components/medical/DeathImminentWarning';
 import PatientHistoryDialog from '../components/medical/PatientHistoryDialog';
 import { generateRandomPatientHistory } from '../components/medical/PatientHistoryGenerator';
+import PerformanceTracker from '../components/medical/PerformanceTracker';
+import PerformanceHistory from '../components/medical/PerformanceHistory';
 
 export default function MedicalScenario() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(true);
@@ -30,6 +32,10 @@ export default function MedicalScenario() {
   const [patientDead, setPatientDead] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [patientHistory, setPatientHistory] = useState(null);
+  const [scenarioStartTime, setScenarioStartTime] = useState(null);
+  const [interventionHistory, setInterventionHistory] = useState([]);
+  const [initialVitals, setInitialVitals] = useState(null);
+  const [performanceHistoryOpen, setPerformanceHistoryOpen] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -462,6 +468,7 @@ export default function MedicalScenario() {
   const handleSelectScenario = (scenario) => {
     setCurrentScenario(scenario);
     setVitals(scenario.vitals);
+    setInitialVitals({ ...scenario.vitals }); // Store initial vitals
     
     // Generate random patient history if not provided
     const history = scenario.patient_history || generateRandomPatientHistory();
@@ -469,9 +476,12 @@ export default function MedicalScenario() {
     
     // Don't auto-load equipment - make it DIY gameplay!
     setEquipment([]);
+    setInterventionHistory([]);
+    setScenarioStartTime(Date.now());
+    setPatientDead(false);
     setShowScenarioSelector(false);
     toast.success(`Scenario loaded: ${scenario.name}`, {
-      description: 'Random patient history generated!'
+      description: 'Random patient history generated! Timer started!'
     });
   };
 
@@ -575,6 +585,83 @@ export default function MedicalScenario() {
     setCurrentScenario(null);
     setEquipment([]);
     setVitals(null);
+    setScenarioStartTime(null);
+    setInterventionHistory([]);
+    setInitialVitals(null);
+  };
+  
+  const savePerformance = async (outcome) => {
+    if (!currentScenario || !scenarioStartTime) return;
+    
+    const endTime = Date.now();
+    const duration = (endTime - scenarioStartTime) / 1000;
+    
+    // Calculate time to first intervention
+    const timeToFirst = interventionHistory.length > 0 
+      ? (interventionHistory[0].timestamp - scenarioStartTime) / 1000 
+      : duration;
+    
+    // Find critical interventions
+    const criticalTypes = ['defibrillator', 'lucas', 'aed', 'ecmo', 'cpb'];
+    const criticalIntervention = interventionHistory.find(i => criticalTypes.includes(i.type));
+    const timeToCritical = criticalIntervention 
+      ? (criticalIntervention.timestamp - scenarioStartTime) / 1000
+      : null;
+    
+    // Calculate scores
+    const speedScore = timeToFirst < 30 ? 25 : timeToFirst < 60 ? 20 : timeToFirst < 120 ? 15 : 10;
+    const bestPracticesScore = Math.min(35, equipment.length * 5);
+    const resourceScore = Math.max(0, 20 - Math.abs(equipment.length - 5) * 2);
+    
+    let outcomeScore = 0;
+    if (outcome === 'patient_survived') outcomeScore = 20;
+    else if (outcome === 'patient_died') outcomeScore = 5;
+    
+    const totalScore = speedScore + bestPracticesScore + resourceScore + outcomeScore;
+    
+    // Generate feedback
+    const feedback = [];
+    if (timeToFirst > 120) feedback.push('Response time was slow - try to act faster');
+    if (equipment.length === 0) feedback.push('No equipment used - patient needs interventions');
+    if (equipment.length > 10) feedback.push('Too many interventions - focus on essential equipment');
+    if (outcome === 'patient_survived') feedback.push('Excellent work - patient survived!');
+    if (vitals.spo2 > initialVitals.spo2) feedback.push('Successfully improved oxygenation');
+    
+    // Check achievements
+    const achievements = [];
+    if (timeToFirst < 30) achievements.push('Speed Demon');
+    if (outcome === 'patient_survived' && equipment.length <= 5) achievements.push('Minimalist Hero');
+    if (totalScore >= 90) achievements.push('Perfect Score');
+    if (outcome === 'patient_survived' && currentScenario.difficulty >= 5) achievements.push('Critical Save');
+    
+    try {
+      await base44.entities.ScenarioPerformance.create({
+        scenario_name: currentScenario.name,
+        scenario_condition: currentScenario.condition || currentScenario.id,
+        difficulty: currentScenario.difficulty || 1,
+        outcome,
+        total_score: totalScore,
+        time_to_first_intervention: timeToFirst,
+        time_to_critical_intervention: timeToCritical,
+        total_duration: duration,
+        interventions_count: equipment.length,
+        correct_interventions: equipment.length,
+        inappropriate_interventions: 0,
+        vitals_improvement: 0,
+        best_practices_score: bestPracticesScore,
+        resource_efficiency_score: resourceScore,
+        speed_score: speedScore,
+        final_vitals: vitals,
+        feedback,
+        achievements
+      });
+      
+      toast.success(`Performance saved! Score: ${totalScore.toFixed(0)}/100`, {
+        description: achievements.length > 0 ? `Achievements: ${achievements.join(', ')}` : undefined
+      });
+    } catch (error) {
+      toast.error('Failed to save performance');
+    }
   };
 
   if (showScenarioSelector) {
@@ -610,7 +697,15 @@ export default function MedicalScenario() {
               </h1>
               <p className="text-slate-600">{currentScenario?.description}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                onClick={() => setPerformanceHistoryOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Performance History
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setHistoryDialogOpen(true)}
@@ -629,19 +724,24 @@ export default function MedicalScenario() {
               </Button>
               <Button
                 variant="outline"
-                onClick={handleReset}
+                onClick={() => {
+                  savePerformance('scenario_abandoned');
+                  handleReset();
+                }}
                 className="flex items-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
-                New Scenario
+                End & New
               </Button>
               <Button
-                onClick={handleSaveScenario}
+                onClick={() => {
+                  savePerformance('patient_survived');
+                  toast.success('Scenario completed successfully!');
+                }}
                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                disabled={saveScenarioMutation.isPending}
               >
                 <Save className="w-4 h-4" />
-                Save Scenario
+                Complete Scenario
               </Button>
             </div>
           </div>
@@ -651,23 +751,36 @@ export default function MedicalScenario() {
             vitals={vitals} 
             onDeath={(reason) => {
               setPatientDead(true);
+              savePerformance('patient_died');
               toast.error(`Patient has died: ${reason.replace(/_/g, ' ').toUpperCase()}`, {
                 duration: 10000,
-                description: 'Scenario failed. Reset to try again.'
+                description: 'Scenario failed. Performance saved.'
               });
             }}
           />
 
-          {/* Vitals */}
-          <div className="mb-6">
-            <PatientVitals 
-              vitals={vitals} 
-              scenario={{
-                ...currentScenario,
-                equipment,
-                patient_history: patientHistory
-              }} 
-            />
+          {/* Vitals and Performance Tracker */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <div className="lg:col-span-2">
+              <PatientVitals 
+                vitals={vitals} 
+                scenario={{
+                  ...currentScenario,
+                  equipment,
+                  patient_history: patientHistory
+                }} 
+              />
+            </div>
+            <div>
+              <PerformanceTracker
+                scenario={currentScenario}
+                equipment={equipment}
+                vitals={vitals}
+                initialVitals={initialVitals}
+                startTime={scenarioStartTime}
+                interventions={interventionHistory}
+              />
+            </div>
           </div>
 
           {/* Clinical Notes */}
@@ -745,6 +858,11 @@ export default function MedicalScenario() {
         onClose={() => setSurgeryMenuOpen(false)}
         onPerformSurgery={(procedureId, success) => {
           if (success) {
+            setInterventionHistory([...interventionHistory, {
+              timestamp: Date.now(),
+              type: `surgery_${procedureId}`,
+              action: 'performed'
+            }]);
             // Improve vitals after successful surgery
             setVitals(prev => ({
               ...prev,
@@ -754,6 +872,12 @@ export default function MedicalScenario() {
             }));
           }
         }}
+      />
+
+      {/* Performance History */}
+      <PerformanceHistory
+        open={performanceHistoryOpen}
+        onClose={() => setPerformanceHistoryOpen(false)}
       />
     </DragDropContext>
   );
