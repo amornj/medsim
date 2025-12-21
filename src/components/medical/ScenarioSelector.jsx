@@ -25,8 +25,19 @@ const PRESET_SCENARIOS = [
       consciousness: 'Alert'
     },
     equipment: [],
-    notes: 'Routine post-op vitals monitoring. Watch for bleeding or infection signs.'
-  },
+    notes: 'Routine post-op vitals monitoring. Watch for bleeding or infection signs.',
+    patient_history: {
+      past_medical: ['Hypertension', 'Hyperlipidemia'],
+      current_medications: ['Lisinopril 10mg daily', 'Atorvastatin 20mg daily'],
+      allergies: [],
+      social_history: {
+        smoking: 'Never smoker',
+        alcohol: 'Occasional social drinker',
+        drugs: 'Denies',
+        occupation: 'Office manager'
+      }
+    }
+    },
   {
     id: 'controlled_hypertension',
     name: 'Controlled Hypertension',
@@ -67,8 +78,19 @@ const PRESET_SCENARIOS = [
       consciousness: 'Alert'
     },
     equipment: [],
-    notes: 'NIV support. Bronchodilators. Monitor for respiratory fatigue.'
-  },
+    notes: 'NIV support. Bronchodilators. Monitor for respiratory fatigue.',
+    patient_history: {
+      past_medical: ['COPD (GOLD Stage 3)', 'Coronary artery disease', 'Type 2 Diabetes'],
+      current_medications: ['Albuterol MDI', 'Tiotropium', 'Metformin 1000mg BID'],
+      allergies: ['Penicillin - rash'],
+      social_history: {
+        smoking: '40 pack-year history, quit 2 years ago',
+        alcohol: 'Denies',
+        drugs: 'Denies',
+        occupation: 'Retired factory worker'
+      }
+    }
+    },
   {
     id: 'pneumonia',
     name: 'Community-Acquired Pneumonia',
@@ -167,8 +189,19 @@ const PRESET_SCENARIOS = [
       { type: 'pulse_ox', settings: { continuous: true } },
       { type: 'temp_monitor', settings: { continuous: true } }
     ],
-    notes: 'Aggressive fluid resuscitation. Early antibiotics. Vasopressors for MAP >65mmHg.'
-  },
+    notes: 'Aggressive fluid resuscitation. Early antibiotics. Vasopressors for MAP >65mmHg.',
+    patient_history: {
+      past_medical: ['Type 2 Diabetes (poorly controlled)', 'Chronic kidney disease stage 3', 'Obesity'],
+      current_medications: ['Insulin glargine', 'Metformin', 'Lisinopril'],
+      allergies: ['Sulfa drugs - Stevens-Johnson syndrome'],
+      social_history: {
+        smoking: 'Never smoker',
+        alcohol: 'Social drinker',
+        drugs: 'Denies',
+        occupation: 'Accountant'
+      }
+    }
+    },
   {
     id: 'trauma',
     name: 'Major Trauma',

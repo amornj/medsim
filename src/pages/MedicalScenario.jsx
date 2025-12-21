@@ -15,6 +15,7 @@ import EquipmentConfigDialog from '../components/medical/EquipmentConfigDialog';
 import HumanAnatomyViewer from '../components/medical/HumanAnatomyViewer';
 import SurgeryMenu from '../components/medical/SurgeryMenu';
 import DeathImminentWarning from '../components/medical/DeathImminentWarning';
+import PatientHistoryDialog from '../components/medical/PatientHistoryDialog';
 
 export default function MedicalScenario() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(true);
@@ -26,6 +27,8 @@ export default function MedicalScenario() {
   const [surgeryMenuOpen, setSurgeryMenuOpen] = useState(false);
   const [showAnatomy, setShowAnatomy] = useState(false);
   const [patientDead, setPatientDead] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [patientHistory, setPatientHistory] = useState(null);
   
   const queryClient = useQueryClient();
 
@@ -125,12 +128,52 @@ export default function MedicalScenario() {
           newVitals.respiratory_rate = Math.max(6, prev.respiratory_rate - 0.1);
         }
         
+        // Patient history influences
+        if (patientHistory) {
+          // COPD/Asthma - baseline lower SpO2
+          if (patientHistory.past_medical.some(c => c.toLowerCase().includes('copd') || c.toLowerCase().includes('asthma'))) {
+            newVitals.spo2 = Math.max(88, newVitals.spo2 - 0.05);
+          }
+          
+          // CHF - fluid retention worsens oxygenation
+          if (patientHistory.past_medical.some(c => c.toLowerCase().includes('chf') || c.toLowerCase().includes('heart failure'))) {
+            newVitals.spo2 = Math.max(85, newVitals.spo2 - 0.08);
+            newVitals.respiratory_rate = Math.min(35, newVitals.respiratory_rate + 0.05);
+          }
+          
+          // Chronic hypertension - higher baseline BP
+          if (patientHistory.past_medical.some(c => c.toLowerCase().includes('hypertension'))) {
+            if (newVitals.blood_pressure_systolic < 140) {
+              newVitals.blood_pressure_systolic = Math.min(160, newVitals.blood_pressure_systolic + 0.1);
+            }
+          }
+          
+          // Diabetes - slower wound healing, infection risk
+          if (patientHistory.past_medical.some(c => c.toLowerCase().includes('diabetes'))) {
+            if (condition === 'trauma' || condition === 'septic_shock') {
+              newVitals.temperature = Math.min(40, newVitals.temperature + 0.01);
+            }
+          }
+          
+          // Smoking history - impaired oxygenation
+          if (patientHistory.social_history?.smoking && patientHistory.social_history.smoking.toLowerCase().includes('pack')) {
+            newVitals.spo2 = Math.max(90, newVitals.spo2 - 0.03);
+          }
+          
+          // Alcohol use - affects liver metabolism and coagulation
+          if (patientHistory.social_history?.alcohol && patientHistory.social_history.alcohol.toLowerCase().includes('heavy')) {
+            if (condition === 'trauma') {
+              newVitals.blood_pressure_systolic = Math.max(60, newVitals.blood_pressure_systolic - 0.05);
+            }
+          }
+        }
+        
         return newVitals;
       });
     }, 3000); // Every 3 seconds for natural drift
 
     return () => clearInterval(interval);
-  }, [vitals, patientDead, currentScenario]);
+  }, [vitals, patientDead, currentScenario, patientHistory]);
 
   // Dynamic equipment effects on vitals
   useEffect(() => {
@@ -180,8 +223,17 @@ export default function MedicalScenario() {
           if ((eq.type === 'syringe_pump' || eq.type === 'iv_pump') && eq.settings?.drug && eq.settings?.rate) {
             const drugName = eq.settings.drug.toLowerCase();
             const rate = parseFloat(eq.settings.rate) || 0;
-            
+
             if (rate === 0) return; // Skip if not running
+
+            // Check for drug allergies
+            if (patientHistory?.allergies?.some(allergy => drugName.includes(allergy.toLowerCase().split(' ')[0]))) {
+              // Allergic reaction
+              newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.4);
+              newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 1.5);
+              newVitals.spo2 = Math.max(80, prev.spo2 - rate * 0.2);
+              return;
+            }
             
             // Norepinephrine
             if (drugName.includes('norepinephrine') || drugName.includes('levophed')) {
@@ -393,7 +445,7 @@ export default function MedicalScenario() {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [equipment, vitals, patientDead]);
+  }, [equipment, vitals, patientDead, patientHistory]);
 
   const saveScenarioMutation = useMutation({
     mutationFn: (scenarioData) => base44.entities.Scenario.create(scenarioData),
@@ -409,6 +461,7 @@ export default function MedicalScenario() {
   const handleSelectScenario = (scenario) => {
     setCurrentScenario(scenario);
     setVitals(scenario.vitals);
+    setPatientHistory(scenario.patient_history || null);
     
     // Don't auto-load equipment - make it DIY gameplay!
     setEquipment([]);
@@ -556,6 +609,14 @@ export default function MedicalScenario() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={() => setHistoryDialogOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Patient History
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setSurgeryMenuOpen(true)}
                 className="flex items-center gap-2"
               >
@@ -654,6 +715,17 @@ export default function MedicalScenario() {
         open={configDialogOpen}
         onClose={() => setConfigDialogOpen(false)}
         onSave={handleSaveConfig}
+      />
+
+      {/* Patient History Dialog */}
+      <PatientHistoryDialog
+        open={historyDialogOpen}
+        onClose={() => setHistoryDialogOpen(false)}
+        history={patientHistory}
+        onSave={(history) => {
+          setPatientHistory(history);
+          toast.success('Patient history updated');
+        }}
       />
 
       {/* Surgery Menu */}
