@@ -72,50 +72,79 @@ export default function MedicalScenario() {
           }
         }
         
-        // VASOPRESSOR INFUSIONS: Affect blood pressure
-        const norepinephrine = equipment.find(eq => 
-          eq.type === 'syringe_pump' && 
-          (eq.settings?.drug?.toLowerCase().includes('norepinephrine') || 
-           eq.settings?.drug?.toLowerCase().includes('levophed'))
-        );
-        if (norepinephrine?.settings?.rate) {
-          const rate = parseFloat(norepinephrine.settings.rate);
-          // Norepinephrine increases BP
-          newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.3);
-          newVitals.blood_pressure_diastolic = Math.min(110, prev.blood_pressure_diastolic + rate * 0.2);
-          newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.5); // Reflex bradycardia
-        }
+        // VASOPRESSOR INFUSIONS: Check both pumps
+        equipment.forEach(eq => {
+          if ((eq.type === 'syringe_pump' || eq.type === 'iv_pump') && eq.settings?.drug && eq.settings?.rate) {
+            const drugName = eq.settings.drug.toLowerCase();
+            const rate = parseFloat(eq.settings.rate) || 0;
+            
+            if (rate === 0) return; // Skip if not running
+            
+            // Norepinephrine
+            if (drugName.includes('norepinephrine') || drugName.includes('levophed')) {
+              newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.3);
+              newVitals.blood_pressure_diastolic = Math.min(110, prev.blood_pressure_diastolic + rate * 0.2);
+              newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.5);
+            }
+            
+            // Epinephrine
+            if (drugName.includes('epinephrine') || drugName.includes('adrenaline')) {
+              newVitals.blood_pressure_systolic = Math.min(200, prev.blood_pressure_systolic + rate * 0.5);
+              newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 2);
+            }
+            
+            // Vasopressin
+            if (drugName.includes('vasopressin')) {
+              newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.4);
+            }
+            
+            // Propofol
+            if (drugName.includes('propofol')) {
+              newVitals.blood_pressure_systolic = Math.max(50, prev.blood_pressure_systolic - rate * 0.2);
+              newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.3);
+            }
+            
+            // Phenylephrine
+            if (drugName.includes('phenylephrine') || drugName.includes('neosynephrine')) {
+              newVitals.blood_pressure_systolic = Math.min(170, prev.blood_pressure_systolic + rate * 0.4);
+              newVitals.heart_rate = Math.max(45, prev.heart_rate - rate * 0.4);
+            }
+            
+            // Dopamine
+            if (drugName.includes('dopamine')) {
+              newVitals.blood_pressure_systolic = Math.min(160, prev.blood_pressure_systolic + rate * 0.35);
+              newVitals.heart_rate = Math.min(150, prev.heart_rate + rate * 1.5);
+            }
+            
+            // Dobutamine
+            if (drugName.includes('dobutamine')) {
+              newVitals.heart_rate = Math.min(140, prev.heart_rate + rate * 1.8);
+              newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + rate * 0.2);
+            }
+            
+            // Fentanyl
+            if (drugName.includes('fentanyl')) {
+              newVitals.respiratory_rate = Math.max(6, prev.respiratory_rate - rate * 0.3);
+              newVitals.heart_rate = Math.max(50, prev.heart_rate - rate * 0.2);
+            }
+            
+            // Midazolam
+            if (drugName.includes('midazolam') || drugName.includes('versed')) {
+              newVitals.respiratory_rate = Math.max(8, prev.respiratory_rate - rate * 0.2);
+              newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.15);
+            }
+          }
+        });
         
-        // Epinephrine affects HR and BP
-        const epinephrine = equipment.find(eq => 
-          eq.type === 'syringe_pump' && 
-          eq.settings?.drug?.toLowerCase().includes('epinephrine')
-        );
-        if (epinephrine?.settings?.rate) {
-          const rate = parseFloat(epinephrine.settings.rate);
-          newVitals.blood_pressure_systolic = Math.min(200, prev.blood_pressure_systolic + rate * 0.5);
-          newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 2);
-        }
-        
-        // Vasopressin
-        const vasopressin = equipment.find(eq => 
-          eq.type === 'syringe_pump' && 
-          eq.settings?.drug?.toLowerCase().includes('vasopressin')
-        );
-        if (vasopressin?.settings?.rate) {
-          const rate = parseFloat(vasopressin.settings.rate);
-          newVitals.blood_pressure_systolic = Math.min(180, prev.blood_pressure_systolic + rate * 0.4);
-        }
-        
-        // Sedatives (Propofol) - decrease BP and HR
-        const propofol = equipment.find(eq => 
-          eq.type === 'syringe_pump' && 
-          eq.settings?.drug?.toLowerCase().includes('propofol')
-        );
-        if (propofol?.settings?.rate) {
-          const rate = parseFloat(propofol.settings.rate);
-          newVitals.blood_pressure_systolic = Math.max(50, prev.blood_pressure_systolic - rate * 0.2);
-          newVitals.heart_rate = Math.max(40, prev.heart_rate - rate * 0.3);
+        // CARDIOPULMONARY BYPASS - Full heart-lung bypass
+        const cpb = equipment.find(eq => eq.type === 'cpb');
+        if (cpb?.settings?.flow_rate) {
+          const flow = parseFloat(cpb.settings.flow_rate);
+          // Aggressive BP stabilization
+          newVitals.blood_pressure_systolic = Math.min(130, prev.blood_pressure_systolic + flow * 1.2);
+          newVitals.blood_pressure_diastolic = Math.min(90, prev.blood_pressure_diastolic + flow * 0.8);
+          newVitals.spo2 = Math.min(100, prev.spo2 + flow * 0.5);
+          newVitals.heart_rate = Math.max(60, Math.min(90, prev.heart_rate));
         }
         
         // ECMO effects - powerful support

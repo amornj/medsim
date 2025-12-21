@@ -91,6 +91,11 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'enabled', label: 'System Active', type: 'select', options: ['true', 'false'] },
     { name: 'target_temp', label: 'Target Temperature (°C)', type: 'number' },
     { name: 'cooling_rate', label: 'Cooling Rate (°C/hr)', type: 'number' }
+  ],
+  cpb: [
+    { name: 'flow_rate', label: 'Flow Rate (L/min)', type: 'number' },
+    { name: 'mode', label: 'Mode', type: 'select', options: ['Full Bypass', 'Partial Bypass'] },
+    { name: 'temperature', label: 'Blood Temperature (°C)', type: 'number' }
   ]
 };
 
