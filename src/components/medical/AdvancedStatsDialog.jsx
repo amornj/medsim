@@ -10,7 +10,56 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Activity, Droplets, Heart, Brain, Wind } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
-export default function AdvancedStatsDialog({ open, onClose, vitals, scenario }) {
+// Helper to determine stat status and color
+const getStatStatus = (value, normalRange, unit = '') => {
+  // Parse value
+  const numValue = parseFloat(value);
+  if (isNaN(numValue)) return { color: 'bg-white', textColor: 'text-slate-900', status: 'unknown' };
+  
+  // Parse normal range
+  const rangeMatch = normalRange.match(/([<>])?(\d+(?:\.\d+)?)-?(\d+(?:\.\d+)?)?/);
+  if (!rangeMatch) return { color: 'bg-white', textColor: 'text-slate-900', status: 'normal' };
+  
+  const operator = rangeMatch[1];
+  const minVal = parseFloat(rangeMatch[2]);
+  const maxVal = rangeMatch[3] ? parseFloat(rangeMatch[3]) : null;
+  
+  let deviation = 0;
+  
+  if (operator === '<') {
+    deviation = numValue >= minVal ? (numValue - minVal) / minVal : 0;
+  } else if (operator === '>') {
+    deviation = numValue <= minVal ? (minVal - numValue) / minVal : 0;
+  } else if (maxVal) {
+    const range = maxVal - minVal;
+    if (numValue < minVal) {
+      deviation = (minVal - numValue) / range;
+    } else if (numValue > maxVal) {
+      deviation = (numValue - maxVal) / range;
+    }
+  }
+  
+  // Color coding based on deviation
+  if (deviation === 0) {
+    // In normal range but check if weak
+    if (numValue < (maxVal || minVal) * 0.7) {
+      return { color: 'bg-green-100 border-green-300', textColor: 'text-green-900', status: 'healthy-weak' };
+    }
+    return { color: 'bg-white border-slate-200', textColor: 'text-slate-900', status: 'normal' };
+  } else if (deviation < 0.15) {
+    return { color: 'bg-yellow-100 border-yellow-300', textColor: 'text-yellow-900', status: 'abnormal' };
+  } else if (deviation < 0.35) {
+    return { color: 'bg-orange-100 border-orange-400', textColor: 'text-orange-900', status: 'strange' };
+  } else if (deviation < 0.6) {
+    return { color: 'bg-red-100 border-red-400', textColor: 'text-red-900', status: 'dangerous' };
+  } else if (deviation < 0.85) {
+    return { color: 'bg-red-900 border-red-950', textColor: 'text-red-50', status: 'near-death' };
+  } else {
+    return { color: 'bg-black border-black', textColor: 'text-white', status: 'deadly' };
+  }
+};
+
+export default function AdvancedStatsDialog({ open, onClose, vitals, scenario, equipment, patientHistory }) {
   // Generate advanced medical data based on scenario
   const getAdvancedData = () => {
     if (!scenario) return null;
@@ -73,6 +122,26 @@ export default function AdvancedStatsDialog({ open, onClose, vitals, scenario })
   };
 
   const advancedData = getAdvancedData();
+  
+  // Check for allergic reactions
+  const checkAllergicReaction = () => {
+    if (!patientHistory?.allergies || !equipment) return null;
+    
+    for (const eq of equipment) {
+      if ((eq.type === 'syringe_pump' || eq.type === 'iv_pump') && eq.settings?.drug) {
+        const drugName = eq.settings.drug.toLowerCase();
+        for (const allergy of patientHistory.allergies) {
+          const allergen = allergy.toLowerCase().split(' ')[0];
+          if (drugName.includes(allergen)) {
+            return { drug: eq.settings.drug, allergy };
+          }
+        }
+      }
+    }
+    return null;
+  };
+  
+  const allergicReaction = checkAllergicReaction();
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -98,22 +167,46 @@ export default function AdvancedStatsDialog({ open, onClose, vitals, scenario })
                   {category}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {metrics.map((metric, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg border ${
-                      metric.critical ? 'bg-red-50 border-red-200' : 'bg-slate-50'
-                    }`}>
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="text-sm font-semibold text-slate-700 break-words">
-                          {metric.label}
-                        </span>
-                        {metric.critical && (
-                          <Badge variant="destructive" className="text-xs ml-2">Critical</Badge>
+                  {metrics.map((metric, idx) => {
+                    const status = getStatStatus(metric.value, metric.normal);
+                    const isAllergic = allergicReaction && metric.label.includes('WBC');
+                    
+                    return (
+                      <div key={idx} className={`p-3 rounded-lg border-2 ${
+                        isAllergic 
+                          ? 'bg-gradient-to-r from-red-200 via-yellow-200 via-green-200 via-blue-200 to-purple-200 animate-pulse border-red-500' 
+                          : status.color
+                      }`}>
+                        <div className="flex justify-between items-start mb-1">
+                          <span className={`text-sm font-semibold break-words ${
+                            isAllergic ? 'text-red-900' : status.textColor
+                          }`}>
+                            {metric.label}
+                          </span>
+                          {metric.critical && !isAllergic && (
+                            <Badge variant="destructive" className="text-xs ml-2">Critical</Badge>
+                          )}
+                          {isAllergic && (
+                            <Badge className="text-xs ml-2 bg-red-600">ALLERGIC!</Badge>
+                          )}
+                          {status.status === 'healthy-weak' && (
+                            <Badge className="text-xs ml-2 bg-green-600">Weak</Badge>
+                          )}
+                        </div>
+                        <div className={`text-xl font-bold ${isAllergic ? 'text-red-900' : status.textColor}`}>
+                          {metric.value}
+                        </div>
+                        <div className={`text-xs mt-1 ${isAllergic ? 'text-red-800' : 'text-slate-500'}`}>
+                          Normal: {metric.normal}
+                        </div>
+                        {isAllergic && (
+                          <div className="text-xs mt-1 font-bold text-red-900">
+                            ⚠️ Allergic to {allergicReaction.drug}!
+                          </div>
                         )}
                       </div>
-                      <div className="text-xl font-bold text-slate-900">{metric.value}</div>
-                      <div className="text-xs text-slate-500 mt-1">Normal: {metric.normal}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </Card>
             ))}

@@ -16,6 +16,7 @@ import HumanAnatomyViewer from '../components/medical/HumanAnatomyViewer';
 import SurgeryMenu from '../components/medical/SurgeryMenu';
 import DeathImminentWarning from '../components/medical/DeathImminentWarning';
 import PatientHistoryDialog from '../components/medical/PatientHistoryDialog';
+import { generateRandomPatientHistory } from '../components/medical/PatientHistoryGenerator';
 
 export default function MedicalScenario() {
   const [showScenarioSelector, setShowScenarioSelector] = useState(true);
@@ -461,13 +462,16 @@ export default function MedicalScenario() {
   const handleSelectScenario = (scenario) => {
     setCurrentScenario(scenario);
     setVitals(scenario.vitals);
-    setPatientHistory(scenario.patient_history || null);
+    
+    // Generate random patient history if not provided
+    const history = scenario.patient_history || generateRandomPatientHistory();
+    setPatientHistory(history);
     
     // Don't auto-load equipment - make it DIY gameplay!
     setEquipment([]);
     setShowScenarioSelector(false);
     toast.success(`Scenario loaded: ${scenario.name}`, {
-      description: 'Configure life support equipment yourself!'
+      description: 'Random patient history generated!'
     });
   };
 
@@ -656,7 +660,14 @@ export default function MedicalScenario() {
 
           {/* Vitals */}
           <div className="mb-6">
-            <PatientVitals vitals={vitals} scenario={currentScenario} />
+            <PatientVitals 
+              vitals={vitals} 
+              scenario={{
+                ...currentScenario,
+                equipment,
+                patient_history: patientHistory
+              }} 
+            />
           </div>
 
           {/* Clinical Notes */}
