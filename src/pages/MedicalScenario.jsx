@@ -259,13 +259,13 @@ export default function MedicalScenario() {
             // Check for drug allergies with game mode severity
             if (patientHistory?.allergies?.some(allergy => drugName.includes(allergy.toLowerCase().split(' ')[0]))) {
               let severity = 1;
-              if (gameMode.allergies === 'complications') severity = 2;
-              if (gameMode.allergies === 'deadly') severity = 3;
+              if (gameMode?.allergies === 'complications') severity = 2;
+              if (gameMode?.allergies === 'deadly') severity = 3;
 
               // Allergic reaction based on severity
               newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.4 * severity);
               newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 1.5 * severity);
-              newVitals.spo2 = Math.max(gameMode.id === 'specialist' ? 70 : 80, prev.spo2 - rate * 0.2 * severity);
+              newVitals.spo2 = Math.max(gameMode?.id === 'specialist' ? 70 : 80, prev.spo2 - rate * 0.2 * severity);
               return;
             }
             
