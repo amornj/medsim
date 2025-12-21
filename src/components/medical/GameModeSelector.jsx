@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Shield, Target, AlertTriangle, Skull, Infinity } from 'lucide-react';
+import { DollarSign, Shield, Target, AlertTriangle, Skull, Infinity, Activity } from 'lucide-react';
 
 const GAME_MODES = [
   {
