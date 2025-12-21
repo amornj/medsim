@@ -29,6 +29,109 @@ export default function MedicalScenario() {
   
   const queryClient = useQueryClient();
 
+  // Natural vitals drift - disease progression and patient response
+  useEffect(() => {
+    if (!vitals || patientDead) return;
+
+    const interval = setInterval(() => {
+      setVitals(prev => {
+        if (!prev) return prev;
+        
+        let newVitals = { ...prev };
+        const condition = currentScenario?.condition || 'custom';
+        
+        // Base drift factors
+        const randomFactor = () => (Math.random() - 0.5) * 0.3;
+        
+        // Condition-specific deterioration patterns
+        switch(condition) {
+          case 'cardiac_arrest':
+            // Without intervention, stays critical
+            if (prev.heart_rate === 0) {
+              newVitals.spo2 = Math.max(0, prev.spo2 - 0.5);
+              newVitals.blood_pressure_systolic = Math.max(0, prev.blood_pressure_systolic - 0.3);
+            }
+            break;
+            
+          case 'respiratory_failure':
+            // Hypoxia worsens without support
+            newVitals.spo2 = Math.max(70, prev.spo2 - 0.2 + randomFactor());
+            newVitals.respiratory_rate = Math.min(40, prev.respiratory_rate + 0.1);
+            if (prev.spo2 < 85) {
+              newVitals.heart_rate = Math.min(150, prev.heart_rate + 0.3);
+            }
+            break;
+            
+          case 'septic_shock':
+            // Progressive hypotension and tachycardia
+            newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - 0.15);
+            newVitals.heart_rate = Math.min(160, prev.heart_rate + 0.2);
+            newVitals.temperature = Math.min(41, prev.temperature + 0.02);
+            newVitals.spo2 = Math.max(80, prev.spo2 - 0.1);
+            break;
+            
+          case 'trauma':
+            // Hemorrhagic shock progression
+            if (prev.blood_pressure_systolic < 90) {
+              newVitals.heart_rate = Math.min(170, prev.heart_rate + 0.4);
+              newVitals.blood_pressure_systolic = Math.max(50, prev.blood_pressure_systolic - 0.2);
+              newVitals.spo2 = Math.max(85, prev.spo2 - 0.15);
+            }
+            break;
+            
+          case 'stroke':
+            // Neurological deterioration with ICP
+            if (prev.blood_pressure_systolic > 180) {
+              newVitals.heart_rate = Math.max(50, prev.heart_rate - 0.1); // Cushing's reflex
+            }
+            break;
+            
+          case 'anaphylaxis':
+            // Rapid deterioration if untreated
+            newVitals.blood_pressure_systolic = Math.max(55, prev.blood_pressure_systolic - 0.3);
+            newVitals.heart_rate = Math.min(180, prev.heart_rate + 0.5);
+            newVitals.spo2 = Math.max(75, prev.spo2 - 0.25);
+            newVitals.respiratory_rate = Math.min(40, prev.respiratory_rate + 0.3);
+            break;
+            
+          default:
+            // General metabolic drift - subtle changes
+            newVitals.heart_rate = Math.max(40, Math.min(140, prev.heart_rate + randomFactor() * 2));
+            newVitals.respiratory_rate = Math.max(8, Math.min(30, prev.respiratory_rate + randomFactor()));
+            newVitals.spo2 = Math.max(88, Math.min(100, prev.spo2 + randomFactor() * 0.5));
+            newVitals.temperature = Math.max(35, Math.min(39, prev.temperature + randomFactor() * 0.1));
+        }
+        
+        // Universal metabolic effects
+        // Low SpO2 causes compensatory tachycardia
+        if (prev.spo2 < 90) {
+          newVitals.heart_rate = Math.min(160, prev.heart_rate + 0.2);
+        }
+        
+        // Severe hypotension causes compensatory tachycardia
+        if (prev.blood_pressure_systolic < 80) {
+          newVitals.heart_rate = Math.min(170, prev.heart_rate + 0.3);
+        }
+        
+        // Fever increases metabolic demand
+        if (prev.temperature > 38.5) {
+          newVitals.heart_rate = Math.min(150, prev.heart_rate + 0.15);
+          newVitals.respiratory_rate = Math.min(35, prev.respiratory_rate + 0.1);
+        }
+        
+        // Hypothermia slows metabolism
+        if (prev.temperature < 35) {
+          newVitals.heart_rate = Math.max(40, prev.heart_rate - 0.2);
+          newVitals.respiratory_rate = Math.max(6, prev.respiratory_rate - 0.1);
+        }
+        
+        return newVitals;
+      });
+    }, 3000); // Every 3 seconds for natural drift
+
+    return () => clearInterval(interval);
+  }, [vitals, patientDead, currentScenario]);
+
   // Dynamic equipment effects on vitals
   useEffect(() => {
     if (!vitals || patientDead) return;
