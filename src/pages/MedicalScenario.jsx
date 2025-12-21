@@ -19,6 +19,7 @@ import PatientHistoryDialog from '../components/medical/PatientHistoryDialog';
 import { generateRandomPatientHistory } from '../components/medical/PatientHistoryGenerator';
 import PerformanceTracker from '../components/medical/PerformanceTracker';
 import PerformanceHistory from '../components/medical/PerformanceHistory';
+import AIScribe from '../components/medical/AIScribe';
 
 import TitleScreen from '../components/medical/TitleScreen';
 import GameModeSelector from '../components/medical/GameModeSelector';
@@ -59,6 +60,7 @@ export default function MedicalScenario() {
   const [interventionHistory, setInterventionHistory] = useState([]);
   const [initialVitals, setInitialVitals] = useState(null);
   const [performanceHistoryOpen, setPerformanceHistoryOpen] = useState(false);
+  const [aiScribeOpen, setAiScribeOpen] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -955,6 +957,14 @@ export default function MedicalScenario() {
               </Button>
               <Button
                 variant="outline"
+                onClick={() => setAiScribeOpen(true)}
+                className="flex items-center gap-2 bg-purple-50 hover:bg-purple-100"
+              >
+                <FileText className="w-4 h-4" />
+                AI Scribe
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setSurgeryMenuOpen(true)}
                 className="flex items-center gap-2"
               >
@@ -1117,6 +1127,17 @@ export default function MedicalScenario() {
       <PerformanceHistory
         open={performanceHistoryOpen}
         onClose={() => setPerformanceHistoryOpen(false)}
+      />
+
+      {/* AI Scribe */}
+      <AIScribe
+        open={aiScribeOpen}
+        onClose={() => setAiScribeOpen(false)}
+        onUpdateHistory={(updatedHistory) => {
+          setPatientHistory(updatedHistory);
+          setAiScribeOpen(false);
+        }}
+        currentHistory={patientHistory}
       />
     </DragDropContext>
   );
