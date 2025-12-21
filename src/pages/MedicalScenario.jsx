@@ -630,9 +630,16 @@ export default function MedicalScenario() {
     }
   };
 
-  const handleRemoveEquipment = (id) => {
+  const handleRemoveEquipment = (id, cost) => {
     setEquipment(equipment.filter(eq => eq.id !== id));
-    toast.info('Equipment removed');
+    if (funds !== Infinity && cost) {
+      setFunds(funds + cost);
+      toast.success(`Equipment removed (+$${cost.toLocaleString()})`, {
+        description: `Refunded. Total: $${(funds + cost).toLocaleString()}`
+      });
+    } else {
+      toast.info('Equipment removed');
+    }
   };
 
   const handleConfigureEquipment = (item) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, X, Settings } from 'lucide-react';
+import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, X, Settings, DollarSign } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -113,6 +113,20 @@ const EQUIPMENT_NAMES = {
   cpap: 'CPAP'
 };
 
+const EQUIPMENT_COSTS = {
+  ventilator: 500, cardiac_monitor: 100, defibrillator: 300, iv_pump: 200, syringe_pump: 250,
+  ecmo: 5000, va_ecmo: 6000, vv_ecmo: 5500, vav_ecmo: 7000, lava_ecmo: 8000, ecpella: 9000,
+  cpb: 4000, iabp: 2000, impella_cp: 4500, impella_5: 5500, impella_rp: 4000, tandem_heart: 5000,
+  heartmate_3: 10000, centrimag: 6000, dialysis: 800, crrt: 1200, pulse_ox: 50, temp_monitor: 50,
+  arterial_line: 300, lucas: 1500, aed: 400, pacemaker: 800, warming_blanket: 150, cooling_blanket: 150,
+  arctic_sun: 2000, hfnc: 400, bipap: 600, cpap: 500, hfov: 1200, jet_ventilator: 1500,
+  cvvh: 1000, cvvhd: 1000, cvvhdf: 1100, sled: 900, plasmapheresis: 1800, eeg_monitor: 700,
+  icp_monitor: 800, brain_o2_monitor: 900, tcd: 600, swan_ganz: 500, picco: 700, lidco: 650,
+  anesthesia_workstation: 1000, tee_machine: 1500, ultrasound: 800, bronchoscope: 600,
+  endoscope: 700, linac: 8000, gamma_knife: 10000, apheresis: 2000, da_vinci: 15000,
+  ortho_navigation: 5000, electrocautery: 400
+};
+
 export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfigureEquipment }) {
   return (
     <Card className="shadow-lg bg-gradient-to-br from-slate-50 to-slate-100">
@@ -150,6 +164,8 @@ export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfi
                     const colorClass = EQUIPMENT_COLORS[item.type] || 'bg-slate-100 text-slate-700 border-slate-300';
                     const name = EQUIPMENT_NAMES[item.type] || item.type;
                     
+                    const cost = EQUIPMENT_COSTS[item.type] || 0;
+
                     return (
                       <Draggable key={item.id} draggableId={item.id} index={index}>
                         {(provided, snapshot) => (
@@ -174,11 +190,18 @@ export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfi
                                 className="h-6 w-6 -mt-1 -mr-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onRemoveEquipment(item.id);
+                                  onRemoveEquipment(item.id, cost);
                                 }}
                               >
                                 <X className="w-4 h-4" />
                               </Button>
+                            </div>
+
+                            <div className="mb-3">
+                              <Badge variant="outline" className="text-xs flex items-center gap-1 w-fit">
+                                <DollarSign className="w-3 h-3" />
+                                {cost.toLocaleString()}
+                              </Badge>
                             </div>
                             
                             {item.settings && Object.keys(item.settings).length > 0 && (
