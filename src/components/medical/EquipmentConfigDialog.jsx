@@ -26,6 +26,21 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'peep', label: 'PEEP (cmH2O)', type: 'number' },
     { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
   ],
+  bipap: [
+    { name: 'ipap', label: 'IPAP (cmH2O)', type: 'number' },
+    { name: 'epap', label: 'EPAP (cmH2O)', type: 'number' },
+    { name: 'respiratory_rate', label: 'Backup Rate (/min)', type: 'number' },
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
+  ],
+  cpap: [
+    { name: 'pressure', label: 'CPAP Pressure (cmH2O)', type: 'number' },
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
+  ],
+  hfnc: [
+    { name: 'flow_rate', label: 'Flow Rate (L/min)', type: 'number' },
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' },
+    { name: 'temperature', label: 'Temperature (°C)', type: 'number' }
+  ],
   cardiac_monitor: [
     { name: 'lead_config', label: 'Lead Configuration', type: 'select', options: ['3-lead', '5-lead', '12-lead'] },
     { name: 'alarm_hr_low', label: 'HR Alarm Low (bpm)', type: 'number' },

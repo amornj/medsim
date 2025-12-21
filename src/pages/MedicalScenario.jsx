@@ -222,7 +222,7 @@ export default function MedicalScenario() {
           if (ventilator.settings.respiratory_rate) {
             newVitals.respiratory_rate = parseInt(ventilator.settings.respiratory_rate);
           }
-          
+
           // FiO2 affects SpO2
           const fio2 = parseInt(ventilator.settings.fio2) || 21;
           if (fio2 >= 80) {
@@ -232,7 +232,7 @@ export default function MedicalScenario() {
           } else if (fio2 >= 40) {
             newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
           }
-          
+
           // PEEP affects oxygenation (higher PEEP = better recruitment)
           const peep = parseInt(ventilator.settings.peep) || 5;
           if (peep >= 12) {
@@ -240,11 +240,90 @@ export default function MedicalScenario() {
           } else if (peep >= 8) {
             newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
           }
-          
+
           // Tidal volume too high can cause barotrauma (decrease SpO2)
           const tidalVolume = parseInt(ventilator.settings.tidal_volume) || 500;
           if (tidalVolume > 600) {
             newVitals.spo2 = Math.max(0, prev.spo2 - 0.2);
+          }
+        }
+
+        // BIPAP: Non-invasive ventilation for hypercapnic respiratory failure
+        const bipap = equipment.find(eq => eq.type === 'bipap');
+        if (bipap?.settings) {
+          const ipap = parseInt(bipap.settings.ipap) || 10;
+          const epap = parseInt(bipap.settings.epap) || 5;
+          const fio2 = parseInt(bipap.settings.fio2) || 21;
+
+          // Higher pressure support improves oxygenation
+          const pressureSupport = ipap - epap;
+          if (pressureSupport >= 10) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.8);
+          } else if (pressureSupport >= 6) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
+          } else {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
+          }
+
+          // FiO2 support
+          if (fio2 >= 60) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.6);
+          } else if (fio2 >= 40) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
+          }
+
+          // Reduces work of breathing
+          if (prev.respiratory_rate > 25) {
+            newVitals.respiratory_rate = Math.max(12, prev.respiratory_rate - 0.2);
+          }
+        }
+
+        // CPAP: Continuous positive airway pressure
+        const cpap = equipment.find(eq => eq.type === 'cpap');
+        if (cpap?.settings) {
+          const pressure = parseInt(cpap.settings.pressure) || 5;
+          const fio2 = parseInt(cpap.settings.fio2) || 21;
+
+          // CPAP improves oxygenation through alveolar recruitment
+          if (pressure >= 10) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
+          } else if (pressure >= 5) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
+          }
+
+          // FiO2 support
+          if (fio2 >= 40) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.4);
+          }
+        }
+
+        // HFNC: High-Flow Nasal Cannula - heated humidified oxygen
+        const hfnc = equipment.find(eq => eq.type === 'hfnc');
+        if (hfnc?.settings) {
+          const flowRate = parseInt(hfnc.settings.flow_rate) || 30;
+          const fio2 = parseInt(hfnc.settings.fio2) || 21;
+
+          // High flow rates provide PEEP-like effect
+          if (flowRate >= 50) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.7);
+          } else if (flowRate >= 40) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.5);
+          } else if (flowRate >= 30) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.3);
+          }
+
+          // FiO2 support
+          if (fio2 >= 80) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.8);
+          } else if (fio2 >= 60) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.6);
+          } else if (fio2 >= 40) {
+            newVitals.spo2 = Math.min(100, prev.spo2 + 0.4);
+          }
+
+          // Reduces respiratory distress
+          if (prev.respiratory_rate > 22) {
+            newVitals.respiratory_rate = Math.max(14, prev.respiratory_rate - 0.15);
           }
         }
         
