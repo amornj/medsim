@@ -556,6 +556,22 @@ export default function MedicalScenario() {
 
     if (source.droppableId === 'palette' && destination.droppableId === 'workspace') {
       const equipmentType = result.draggableId.replace('palette-', '').split('-')[0];
+      const cost = EQUIPMENT_COSTS[equipmentType] || 0;
+      
+      // Check funds
+      if (funds !== Infinity && funds < cost) {
+        toast.error(`Insufficient funds! Need $${cost.toLocaleString()}, have $${funds.toLocaleString()}`);
+        return;
+      }
+      
+      // Check procedure failure (specialist mode)
+      if (gameMode?.id === 'specialist' && Math.random() < 0.15) {
+        toast.error('Equipment malfunction! Try again.', {
+          description: 'Funds deducted but equipment failed'
+        });
+        if (funds !== Infinity) setFunds(funds - cost);
+        return;
+      }
       
       const newEquipment = {
         id: `${equipmentType}-${Date.now()}`,
@@ -564,7 +580,16 @@ export default function MedicalScenario() {
       };
       
       setEquipment([...equipment, newEquipment]);
-      toast.success('Equipment added');
+      setInterventionHistory([...interventionHistory, {
+        timestamp: Date.now(),
+        type: equipmentType,
+        action: 'added'
+      }]);
+      
+      if (funds !== Infinity) setFunds(funds - cost);
+      toast.success(`Equipment added (-$${cost.toLocaleString()})`, {
+        description: `Remaining: ${funds === Infinity ? '∞' : '$' + (funds - cost).toLocaleString()}`
+      });
     } else if (source.droppableId === 'workspace' && destination.droppableId === 'workspace') {
       const items = Array.from(equipment);
       const [reorderedItem] = items.splice(source.index, 1);
