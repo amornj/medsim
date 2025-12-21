@@ -20,8 +20,31 @@ import { generateRandomPatientHistory } from '../components/medical/PatientHisto
 import PerformanceTracker from '../components/medical/PerformanceTracker';
 import PerformanceHistory from '../components/medical/PerformanceHistory';
 
+import TitleScreen from '../components/medical/TitleScreen';
+import GameModeSelector from '../components/medical/GameModeSelector';
+import FundsDisplay from '../components/medical/FundsDisplay';
+
+// Equipment costs
+const EQUIPMENT_COSTS = {
+  ventilator: 500, cardiac_monitor: 100, defibrillator: 300, iv_pump: 200, syringe_pump: 250,
+  ecmo: 5000, va_ecmo: 6000, vv_ecmo: 5500, vav_ecmo: 7000, lava_ecmo: 8000, ecpella: 9000,
+  cpb: 4000, iabp: 2000, impella_cp: 4500, impella_5: 5500, impella_rp: 4000, tandem_heart: 5000,
+  heartmate_3: 10000, centrimag: 6000, dialysis: 800, crrt: 1200, pulse_ox: 50, temp_monitor: 50,
+  arterial_line: 300, lucas: 1500, aed: 400, pacemaker: 800, warming_blanket: 150, cooling_blanket: 150,
+  arctic_sun: 2000, hfnc: 400, bipap: 600, cpap: 500, hfov: 1200, jet_ventilator: 1500,
+  cvvh: 1000, cvvhd: 1000, cvvhdf: 1100, sled: 900, plasmapheresis: 1800, eeg_monitor: 700,
+  icp_monitor: 800, brain_o2_monitor: 900, tcd: 600, swan_ganz: 500, picco: 700, lidco: 650,
+  ct_scanner: 2500, coronary_cta: 3000, mri_scanner: 3500, pet_ct: 4000, fluoroscopy: 2000,
+  c_arm: 1800, anesthesia_workstation: 1000, tee_machine: 1500, ultrasound: 800, bronchoscope: 600,
+  endoscope: 700, linac: 8000, gamma_knife: 10000, apheresis: 2000, da_vinci: 15000,
+  ortho_navigation: 5000, electrocautery: 400
+};
+
 export default function MedicalScenario() {
-  const [showScenarioSelector, setShowScenarioSelector] = useState(true);
+  const [gameState, setGameState] = useState('title'); // 'title', 'mode_select', 'scenario_select', 'playing'
+  const [gameMode, setGameMode] = useState(null);
+  const [funds, setFunds] = useState(0);
+  const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [currentScenario, setCurrentScenario] = useState(null);
   const [equipment, setEquipment] = useState([]);
   const [vitals, setVitals] = useState(null);
@@ -233,12 +256,16 @@ export default function MedicalScenario() {
 
             if (rate === 0) return; // Skip if not running
 
-            // Check for drug allergies
+            // Check for drug allergies with game mode severity
             if (patientHistory?.allergies?.some(allergy => drugName.includes(allergy.toLowerCase().split(' ')[0]))) {
-              // Allergic reaction
-              newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.4);
-              newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 1.5);
-              newVitals.spo2 = Math.max(80, prev.spo2 - rate * 0.2);
+              let severity = 1;
+              if (gameMode.allergies === 'complications') severity = 2;
+              if (gameMode.allergies === 'deadly') severity = 3;
+
+              // Allergic reaction based on severity
+              newVitals.blood_pressure_systolic = Math.max(60, prev.blood_pressure_systolic - rate * 0.4 * severity);
+              newVitals.heart_rate = Math.min(180, prev.heart_rate + rate * 1.5 * severity);
+              newVitals.spo2 = Math.max(gameMode.id === 'specialist' ? 70 : 80, prev.spo2 - rate * 0.2 * severity);
               return;
             }
             
@@ -298,15 +325,13 @@ export default function MedicalScenario() {
           }
         });
         
-        // CARDIOPULMONARY BYPASS - Full heart-lung bypass
+        // CARDIOPULMONARY BYPASS - Blood pressure regulation only
         const cpb = equipment.find(eq => eq.type === 'cpb');
         if (cpb?.settings?.flow_rate) {
           const flow = parseFloat(cpb.settings.flow_rate);
-          // Aggressive BP stabilization
-          newVitals.blood_pressure_systolic = Math.min(130, prev.blood_pressure_systolic + flow * 1.2);
-          newVitals.blood_pressure_diastolic = Math.min(90, prev.blood_pressure_diastolic + flow * 0.8);
-          newVitals.spo2 = Math.min(100, prev.spo2 + flow * 0.5);
-          newVitals.heart_rate = Math.max(60, Math.min(90, prev.heart_rate));
+          // Only stabilizes blood pressure
+          newVitals.blood_pressure_systolic = Math.min(130, prev.blood_pressure_systolic + flow * 0.8);
+          newVitals.blood_pressure_diastolic = Math.min(90, prev.blood_pressure_diastolic + flow * 0.5);
         }
         
         // ECMO effects - powerful support
@@ -468,20 +493,31 @@ export default function MedicalScenario() {
   const handleSelectScenario = (scenario) => {
     setCurrentScenario(scenario);
     setVitals(scenario.vitals);
-    setInitialVitals({ ...scenario.vitals }); // Store initial vitals
+    setInitialVitals({ ...scenario.vitals });
     
-    // Generate random patient history if not provided
-    const history = scenario.patient_history || generateRandomPatientHistory();
+    // Handle patient history based on game mode
+    let history = scenario.patient_history;
+    if (!history) {
+      if (gameMode.allergies === 'none' || gameMode.allergies === 'disabled') {
+        history = { ...generateRandomPatientHistory(), allergies: [] };
+      } else if (gameMode.allergies === 'fixed') {
+        history = generateRandomPatientHistory();
+      } else if (gameMode.allergies === 'random') {
+        history = generateRandomPatientHistory();
+        if (Math.random() > 0.5) history.allergies = [];
+      } else {
+        history = generateRandomPatientHistory();
+      }
+    }
     setPatientHistory(history);
     
-    // Don't auto-load equipment - make it DIY gameplay!
     setEquipment([]);
     setInterventionHistory([]);
     setScenarioStartTime(Date.now());
     setPatientDead(false);
-    setShowScenarioSelector(false);
+    setGameState('playing');
     toast.success(`Scenario loaded: ${scenario.name}`, {
-      description: 'Random patient history generated! Timer started!'
+      description: `Budget: ${funds === Infinity ? '∞' : '$' + funds.toLocaleString()}`
     });
   };
 
@@ -581,7 +617,7 @@ export default function MedicalScenario() {
   };
 
   const handleReset = () => {
-    setShowScenarioSelector(true);
+    setGameState('mode_select');
     setCurrentScenario(null);
     setEquipment([]);
     setVitals(null);
@@ -664,22 +700,50 @@ export default function MedicalScenario() {
     }
   };
 
-  if (showScenarioSelector) {
+  // Title Screen
+  if (gameState === 'title') {
+    return <TitleScreen onPlay={() => setGameState('mode_select')} />;
+  }
+
+  // Game Mode Selection
+  if (gameState === 'mode_select') {
+    return (
+      <GameModeSelector
+        onSelectMode={(mode) => {
+          setGameMode(mode);
+          setFunds(mode.funds);
+          setGameState('scenario_select');
+        }}
+        onBack={() => setGameState('title')}
+      />
+    );
+  }
+
+  // Scenario Selection
+  if (gameState === 'scenario_select') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-6">
         <div className="max-w-7xl mx-auto">
+          <div className="mb-6">
+            <FundsDisplay funds={funds} gameMode={gameMode} />
+          </div>
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-slate-800 mb-2">
-              Medical Life Support Simulator
+              Select Emergency Scenario
             </h1>
             <p className="text-slate-600">
-              Configure critical care equipment for various medical emergencies
+              Mode: {gameMode.name} • Difficulty: {gameMode.difficulty}
             </p>
           </div>
           <ScenarioSelector
             onSelectScenario={handleSelectScenario}
             onCreateCustom={handleCreateCustom}
           />
+          <div className="mt-6 text-center">
+            <Button variant="outline" onClick={() => setGameState('mode_select')}>
+              Change Game Mode
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -690,6 +754,10 @@ export default function MedicalScenario() {
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-4 md:p-6">
         <div className="max-w-[1800px] mx-auto">
           {/* Header */}
+          <div className="mb-6">
+            <FundsDisplay funds={funds} gameMode={gameMode} />
+          </div>
+
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-800 mb-1">

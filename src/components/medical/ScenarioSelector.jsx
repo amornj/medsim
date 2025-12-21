@@ -6,6 +6,48 @@ import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles, Activit
 import AIScenarioGenerator from './AIScenarioGenerator';
 
 const PRESET_SCENARIOS = [
+  // VERY EASY - Tutorial scenarios
+  {
+    id: 'routine_checkup',
+    name: 'Routine Medical Checkup',
+    icon: Heart,
+    color: 'bg-green-100 border-green-300 text-green-700',
+    description: 'Basic vitals monitoring for a healthy patient',
+    difficulty: 1,
+    difficultyLabel: 'Very Easy',
+    vitals: {
+      heart_rate: 75,
+      blood_pressure_systolic: 120,
+      blood_pressure_diastolic: 80,
+      respiratory_rate: 14,
+      spo2: 99,
+      temperature: 36.8,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'Healthy patient. Monitor vitals and ensure stability.'
+  },
+  {
+    id: 'mild_fever',
+    name: 'Mild Fever Management',
+    icon: Thermometer,
+    color: 'bg-green-100 border-green-300 text-green-700',
+    description: 'Patient with mild fever requiring monitoring',
+    difficulty: 1,
+    difficultyLabel: 'Very Easy',
+    vitals: {
+      heart_rate: 88,
+      blood_pressure_systolic: 125,
+      blood_pressure_diastolic: 82,
+      respiratory_rate: 16,
+      spo2: 98,
+      temperature: 38.2,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'Monitor temperature. Consider cooling measures if needed.'
+  },
+
   // EASY - Stable monitoring
   {
     id: 'post_op_stable',
@@ -57,6 +99,26 @@ const PRESET_SCENARIOS = [
     },
     equipment: [],
     notes: 'Gradually titrate antihypertensives. Monitor for end-organ damage.'
+  },
+  {
+    id: 'dehydration',
+    name: 'Moderate Dehydration',
+    icon: Droplets,
+    color: 'bg-blue-100 border-blue-300 text-blue-700',
+    description: 'Patient needs IV fluid resuscitation',
+    difficulty: 1,
+    difficultyLabel: 'Easy',
+    vitals: {
+      heart_rate: 102,
+      blood_pressure_systolic: 105,
+      blood_pressure_diastolic: 68,
+      respiratory_rate: 18,
+      spo2: 96,
+      temperature: 37.2,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'IV fluid bolus. Monitor urine output and electrolytes.'
   },
   
   // MODERATE - Some intervention needed
@@ -110,6 +172,46 @@ const PRESET_SCENARIOS = [
     },
     equipment: [],
     notes: 'Supplemental oxygen. Broad-spectrum antibiotics. Fluid resuscitation.'
+  },
+  {
+    id: 'acute_asthma',
+    name: 'Acute Asthma Exacerbation',
+    icon: Wind,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Severe bronchospasm requiring immediate intervention',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: {
+      heart_rate: 118,
+      blood_pressure_systolic: 135,
+      blood_pressure_diastolic: 85,
+      respiratory_rate: 32,
+      spo2: 88,
+      temperature: 37.0,
+      consciousness: 'Anxious'
+    },
+    equipment: [],
+    notes: 'Albuterol nebulizers. Steroids. Consider BiPAP if worsening.'
+  },
+  {
+    id: 'chest_pain',
+    name: 'Unstable Angina',
+    icon: Heart,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Chest pain with potential cardiac involvement',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: {
+      heart_rate: 95,
+      blood_pressure_systolic: 165,
+      blood_pressure_diastolic: 98,
+      respiratory_rate: 20,
+      spo2: 96,
+      temperature: 37.1,
+      consciousness: 'Alert'
+    },
+    equipment: [],
+    notes: 'ECG monitoring. Nitrates. Aspirin. Prepare for cath lab.'
   },
   
   // SERIOUS - Life-threatening if untreated
@@ -460,8 +562,48 @@ const PRESET_SCENARIOS = [
     },
     equipment: [],
     notes: 'Maximal support. VA-ECMO + CRRT. Multiple vasopressors. Poor prognosis without rapid reversal.'
+  },
+  {
+    id: 'hemorrhagic_shock',
+    name: 'Hemorrhagic Shock',
+    icon: Droplets,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Massive blood loss with cardiovascular collapse',
+    difficulty: 5,
+    difficultyLabel: 'Critical',
+    vitals: {
+      heart_rate: 152,
+      blood_pressure_systolic: 72,
+      blood_pressure_diastolic: 45,
+      respiratory_rate: 30,
+      spo2: 86,
+      temperature: 35.5,
+      consciousness: 'Confused'
+    },
+    equipment: [],
+    notes: 'Massive transfusion protocol. Rapid fluid resuscitation. Stop the bleeding.'
+  },
+  {
+    id: 'acute_liver_failure',
+    name: 'Acute Liver Failure',
+    icon: AlertCircle,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Fulminant hepatic failure with encephalopathy',
+    difficulty: 6,
+    difficultyLabel: 'Life-Threatening',
+    vitals: {
+      heart_rate: 115,
+      blood_pressure_systolic: 88,
+      blood_pressure_diastolic: 55,
+      respiratory_rate: 22,
+      spo2: 92,
+      temperature: 37.8,
+      consciousness: 'Confused'
+    },
+    equipment: [],
+    notes: 'Coagulopathy management. Cerebral edema monitoring. Transplant evaluation.'
   }
-];
+  ];
 
 export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
