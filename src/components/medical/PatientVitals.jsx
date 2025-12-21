@@ -53,7 +53,7 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
   const vitalDisplays = [
     {
       label: 'Heart Rate',
-      value: vitals?.heart_rate || '--',
+      value: vitals?.heart_rate ? Math.round(vitals.heart_rate) : '--',
       unit: 'bpm',
       icon: Heart,
       color: getStatusColor('heart_rate', vitals?.heart_rate)
@@ -61,7 +61,7 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
     {
       label: 'Blood Pressure',
       value: vitals?.blood_pressure_systolic && vitals?.blood_pressure_diastolic
-        ? `${vitals.blood_pressure_systolic}/${vitals.blood_pressure_diastolic}`
+        ? `${Math.round(vitals.blood_pressure_systolic)}/${Math.round(vitals.blood_pressure_diastolic)}`
         : '--/--',
       unit: 'mmHg',
       icon: Activity,
@@ -69,21 +69,21 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
     },
     {
       label: 'SpO₂',
-      value: vitals?.spo2 || '--',
+      value: vitals?.spo2 ? Math.round(vitals.spo2) : '--',
       unit: '%',
       icon: Droplet,
       color: getStatusColor('spo2', vitals?.spo2)
     },
     {
       label: 'Resp Rate',
-      value: vitals?.respiratory_rate || '--',
+      value: vitals?.respiratory_rate ? Math.round(vitals.respiratory_rate) : '--',
       unit: '/min',
       icon: Wind,
       color: getStatusColor('respiratory_rate', vitals?.respiratory_rate)
     },
     {
       label: 'Temperature',
-      value: vitals?.temperature || '--',
+      value: vitals?.temperature ? Math.round(vitals.temperature) : '--',
       unit: '°C',
       icon: Thermometer,
       color: 'bg-orange-500'
