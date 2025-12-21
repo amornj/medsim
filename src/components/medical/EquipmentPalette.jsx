@@ -11,19 +11,20 @@ const EQUIPMENT_CATEGORIES = {
     name: '❤️ Cardiovascular Support',
     color: 'bg-red-100 border-red-300',
     equipment: [
-      { id: 'ecmo', name: 'ECMO (Extracorporeal Membrane Oxygenation)', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Temporary heart/lung support' },
-      { id: 'va_ecmo', name: 'VA-ECMO', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiac + respiratory failure' },
-      { id: 'vv_ecmo', name: 'VV-ECMO', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Isolated respiratory failure' },
-      { id: 'vav_ecmo', name: 'V-AV ECMO', icon: Heart, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Differential hypoxia' },
-      { id: 'lava_ecmo', name: 'LAVA-ECMO', icon: Heart, color: 'bg-rose-100 text-rose-700 border-rose-300', description: 'LV unloading + oxygenation' },
-      { id: 'ecpella', name: 'ECPELLA (VA-ECMO + Impella)', icon: Heart, color: 'bg-pink-200 text-pink-800 border-pink-400', description: 'Cardiogenic shock with LV distension' },
-      { id: 'iabp', name: 'IABP (Intra-aortic Balloon Pump)', icon: Activity, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Coronary perfusion support' },
-      { id: 'impella_cp', name: 'Impella CP', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Acute LV support' },
-      { id: 'impella_5', name: 'Impella 5.0 / 5.5', icon: Heart, color: 'bg-red-200 text-red-800 border-red-400', description: 'Advanced LV unloading' },
-      { id: 'impella_rp', name: 'Impella RP', icon: Wind, color: 'bg-sky-100 text-sky-700 border-sky-300', description: 'RV failure' },
-      { id: 'tandem_heart', name: 'TandemHeart', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'LV bypass' },
-      { id: 'heartmate_3', name: 'HeartMate 3 (LVAD)', icon: Heart, color: 'bg-rose-200 text-rose-800 border-rose-400', description: 'End-stage heart failure' },
-      { id: 'centrimag', name: 'CentriMag', icon: Repeat, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'Temporary biventricular support' }
+      { id: 'ecmo', name: 'ECMO (Extracorporeal Membrane Oxygenation)', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Flow 3-7 L/min, membrane oxygenator' },
+      { id: 'va_ecmo', name: 'VA-ECMO', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiogenic shock, retrograde flow' },
+      { id: 'vv_ecmo', name: 'VV-ECMO', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Severe ARDS, venous-venous' },
+      { id: 'vav_ecmo', name: 'V-AV ECMO', icon: Heart, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Differential hypoxia (Harlequin)' },
+      { id: 'lava_ecmo', name: 'LAVA-ECMO', icon: Heart, color: 'bg-rose-100 text-rose-700 border-rose-300', description: 'Transseptal LA/LV vent + ECMO' },
+      { id: 'ecpella', name: 'ECPELLA (VA-ECMO + Impella)', icon: Heart, color: 'bg-pink-200 text-pink-800 border-pink-400', description: 'Combined flow 5-9 L/min' },
+      { id: 'cpb', name: 'Cardiopulmonary Bypass', icon: Heart, color: 'bg-red-200 text-red-800 border-red-400', description: 'Full heart-lung bypass, BP stabilization' },
+      { id: 'iabp', name: 'IABP', icon: Activity, color: 'bg-orange-100 text-orange-700 border-orange-300', description: '~0.5 L/min coronary assist' },
+      { id: 'impella_cp', name: 'Impella CP', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Percutaneous, 3.5-4 L/min' },
+      { id: 'impella_5', name: 'Impella 5.0 / 5.5', icon: Heart, color: 'bg-red-200 text-red-800 border-red-400', description: 'Axillary access, 5-5.5 L/min' },
+      { id: 'impella_rp', name: 'Impella RP', icon: Wind, color: 'bg-sky-100 text-sky-700 border-sky-300', description: 'RV support, ~4 L/min' },
+      { id: 'tandem_heart', name: 'TandemHeart', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Transseptal LA bypass, ~5 L/min' },
+      { id: 'heartmate_3', name: 'HeartMate 3 (LVAD)', icon: Heart, color: 'bg-rose-200 text-rose-800 border-rose-400', description: 'Implantable continuous flow' },
+      { id: 'centrimag', name: 'CentriMag', icon: Repeat, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'External BiVAD, up to 10 L/min' }
     ]
   },
   respiratory: {
