@@ -114,17 +114,17 @@ const EQUIPMENT_NAMES = {
 };
 
 const EQUIPMENT_COSTS = {
-  ventilator: 500, cardiac_monitor: 100, defibrillator: 300, iv_pump: 200, syringe_pump: 250,
-  ecmo: 5000, va_ecmo: 6000, vv_ecmo: 5500, vav_ecmo: 7000, lava_ecmo: 8000, ecpella: 9000,
-  cpb: 4000, iabp: 2000, impella_cp: 4500, impella_5: 5500, impella_rp: 4000, tandem_heart: 5000,
-  heartmate_3: 10000, centrimag: 6000, dialysis: 800, crrt: 1200, pulse_ox: 50, temp_monitor: 50,
-  arterial_line: 300, lucas: 1500, aed: 400, pacemaker: 800, warming_blanket: 150, cooling_blanket: 150,
-  arctic_sun: 2000, hfnc: 400, bipap: 600, cpap: 500, hfov: 1200, jet_ventilator: 1500,
-  cvvh: 1000, cvvhd: 1000, cvvhdf: 1100, sled: 900, plasmapheresis: 1800, eeg_monitor: 700,
-  icp_monitor: 800, brain_o2_monitor: 900, tcd: 600, swan_ganz: 500, picco: 700, lidco: 650,
-  anesthesia_workstation: 1000, tee_machine: 1500, ultrasound: 800, bronchoscope: 600,
-  endoscope: 700, linac: 8000, gamma_knife: 10000, apheresis: 2000, da_vinci: 15000,
-  ortho_navigation: 5000, electrocautery: 400
+  ventilator: 5000, cardiac_monitor: 1000, defibrillator: 3000, iv_pump: 2000, syringe_pump: 2500,
+  ecmo: 50000, va_ecmo: 60000, vv_ecmo: 55000, vav_ecmo: 70000, lava_ecmo: 80000, ecpella: 90000,
+  cpb: 40000, iabp: 20000, impella_cp: 45000, impella_5: 55000, impella_rp: 40000, tandem_heart: 50000,
+  heartmate_3: 100000, centrimag: 60000, dialysis: 8000, crrt: 12000, pulse_ox: 500, temp_monitor: 500,
+  arterial_line: 3000, lucas: 15000, aed: 4000, pacemaker: 8000, warming_blanket: 1500, cooling_blanket: 1500,
+  arctic_sun: 20000, hfnc: 4000, bipap: 6000, cpap: 5000, hfov: 12000, jet_ventilator: 15000,
+  cvvh: 10000, cvvhd: 10000, cvvhdf: 11000, sled: 9000, plasmapheresis: 18000, eeg_monitor: 7000,
+  icp_monitor: 8000, brain_o2_monitor: 9000, tcd: 6000, swan_ganz: 5000, picco: 7000, lidco: 6500,
+  anesthesia_workstation: 10000, tee_machine: 15000, ultrasound: 8000, bronchoscope: 6000,
+  endoscope: 7000, linac: 80000, gamma_knife: 100000, apheresis: 20000, da_vinci: 150000,
+  ortho_navigation: 50000, electrocautery: 4000
 };
 
 export default function PatientWorkspace({ equipment, onRemoveEquipment, onConfigureEquipment }) {

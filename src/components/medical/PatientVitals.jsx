@@ -3,7 +3,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Activity, Heart, Wind, Droplet, Thermometer, Brain, TrendingUp } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdvancedStatsDialog from './AdvancedStatsDialog';
+import EKGMonitor from './EKGMonitor';
 
 export default function PatientVitals({ vitals: initialVitals, scenario }) {
   const [vitals, setVitals] = useState(initialVitals);
@@ -119,31 +121,42 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
         </div>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {vitalDisplays.map((vital, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg border-2 border-slate-200 p-3 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1.5 rounded ${vital.color} bg-opacity-20`}>
-                  <vital.icon className={`w-4 h-4 ${vital.color.replace('bg-', 'text-')}`} />
+        <Tabs defaultValue="vitals" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="vitals">Vital Signs</TabsTrigger>
+            <TabsTrigger value="ekg">EKG Monitor</TabsTrigger>
+          </TabsList>
+          <TabsContent value="vitals">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {vitalDisplays.map((vital, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg border-2 border-slate-200 p-3 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`p-1.5 rounded ${vital.color} bg-opacity-20`}>
+                      <vital.icon className={`w-4 h-4 ${vital.color.replace('bg-', 'text-')}`} />
+                    </div>
+                    <div className="text-xs font-medium text-slate-600 leading-tight">
+                      {vital.label}
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <div className="text-2xl font-bold text-slate-800">
+                      {vital.value}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {vital.unit}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs font-medium text-slate-600 leading-tight">
-                  {vital.label}
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <div className="text-2xl font-bold text-slate-800">
-                  {vital.value}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {vital.unit}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </TabsContent>
+          <TabsContent value="ekg">
+            <EKGMonitor vitals={vitals} />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
 
