@@ -449,7 +449,7 @@ export default function MedicalScenario() {
         );
         if (ivPump?.settings?.rate) {
           const rate = parseFloat(ivPump.settings.rate);
-          
+
           // Fluid resuscitation effects based on rate
           if (rate > 500) { // Massive fluid resuscitation (>500 ml/hr)
             newVitals.blood_pressure_systolic = Math.min(140, prev.blood_pressure_systolic + 1.2);
@@ -463,12 +463,44 @@ export default function MedicalScenario() {
             newVitals.blood_pressure_systolic = Math.min(120, prev.blood_pressure_systolic + 0.3);
             newVitals.spo2 = Math.min(95, prev.spo2 + 0.1);
           }
-          
+
           // Fluid overload effects (too much too fast)
           if (rate > 1000) {
             // Pulmonary edema risk - decreases oxygenation
             newVitals.spo2 = Math.max(85, prev.spo2 - 0.5);
             newVitals.respiratory_rate = Math.min(35, prev.respiratory_rate + 0.2);
+          }
+        }
+
+        // SWAN-GANZ - Provides detailed cardiac data, helps guide treatment
+        const swanGanz = equipment.find(eq => eq.type === 'swan_ganz');
+        if (swanGanz?.settings?.enabled === 'true') {
+          // Swan-Ganz allows more precise fluid and pressor management
+          // Slight improvement in hemodynamic stability through better monitoring
+          if (prev.blood_pressure_systolic < 90) {
+            newVitals.blood_pressure_systolic = Math.min(95, prev.blood_pressure_systolic + 0.2);
+          }
+        }
+
+        // PiCCO - Advanced hemodynamic monitoring improves treatment
+        const picco = equipment.find(eq => eq.type === 'picco');
+        if (picco?.settings?.enabled === 'true' && picco.settings?.calibration === 'Calibrated') {
+          // Better fluid and pressor titration with PiCCO data
+          if (prev.blood_pressure_systolic < 90) {
+            newVitals.blood_pressure_systolic = Math.min(100, prev.blood_pressure_systolic + 0.3);
+          }
+          // Helps optimize cardiac output
+          if (prev.spo2 < 92) {
+            newVitals.spo2 = Math.min(94, prev.spo2 + 0.2);
+          }
+        }
+
+        // LiDCO - Cardiac output monitoring optimizes resuscitation
+        const lidco = equipment.find(eq => eq.type === 'lidco');
+        if (lidco?.settings?.enabled === 'true') {
+          // Improved fluid responsiveness assessment
+          if (prev.blood_pressure_systolic < 90) {
+            newVitals.blood_pressure_systolic = Math.min(95, prev.blood_pressure_systolic + 0.25);
           }
         }
         

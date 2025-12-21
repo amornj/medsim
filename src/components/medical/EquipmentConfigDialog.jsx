@@ -96,6 +96,21 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'flow_rate', label: 'Flow Rate (L/min)', type: 'number' },
     { name: 'mode', label: 'Mode', type: 'select', options: ['Full Bypass', 'Partial Bypass'] },
     { name: 'temperature', label: 'Blood Temperature (°C)', type: 'number' }
+  ],
+  swan_ganz: [
+    { name: 'enabled', label: 'Monitoring Active', type: 'select', options: ['true', 'false'] },
+    { name: 'wedge_pressure', label: 'Measure PCWP', type: 'select', options: ['true', 'false'] },
+    { name: 'cardiac_output', label: 'CO Monitoring', type: 'select', options: ['Continuous', 'Intermittent'] }
+  ],
+  picco: [
+    { name: 'enabled', label: 'System Active', type: 'select', options: ['true', 'false'] },
+    { name: 'calibration', label: 'Calibration Status', type: 'select', options: ['Calibrated', 'Needs Calibration'] },
+    { name: 'monitoring_mode', label: 'Monitoring', type: 'select', options: ['Full Hemodynamics', 'Basic'] }
+  ],
+  lidco: [
+    { name: 'enabled', label: 'System Active', type: 'select', options: ['true', 'false'] },
+    { name: 'sensor_type', label: 'Sensor Type', type: 'select', options: ['LiDCOplus', 'LiDCOrapid'] },
+    { name: 'calibration', label: 'Calibration', type: 'select', options: ['Required', 'Not Required'] }
   ]
 };
 
