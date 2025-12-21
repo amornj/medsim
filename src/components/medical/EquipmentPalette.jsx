@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, Waves, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight } from 'lucide-react';
+import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, Waves, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight, Gauge } from 'lucide-react';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,24 +66,13 @@ const EQUIPMENT_CATEGORIES = {
     name: '🫀 Hemodynamic Monitoring',
     color: 'bg-rose-100 border-rose-300',
     equipment: [
-      { id: 'swan_ganz', name: 'Swan-Ganz Catheter', icon: Activity, color: 'bg-rose-100 text-rose-700 border-rose-300', description: 'Pulmonary pressures' },
-      { id: 'picco', name: 'PiCCO', icon: Activity, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Advanced hemodynamics' },
-      { id: 'lidco', name: 'LiDCO', icon: Activity, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiac output monitoring' },
+      { id: 'swan_ganz', name: 'Swan-Ganz Catheter', icon: Heart, color: 'bg-rose-100 text-rose-700 border-rose-300', description: 'Pulmonary pressures' },
+      { id: 'picco', name: 'PiCCO', icon: Gauge, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Advanced hemodynamics' },
+      { id: 'lidco', name: 'LiDCO', icon: Gauge, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiac output monitoring' },
       { id: 'arterial_line', name: 'Arterial Line', icon: Activity, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Beat-to-beat BP' }
     ]
   },
-  imaging: {
-    name: '🩻 Imaging Machinery',
-    color: 'bg-slate-100 border-slate-300',
-    equipment: [
-      { id: 'ct_scanner', name: 'CT Scanner', icon: ScanLine, color: 'bg-slate-100 text-slate-700 border-slate-300', description: 'Cross-sectional imaging' },
-      { id: 'coronary_cta', name: 'Coronary CTA', icon: Heart, color: 'bg-gray-100 text-gray-700 border-gray-300', description: 'Non-invasive CAD assessment' },
-      { id: 'mri_scanner', name: 'MRI Scanner', icon: ScanLine, color: 'bg-zinc-100 text-zinc-700 border-zinc-300', description: 'Soft tissue imaging' },
-      { id: 'pet_ct', name: 'PET-CT', icon: ScanLine, color: 'bg-stone-100 text-stone-700 border-stone-300', description: 'Metabolic imaging' },
-      { id: 'fluoroscopy', name: 'Fluoroscopy', icon: ScanLine, color: 'bg-neutral-100 text-neutral-700 border-neutral-300', description: 'Real-time imaging' },
-      { id: 'c_arm', name: 'C-Arm', icon: ScanLine, color: 'bg-slate-200 text-slate-800 border-slate-400', description: 'Mobile fluoroscopy' }
-    ]
-  },
+
   icu_emergency: {
     name: '🧪 ICU / Emergency Support',
     color: 'bg-amber-100 border-amber-300',
