@@ -24,10 +24,10 @@ const GAME_MODES = [
     icon: Shield,
     color: 'bg-blue-100 border-blue-300 text-blue-700',
     buttonColor: 'bg-blue-600 hover:bg-blue-700',
-    funds: 50000,
+    funds: 500000,
     allergies: 'none',
     difficulty: 'Easy',
-    features: ['💰 $50,000 Budget', '✓ No Allergies', '✓ Easy Scenarios']
+    features: ['💰 $500,000 Budget', '✓ No Allergies', '✓ Easy Scenarios']
   },
   {
     id: 'cadet',
@@ -36,10 +36,10 @@ const GAME_MODES = [
     icon: Target,
     color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
     buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
-    funds: 30000,
+    funds: 300000,
     allergies: 'fixed',
     difficulty: 'Medium',
-    features: ['💰 $30,000 Budget', '⚠️ Fixed Allergies', '✓ Standard Care']
+    features: ['💰 $300,000 Budget', '⚠️ Fixed Allergies', '✓ Standard Care']
   },
   {
     id: 'experienced',
@@ -48,10 +48,10 @@ const GAME_MODES = [
     icon: Activity,
     color: 'bg-orange-100 border-orange-300 text-orange-700',
     buttonColor: 'bg-orange-600 hover:bg-orange-700',
-    funds: 15000,
+    funds: 150000,
     allergies: 'random',
     difficulty: 'Hard',
-    features: ['💰 $15,000 Budget', '⚠️ Random Allergies', '⚡ Quick Decisions']
+    features: ['💰 $150,000 Budget', '⚠️ Random Allergies', '⚡ Quick Decisions']
   },
   {
     id: 'petty_officer',
@@ -60,10 +60,10 @@ const GAME_MODES = [
     icon: AlertTriangle,
     color: 'bg-red-100 border-red-300 text-red-700',
     buttonColor: 'bg-red-600 hover:bg-red-700',
-    funds: 8000,
+    funds: 80000,
     allergies: 'complications',
     difficulty: 'Very Hard',
-    features: ['💰 $8,000 Budget', '⚠️ Allergy Complications', '❌ High Stakes']
+    features: ['💰 $80,000 Budget', '⚠️ Allergy Complications', '❌ High Stakes']
   },
   {
     id: 'specialist',
@@ -72,10 +72,10 @@ const GAME_MODES = [
     icon: Skull,
     color: 'bg-red-900 border-red-950 text-red-50',
     buttonColor: 'bg-red-900 hover:bg-red-950',
-    funds: 3000,
+    funds: 30000,
     allergies: 'deadly',
     difficulty: 'Expert',
-    features: ['💰 $3,000 Budget', '☠️ Deadly Allergies', '❌ Procedure Failures']
+    features: ['💰 $30,000 Budget', '☠️ Deadly Allergies', '❌ Procedure Failures']
   }
 ];
 
