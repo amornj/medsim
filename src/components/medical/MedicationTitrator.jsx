@@ -7,12 +7,22 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { ChevronUp, ChevronDown, Play, Pause } from 'lucide-react';
 
-export default function MedicationTitrator({ drug, concentration, currentRate, onRateChange }) {
+export default function MedicationTitrator({ drug, concentration, currentRate, onRateChange, patientWeight = 70 }) {
   const [isRunning, setIsRunning] = useState(true);
   const [rate, setRate] = useState(currentRate || 0);
 
+  // List of vasopressors and inotropes that should use mcg/kg/min
+  const vasopressorInotropeList = [
+    'norepinephrine', 'levophed', 'epinephrine', 'adrenaline', 'dopamine', 
+    'dobutamine', 'phenylephrine', 'neosynephrine', 'vasopressin', 'milrinone'
+  ];
+  
+  const isVasopressorInotrope = vasopressorInotropeList.some(name => 
+    drug.toLowerCase().includes(name)
+  );
+
   const adjustRate = (delta) => {
-    const newRate = Math.max(0, Math.min(20, rate + delta));
+    const newRate = Math.max(0, Math.min(isVasopressorInotrope ? 50 : 20, rate + delta));
     setRate(newRate);
     onRateChange(newRate);
   };
@@ -65,9 +75,11 @@ export default function MedicationTitrator({ drug, concentration, currentRate, o
           </Button>
           <div className="flex-1 text-center">
             <div className="text-2xl font-bold text-indigo-700">
-              {rate.toFixed(1)}
+              {rate.toFixed(2)}
             </div>
-            <div className="text-xs text-indigo-600">ml/hr</div>
+            <div className="text-xs text-indigo-600">
+              {isVasopressorInotrope ? 'mcg/kg/min' : 'ml/hr'}
+            </div>
           </div>
           <Button
             size="sm"
@@ -95,10 +107,14 @@ export default function MedicationTitrator({ drug, concentration, currentRate, o
             value={[rate]}
             onValueChange={handleSliderChange}
             min={0}
-            max={20}
-            step={0.1}
+            max={isVasopressorInotrope ? 50 : 20}
+            step={isVasopressorInotrope ? 0.01 : 0.1}
             className="w-full"
           />
+          <div className="flex justify-between text-xs text-slate-500">
+            <span>0</span>
+            <span>{isVasopressorInotrope ? '50 mcg/kg/min' : '20 ml/hr'}</span>
+          </div>
         </div>
 
         {/* Start/Stop */}

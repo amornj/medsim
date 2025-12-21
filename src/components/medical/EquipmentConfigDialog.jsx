@@ -59,7 +59,8 @@ const EQUIPMENT_CONFIG_FIELDS = {
   syringe_pump: [
     { name: 'drug', label: 'Drug Name', type: 'text' },
     { name: 'concentration', label: 'Concentration (mcg/ml)', type: 'number' },
-    { name: 'rate', label: 'Rate (ml/hr or mcg/kg/min)', type: 'text' }
+    { name: 'rate', label: 'Rate (mcg/kg/min for vasopressors)', type: 'text' },
+    { name: 'patient_weight', label: 'Patient Weight (kg)', type: 'number' }
   ],
   ecmo: [
     { name: 'mode', label: 'ECMO Mode', type: 'select', options: ['VV-ECMO', 'VA-ECMO'] },
@@ -308,6 +309,7 @@ export default function EquipmentConfigDialog({ equipment, open, onClose, onSave
                 concentration={settings.concentration || 'N/A'}
                 currentRate={parseFloat(settings.rate) || 0}
                 onRateChange={(newRate) => setSettings({ ...settings, rate: newRate.toString() })}
+                patientWeight={parseFloat(settings.patient_weight) || 70}
               />
 
               <div className="pt-4 border-t space-y-3">
