@@ -152,6 +152,8 @@ export default function PatientVitals({ vitals: initialVitals, scenario }) {
         onClose={() => setAdvancedStatsOpen(false)}
         vitals={vitals}
         scenario={scenario}
+        equipment={scenario?.equipment || []}
+        patientHistory={scenario?.patient_history}
       />
     </>
   );
