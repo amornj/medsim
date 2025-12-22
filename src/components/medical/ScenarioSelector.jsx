@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles, Activity, Thermometer } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles, Activity, Thermometer, ChevronDown, ChevronRight } from 'lucide-react';
 import AIScenarioGenerator from './AIScenarioGenerator';
 
 const PRESET_SCENARIOS = [
@@ -755,11 +757,37 @@ const PRESET_SCENARIOS = [
   }
 ];
 
+const DIFFICULTY_CATEGORIES = {
+  very_easy: { name: '🟢 Very Easy', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 1 && s.difficultyLabel === 'Very Easy') },
+  easy: { name: '🔵 Easy', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 1 && s.difficultyLabel === 'Easy') },
+  moderate: { name: '🟡 Moderate', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 2) },
+  serious: { name: '🟠 Serious', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 3) },
+  severe: { name: '🔴 Severe', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 4) },
+  critical: { name: '🔴 Critical', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 5) },
+  life_threatening: { name: '⚫ Life-Threatening', scenarios: PRESET_SCENARIOS.filter(s => s.difficulty === 6) }
+};
+
 export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState(Object.keys(DIFFICULTY_CATEGORIES));
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Sort scenarios by difficulty
-  const sortedScenarios = [...PRESET_SCENARIOS].sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
+  const toggleCategory = (categoryKey) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryKey) 
+        ? prev.filter(k => k !== categoryKey)
+        : [...prev, categoryKey]
+    );
+  };
+
+  // Flatten scenarios for search
+  const allScenarios = PRESET_SCENARIOS;
+  const filteredScenarios = searchQuery.trim()
+    ? allScenarios.filter(s => 
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : null;
 
   // Add randomization to scenarios for dynamic gameplay
   const randomizeScenario = (scenario) => {
@@ -787,6 +815,46 @@ export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
     return 'bg-slate-500';
   };
 
+  const ScenarioCard = ({ scenario }) => (
+    <Card
+      className="hover:shadow-lg transition-all cursor-pointer group border-2"
+      onClick={() => onSelectScenario(randomizeScenario(scenario))}
+    >
+      <CardHeader className={`pb-3 ${scenario.color} border-b`}>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white rounded-lg shadow-sm">
+              <scenario.icon className="w-6 h-6" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-bold">
+                {scenario.name}
+              </CardTitle>
+              {scenario.difficultyLabel && (
+                <Badge className={`${getDifficultyColor(scenario.difficulty)} text-white mt-1`}>
+                  {scenario.difficultyLabel}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-4">
+        <p className="text-sm text-slate-600 mb-3">
+          {scenario.description}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          <Badge variant="secondary" className="text-xs">
+            HR: {scenario.vitals.heart_rate}
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            SpO₂: {scenario.vitals.spo2}%
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -812,58 +880,50 @@ export default function ScenarioSelector({ onSelectScenario, onCreateCustom }) {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sortedScenarios.map((scenario) => (
-          <Card
-            key={scenario.id}
-            className="hover:shadow-lg transition-all cursor-pointer group border-2"
-            onClick={() => onSelectScenario(scenario)}
-          >
-            <CardHeader className={`pb-3 ${scenario.color} border-b`}>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <scenario.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base font-bold">
-                      {scenario.name}
-                    </CardTitle>
-                    {scenario.difficultyLabel && (
-                      <Badge className={`${getDifficultyColor(scenario.difficulty)} text-white mt-1`}>
-                        {scenario.difficultyLabel}
-                      </Badge>
-                    )}
-                  </div>
+
+      <Input
+        placeholder="Search scenarios..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
+      <ScrollArea className="h-[600px] pr-4">
+        {filteredScenarios ? (
+          // Search results
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredScenarios.map((scenario) => (
+              <ScenarioCard key={scenario.id} scenario={scenario} />
+            ))}
+          </div>
+        ) : (
+          // Categorized view
+          <div className="space-y-3">
+            {Object.entries(DIFFICULTY_CATEGORIES).map(([categoryKey, category]) => {
+              const isExpanded = expandedCategories.includes(categoryKey);
+              return (
+                <div key={categoryKey}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleCategory(categoryKey)}
+                    className="w-full justify-start font-bold text-left hover:bg-slate-100"
+                  >
+                    {isExpanded ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+                    {category.name} ({category.scenarios.length})
+                  </Button>
+                  {isExpanded && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2 ml-6">
+                      {category.scenarios.map((scenario) => (
+                        <ScenarioCard key={scenario.id} scenario={scenario} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <p className="text-sm text-slate-600 mb-3">
-                {scenario.description}
-              </p>
-              <div className="flex flex-wrap gap-1 mb-3">
-                <Badge variant="secondary" className="text-xs">
-                  {scenario.equipment.length} Equipment
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  HR: {scenario.vitals.heart_rate}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  SpO₂: {scenario.vitals.spo2}%
-                </Badge>
-              </div>
-              <Button
-                className="w-full group-hover:bg-slate-800 transition-colors"
-                size="sm"
-                onClick={() => onSelectScenario(randomizeScenario(scenario))}
-              >
-                Load Scenario
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              );
+            })}
+          </div>
+        )}
+      </ScrollArea>
 
       <AIScenarioGenerator
         open={aiGeneratorOpen}
