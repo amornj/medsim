@@ -26,6 +26,8 @@ import { generateRandomEvent, applyEventEffects } from '../components/medical/Dy
 import TitleScreen from '../components/medical/TitleScreen';
 import GameModeSelector from '../components/medical/GameModeSelector';
 import FundsDisplay from '../components/medical/FundsDisplay';
+import { LanguageProvider } from '../components/LanguageContext';
+import LanguageSelector from '../components/LanguageSelector';
 
 // Equipment costs
 const EQUIPMENT_COSTS = {
@@ -957,22 +959,42 @@ export default function MedicalScenario() {
     }
   };
 
+  return (
+    <LanguageProvider>
+      {renderContent()}
+    </LanguageProvider>
+  );
+}
+
+function renderContent() {
   // Title Screen
   if (gameState === 'title') {
-    return <TitleScreen onPlay={() => setGameState('mode_select')} />;
+    return (
+      <>
+        <div className="fixed top-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
+        <TitleScreen onPlay={() => setGameState('mode_select')} />
+      </>
+    );
   }
 
   // Game Mode Selection
   if (gameState === 'mode_select') {
     return (
-      <GameModeSelector
-        onSelectMode={(mode) => {
-          setGameMode(mode);
-          setFunds(mode.funds);
-          setGameState('scenario_select');
-        }}
-        onBack={() => setGameState('title')}
-      />
+      <>
+        <div className="fixed top-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
+        <GameModeSelector
+          onSelectMode={(mode) => {
+            setGameMode(mode);
+            setFunds(mode.funds);
+            setGameState('scenario_select');
+          }}
+          onBack={() => setGameState('title')}
+        />
+      </>
     );
   }
 
@@ -980,6 +1002,9 @@ export default function MedicalScenario() {
   if (gameState === 'scenario_select') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-6">
+        <div className="fixed top-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <FundsDisplay funds={funds} gameMode={gameMode} />
@@ -1009,6 +1034,11 @@ export default function MedicalScenario() {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-4 md:p-6">
+        {/* Language Selector */}
+        <div className="fixed top-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
+        
         {/* Complication Alert Overlay */}
         {currentEvent && (
           <ComplicationAlert
