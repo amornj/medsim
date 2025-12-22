@@ -959,16 +959,9 @@ export default function MedicalScenario() {
     }
   };
 
-  return (
-    <LanguageProvider>
-      {renderContent()}
-    </LanguageProvider>
-  );
-}
-
-function renderContent() {
-  // Title Screen
-  if (gameState === 'title') {
+  const renderContent = () => {
+    // Title Screen
+    if (gameState === 'title') {
     return (
       <>
         <div className="fixed top-4 right-4 z-50">
@@ -1263,5 +1256,12 @@ function renderContent() {
         currentHistory={patientHistory}
       />
     </DragDropContext>
+  );
+  };
+
+  return (
+    <LanguageProvider>
+      {renderContent()}
+    </LanguageProvider>
   );
 }
