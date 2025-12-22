@@ -195,9 +195,104 @@ const DRUG_CATEGORIES = {
     drugs: [
       { name: 'Insulin Regular (Humulin R)', concentration: '100units/ml', dosage: '0.1units/kg/hr', description: 'Short-acting insulin. DKA, HHS, hyperkalemia. IV only regular insulin.' },
       { name: 'Insulin Glargine (Lantus)', concentration: '100units/ml', dosage: '0.2units/kg SC daily', description: 'Long-acting basal insulin. Never give IV. Adjust daily.' },
+      { name: 'Insulin Lispro (Humalog)', concentration: '100units/ml', dosage: '0.1-0.2units/kg SC', description: 'Rapid-acting insulin. Peaks 30-90 min. For prandial coverage.' },
+      { name: 'Insulin Aspart (NovoLog)', concentration: '100units/ml', dosage: '0.1-0.2units/kg SC', description: 'Rapid-acting insulin analog. Similar to lispro. 15 min onset.' },
       { name: 'Hydrocortisone', concentration: '100mg vial', dosage: '50mg IV q6h', description: 'Stress dose steroids. Adrenal insufficiency, septic shock, anaphylaxis.' },
+      { name: 'Prednisone', concentration: 'PO', dosage: '40-60mg PO daily', description: 'Oral corticosteroid. Asthma, COPD, autoimmune. Taper to avoid adrenal crisis.' },
       { name: 'Levothyroxine (Synthroid)', concentration: '100mcg vial', dosage: '1.6mcg/kg PO daily', description: 'Hypothyroidism. Myxedema coma: 200-500mcg IV load.' },
-      { name: 'Glucagon', concentration: '1mg vial', dosage: '1mg IM/SC/IV', description: 'Severe hypoglycemia when IV access unavailable. Beta-blocker overdose.' }
+      { name: 'Glucagon', concentration: '1mg vial', dosage: '1mg IM/SC/IV', description: 'Severe hypoglycemia when IV access unavailable. Beta-blocker overdose.' },
+      { name: 'Octreotide', concentration: '100mcg/ml', dosage: '50-100mcg SC TID', description: 'Somatostatin analog. Variceal bleeding, acromegaly, carcinoid crisis.' },
+      { name: 'Canagliflozin (Invokana)', concentration: 'PO', dosage: '100-300mg PO daily', description: 'SGLT2 inhibitor. DM, HF benefit. DKA risk, UTI, genital infections.' },
+      { name: 'Dapagliflozin (Farxiga)', concentration: 'PO', dosage: '5-10mg PO daily', description: 'SGLT2 inhibitor. DM, HF, CKD. Cardiovascular benefits.' },
+      { name: 'Liraglutide (Victoza)', concentration: '6mg/ml', dosage: '0.6-1.8mg SC daily', description: 'GLP-1 agonist. DM, obesity. CV benefit. Medullary thyroid cancer risk.' },
+      { name: 'Tirzepatide (Mounjaro)', concentration: '2.5mg/0.5ml', dosage: '5-15mg SC weekly', description: 'Dual GIP/GLP-1 agonist. Superior A1c and weight loss.' }
+    ]
+  },
+  pain_management: {
+    name: 'Advanced Pain Management',
+    color: 'bg-indigo-100 text-indigo-700 border-indigo-300',
+    drugs: [
+      { name: 'Bupivacaine', concentration: '5mg/ml', dosage: 'local infiltration', description: 'Long-acting local anesthetic. Epidural, spinal, nerve blocks. Cardiotoxic.' },
+      { name: 'Lidocaine 1-2%', concentration: '10-20mg/ml', dosage: 'local infiltration', description: 'Local anesthetic. Rapid onset, intermediate duration. Max 4.5mg/kg.' },
+      { name: 'Ropivacaine', concentration: '2mg/ml', dosage: 'epidural/nerve block', description: 'Long-acting amide anesthetic. Less cardiotoxic than bupivacaine.' },
+      { name: 'Ketamine (Sub-dissociative)', concentration: '10mg/ml', dosage: '0.1-0.3mg/kg IV', description: 'Low-dose analgesic. Severe pain, opioid-sparing. Preserves airway.' },
+      { name: 'Gabapentin (Neurontin)', concentration: 'PO', dosage: '300-900mg PO TID', description: 'Neuropathic pain. Adjunct for chronic pain. Dizziness, sedation.' },
+      { name: 'Pregabalin (Lyrica)', concentration: 'PO', dosage: '75-150mg PO BID', description: 'Neuropathic pain, fibromyalgia. More potent than gabapentin.' },
+      { name: 'Acetaminophen (Tylenol)', concentration: '10mg/ml', dosage: '1g IV/PO q6h', description: 'Non-opioid analgesic/antipyretic. Max 4g/day. Hepatotoxic in overdose.' },
+      { name: 'Ibuprofen (Motrin)', concentration: 'PO', dosage: '400-800mg PO q6h', description: 'NSAID for pain and inflammation. GI bleed and renal risks. Max 3200mg/day.' }
+    ]
+  },
+  toxicology: {
+    name: 'Toxicology & Antidotes',
+    color: 'bg-pink-100 text-pink-700 border-pink-300',
+    drugs: [
+      { name: 'N-Acetylcysteine (NAC)', concentration: '200mg/ml', dosage: '150mg/kg load, then protocol', description: 'Acetaminophen overdose. Prevents hepatotoxicity. Give within 8 hours optimal.' },
+      { name: 'Fomepizole (Antizol)', concentration: '1g/ml', dosage: '15mg/kg IV load', description: 'Ethylene glycol/methanol poisoning. Alcohol dehydrogenase inhibitor.' },
+      { name: 'Pralidoxime (2-PAM)', concentration: '50mg/ml', dosage: '1-2g IV over 30min', description: 'Organophosphate poisoning. Reactivates acetylcholinesterase. Give with atropine.' },
+      { name: 'Calcium EDTA', concentration: 'varies', dosage: '1g/m² IV q24h', description: 'Lead poisoning. Chelation therapy. Monitor calcium levels.' },
+      { name: 'Deferoxamine (Desferal)', concentration: '500mg vial', dosage: '15mg/kg/hr IV', description: 'Iron overdose. Chelates free iron. Turns urine pink/red (ferrioxamine).' },
+      { name: 'Methylene Blue', concentration: '10mg/ml', dosage: '1-2mg/kg IV over 5min', description: 'Methemoglobinemia. Turns skin/urine blue. Contraindicated in G6PD deficiency.' },
+      { name: 'Hydroxocobalamin (Cyanokit)', concentration: '2.5g vial', dosage: '5g IV over 15min', description: 'Cyanide poisoning. Binds cyanide. Turns skin/urine red.' },
+      { name: 'Dimercaprol (BAL)', concentration: '100mg/ml', dosage: '3-5mg/kg IM q4h', description: 'Heavy metal poisoning (arsenic, mercury, lead). IM only. Painful injection.' },
+      { name: 'Physostigmine', concentration: '1mg/ml', dosage: '0.5-2mg IV slowly', description: 'Anticholinergic toxidrome reversal. Risk of seizures/bradycardia.' }
+    ]
+  },
+  psychiatric: {
+    name: 'Psychiatric Medications',
+    color: 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300',
+    drugs: [
+      { name: 'Haloperidol (Haldol)', concentration: '5mg/ml', dosage: '2-10mg IM/IV', description: 'Typical antipsychotic. Acute agitation, delirium. Extrapyramidal symptoms, QT prolongation.' },
+      { name: 'Olanzapine (Zyprexa)', concentration: '10mg IM', dosage: '5-10mg IM', description: 'Atypical antipsychotic. Agitation, psychosis. Less EPS than haloperidol.' },
+      { name: 'Quetiapine (Seroquel)', concentration: 'PO', dosage: '25-800mg PO daily', description: 'Atypical antipsychotic. Psychosis, bipolar. Sedating. Metabolic syndrome risk.' },
+      { name: 'Risperidone (Risperdal)', concentration: 'PO/IM', dosage: '1-6mg PO daily', description: 'Atypical antipsychotic. Schizophrenia, bipolar. Prolactin elevation.' },
+      { name: 'Lithium Carbonate', concentration: 'PO', dosage: '300-600mg PO TID', description: 'Mood stabilizer. Bipolar disorder. Narrow therapeutic index. Monitor levels.' },
+      { name: 'Sertraline (Zoloft)', concentration: 'PO', dosage: '50-200mg PO daily', description: 'SSRI antidepressant. Depression, anxiety. Serotonin syndrome risk.' },
+      { name: 'Escitalopram (Lexapro)', concentration: 'PO', dosage: '10-20mg PO daily', description: 'SSRI antidepressant. Well-tolerated. Fewer drug interactions.' },
+      { name: 'Venlafaxine (Effexor)', concentration: 'PO', dosage: '75-225mg PO daily', description: 'SNRI antidepressant. Depression, anxiety. Hypertension at high doses.' }
+    ]
+  },
+  immunosuppressants: {
+    name: 'Immunosuppressants',
+    color: 'bg-lime-100 text-lime-700 border-lime-300',
+    drugs: [
+      { name: 'Tacrolimus (Prograf)', concentration: 'PO/IV', dosage: '0.1-0.2mg/kg/day', description: 'Calcineurin inhibitor. Organ transplant. Nephrotoxic. Monitor levels.' },
+      { name: 'Cyclosporine (Neoral)', concentration: 'PO/IV', dosage: '2-5mg/kg/day', description: 'Calcineurin inhibitor. Transplant rejection. Nephrotoxic, hypertension.' },
+      { name: 'Mycophenolate (CellCept)', concentration: 'PO/IV', dosage: '1-2g PO BID', description: 'Purine synthesis inhibitor. Transplant, lupus nephritis. GI side effects.' },
+      { name: 'Azathioprine (Imuran)', concentration: 'PO', dosage: '1-3mg/kg/day', description: 'Purine analog. Autoimmune diseases. Check TPMT enzyme. Bone marrow suppression.' },
+      { name: 'Rituximab (Rituxan)', concentration: 'IV infusion', dosage: '375mg/m² IV weekly', description: 'Anti-CD20 antibody. Lymphoma, autoimmune. Infusion reactions.' },
+      { name: 'Infliximab (Remicade)', concentration: 'IV infusion', dosage: '3-10mg/kg IV', description: 'TNF-alpha inhibitor. Crohn\'s, RA, psoriasis. Infection risk, infusion reactions.' }
+    ]
+  },
+  antivirals_antifungals: {
+    name: 'Antivirals & Antifungals',
+    color: 'bg-teal-100 text-teal-700 border-teal-300',
+    drugs: [
+      { name: 'Ganciclovir (Cytovene)', concentration: '10mg/ml', dosage: '5mg/kg IV q12h', description: 'CMV retinitis, colitis. Bone marrow suppression. Monitor CBC.' },
+      { name: 'Valganciclovir (Valcyte)', concentration: 'PO', dosage: '900mg PO BID', description: 'Oral CMV treatment. Prodrug of ganciclovir. Better bioavailability.' },
+      { name: 'Foscarnet (Foscavir)', concentration: '24mg/ml', dosage: '60mg/kg IV q8h', description: 'Resistant CMV/HSV. Nephrotoxic. Electrolyte wasting. Monitor Ca, Mg, K.' },
+      { name: 'Ribavirin (Virazole)', concentration: 'varies', dosage: 'inhaled/PO/IV', description: 'RSV in infants, Hep C combo therapy. Teratogenic. Hemolytic anemia.' },
+      { name: 'Entecavir (Baraclude)', concentration: 'PO', dosage: '0.5-1mg PO daily', description: 'Hepatitis B. Potent viral suppression. Monitor LFTs, viral load.' },
+      { name: 'Dolutegravir (Tivicay)', concentration: 'PO', dosage: '50mg PO daily', description: 'HIV integrase inhibitor. High barrier to resistance. Well-tolerated.' },
+      { name: 'Amphotericin B (AmBisome)', concentration: '5mg/ml', dosage: '3-5mg/kg IV daily', description: 'Systemic fungal infections. Nephrotoxic, infusion reactions. Premedicate.' },
+      { name: 'Voriconazole (Vfend)', concentration: '10mg/ml', dosage: '6mg/kg load, then 4mg/kg IV q12h', description: 'Aspergillosis. Visual disturbances. Monitor levels. Drug interactions.' },
+      { name: 'Posaconazole (Noxafil)', concentration: 'PO', dosage: '300mg PO BID', description: 'Fungal prophylaxis in neutropenia. Good Mucor coverage.' },
+      { name: 'Caspofungin (Cancidas)', concentration: '5mg/ml', dosage: '70mg load, then 50mg IV daily', description: 'Echinocandin. Invasive candidiasis. Well-tolerated. Limited resistance.' },
+      { name: 'Micafungin (Mycamine)', concentration: '5mg/ml', dosage: '100-150mg IV daily', description: 'Echinocandin. Candidemia, esophageal candidiasis. Minimal drug interactions.' },
+      { name: 'Flucytosine (Ancobon)', concentration: 'PO', dosage: '25mg/kg PO q6h', description: 'Cryptococcal meningitis with amphotericin. Bone marrow suppression.' }
+    ]
+  },
+  hematology_immune: {
+    name: 'Hematology & Colony Stimulating',
+    color: 'bg-red-100 text-red-700 border-red-300',
+    drugs: [
+      { name: 'Epoetin Alfa (Epogen)', concentration: '10,000units/ml', dosage: '50-100units/kg SC 3x/week', description: 'Anemia of CKD, chemo. Recombinant EPO. Hypertension, thrombosis risk.' },
+      { name: 'Darbepoetin (Aranesp)', concentration: 'varies', dosage: '0.45mcg/kg SC weekly', description: 'Long-acting EPO. Anemia of CKD. Less frequent dosing than epoetin.' },
+      { name: 'Filgrastim (Neupogen)', concentration: '300mcg/ml', dosage: '5mcg/kg SC daily', description: 'Neutropenia. G-CSF. Chemo, BMT. Bone pain common.' },
+      { name: 'Pegfilgrastim (Neulasta)', concentration: '6mg/0.6ml', dosage: '6mg SC once per cycle', description: 'Long-acting G-CSF. Single dose per chemo cycle. Bone pain.' },
+      { name: 'Romiplostim (Nplate)', concentration: 'varies', dosage: '1-10mcg/kg SC weekly', description: 'ITP. Thrombopoietin receptor agonist. Titrate to platelet count.' },
+      { name: 'Eltrombopag (Promacta)', concentration: 'PO', dosage: '25-75mg PO daily', description: 'ITP, severe aplastic anemia. Oral TPO agonist. Hepatotoxicity.' },
+      { name: 'Iron Sucrose (Venofer)', concentration: '20mg/ml', dosage: '200mg IV over 2-5min', description: 'Iron deficiency anemia. Less anaphylaxis than iron dextran.' },
+      { name: 'Ferric Carboxymaltose (Injectafer)', concentration: '50mg/ml', dosage: '750mg IV over 15min', description: 'Iron deficiency. High-dose infusion. Hypophosphatemia risk.' }
     ]
   }
 };
