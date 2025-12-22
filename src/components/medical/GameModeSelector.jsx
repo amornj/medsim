@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Shield, Target, AlertTriangle, Skull, Infinity, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const GAME_MODES = [
   {
@@ -79,53 +80,117 @@ const GAME_MODES = [
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
+
 export default function GameModeSelector({ onSelectMode, onBack }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8 text-center">
+        <motion.div 
+          className="mb-8 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <h1 className="text-4xl font-bold text-slate-800 mb-2">Select Game Mode</h1>
           <p className="text-slate-600">Choose your difficulty and resource constraints</p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {GAME_MODES.map((mode) => (
-            <Card
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {GAME_MODES.map((mode, index) => (
+            <motion.div
               key={mode.id}
-              className={`hover:shadow-xl transition-all cursor-pointer border-2 ${mode.color}`}
+              variants={cardVariants}
+              whileHover={{ scale: 1.03, y: -5 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between mb-2">
-                  <mode.icon className="w-8 h-8" />
-                  <Badge variant="outline">{mode.difficulty}</Badge>
-                </div>
-                <CardTitle className="text-xl">{mode.name}</CardTitle>
-                <p className="text-sm opacity-80 mt-1">{mode.description}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-4">
-                  {mode.features.map((feature, idx) => (
-                    <p key={idx} className="text-sm font-medium">
-                      {feature}
-                    </p>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => onSelectMode(mode)}
-                  className={`w-full ${mode.buttonColor} text-white font-bold`}
-                >
-                  Select {mode.name}
-                </Button>
-              </CardContent>
-            </Card>
+              <Card
+                className={`hover:shadow-xl transition-shadow cursor-pointer border-2 ${mode.color} h-full`}
+              >
+                <CardHeader className="pb-3">
+                  <motion.div 
+                    className="flex items-center justify-between mb-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                    >
+                      <mode.icon className="w-8 h-8" />
+                    </motion.div>
+                    <Badge variant="outline">{mode.difficulty}</Badge>
+                  </motion.div>
+                  <CardTitle className="text-xl">{mode.name}</CardTitle>
+                  <p className="text-sm opacity-80 mt-1">{mode.description}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 mb-4">
+                    {mode.features.map((feature, idx) => (
+                      <motion.p 
+                        key={idx} 
+                        className="text-sm font-medium"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 + 0.4 + idx * 0.05 }}
+                      >
+                        {feature}
+                      </motion.p>
+                    ))}
+                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      onClick={() => onSelectMode(mode)}
+                      className={`w-full ${mode.buttonColor} text-white font-bold`}
+                    >
+                      Select {mode.name}
+                    </Button>
+                  </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="text-center">
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
           <Button variant="outline" onClick={onBack}>
             Back to Title
           </Button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
