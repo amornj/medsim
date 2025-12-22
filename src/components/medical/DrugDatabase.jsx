@@ -412,20 +412,22 @@ export default function DrugDatabase({ open, onClose, onSelectDrug, pumpType }) 
             <>
               {/* Categories */}
               {!selectedCategory && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {Object.entries(DRUG_CATEGORIES).map(([key, category]) => (
-                    <Button
-                      key={key}
-                      variant="outline"
-                      className={`h-auto py-4 flex flex-col items-center gap-2 ${category.color}`}
-                      onClick={() => setSelectedCategory(key)}
-                    >
-                      <Pill className="w-5 h-5" />
-                      <span className="font-semibold text-sm">{category.name}</span>
-                      <span className="text-xs opacity-75">{category.drugs.length} drugs</span>
-                    </Button>
-                  ))}
-                </div>
+                <ScrollArea className="h-[500px]">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pr-4">
+                    {Object.entries(DRUG_CATEGORIES).map(([key, category]) => (
+                      <Button
+                        key={key}
+                        variant="outline"
+                        className={`h-auto py-4 flex flex-col items-center gap-2 ${category.color}`}
+                        onClick={() => setSelectedCategory(key)}
+                      >
+                        <Pill className="w-5 h-5" />
+                        <span className="font-semibold text-sm">{category.name}</span>
+                        <span className="text-xs opacity-75">{category.drugs.length} drugs</span>
+                      </Button>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
 
               {/* Drug List */}
