@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, Waves, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight, Gauge } from 'lucide-react';
+import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, Waves, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight, Gauge, Eye, Scissors, Bone, Microscope, Siren, Truck, Users, Airplay, Monitor, Database } from 'lucide-react';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,7 +120,11 @@ const EQUIPMENT_CATEGORIES = {
     color: 'bg-green-100 border-green-300',
     equipment: [
       { id: 'pulse_ox', name: 'Pulse Oximeter', icon: Radio, color: 'bg-green-100 text-green-700 border-green-300', description: 'SpO2 monitoring' },
-      { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' }
+      { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' },
+      { id: 'capnography', name: 'Capnography', icon: Waves, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'End-tidal CO2 monitoring' },
+      { id: 'bis_monitor', name: 'BIS Monitor', icon: Brain, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Depth of anesthesia' },
+      { id: 'nirs', name: 'NIRS (Cerebral Oximetry)', icon: Brain, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Brain tissue oxygenation' },
+      { id: 'bladder_scanner', name: 'Bladder Scanner', icon: Monitor, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Non-invasive urine volume' }
     ]
   },
   temperature_management: {
@@ -130,6 +134,66 @@ const EQUIPMENT_CATEGORIES = {
       { id: 'warming_blanket', name: 'Warming Blanket (Bair Hugger)', icon: Thermometer, color: 'bg-red-100 text-red-700 border-red-300', description: 'Active warming for hypothermia' },
       { id: 'cooling_blanket', name: 'Cooling Blanket', icon: Thermometer, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Active cooling for hyperthermia' },
       { id: 'arctic_sun', name: 'Arctic Sun (Intravascular Cooling)', icon: Thermometer, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Targeted temperature management' }
+    ]
+  },
+  imaging: {
+    name: '📷 Imaging & Diagnostics',
+    color: 'bg-indigo-100 border-indigo-300',
+    equipment: [
+      { id: 'portable_xray', name: 'Portable X-Ray', icon: ScanLine, color: 'bg-slate-100 text-slate-700 border-slate-300', description: 'Bedside radiography' },
+      { id: 'ct_scanner', name: 'CT Scanner', icon: ScanLine, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Cross-sectional imaging' },
+      { id: 'mri_scanner', name: 'MRI Scanner', icon: ScanLine, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Magnetic resonance imaging' },
+      { id: 'fluoroscopy', name: 'Fluoroscopy Machine', icon: Airplay, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Real-time X-ray imaging' },
+      { id: 'echo_machine', name: 'Echocardiography Machine', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiac ultrasound' },
+      { id: 'vascular_ultrasound', name: 'Vascular Ultrasound', icon: Activity, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'DVT detection, vascular access' }
+    ]
+  },
+  laboratory: {
+    name: '🔬 Laboratory & Point of Care',
+    color: 'bg-fuchsia-100 border-fuchsia-300',
+    equipment: [
+      { id: 'blood_gas_analyzer', name: 'Blood Gas Analyzer', icon: Droplets, color: 'bg-red-100 text-red-700 border-red-300', description: 'ABG, VBG analysis' },
+      { id: 'glucometer', name: 'Glucometer', icon: Gauge, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Point-of-care glucose' },
+      { id: 'coagulation_analyzer', name: 'Coagulation Analyzer', icon: Droplets, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'INR, PT, PTT' },
+      { id: 'lactate_meter', name: 'Lactate Meter', icon: Database, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Tissue perfusion marker' },
+      { id: 'troponin_assay', name: 'Troponin Rapid Assay', icon: Heart, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Cardiac biomarker' }
+    ]
+  },
+  trauma_transport: {
+    name: '🚑 Trauma & Transport',
+    color: 'bg-red-100 border-red-300',
+    equipment: [
+      { id: 'c_collar', name: 'Cervical Collar', icon: Bone, color: 'bg-amber-100 text-amber-700 border-amber-300', description: 'Spinal immobilization' },
+      { id: 'backboard', name: 'Backboard', icon: Bone, color: 'bg-slate-100 text-slate-700 border-slate-300', description: 'Full spinal precautions' },
+      { id: 'pelvic_binder', name: 'Pelvic Binder', icon: Bone, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Pelvic fracture stabilization' },
+      { id: 'tourniquet', name: 'Tourniquet', icon: Activity, color: 'bg-red-100 text-red-700 border-red-300', description: 'Hemorrhage control' },
+      { id: 'traction_splint', name: 'Traction Splint', icon: Bone, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Femur fracture' },
+      { id: 'chest_seal', name: 'Chest Seal', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Open pneumothorax' },
+      { id: 'fast_exam', name: 'FAST Ultrasound', icon: ScanLine, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Trauma ultrasound' }
+    ]
+  },
+  airway: {
+    name: '🫁 Airway Management',
+    color: 'bg-sky-100 border-sky-300',
+    equipment: [
+      { id: 'laryngoscope', name: 'Laryngoscope', icon: Eye, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Direct laryngoscopy' },
+      { id: 'video_laryngoscope', name: 'Video Laryngoscope (GlideScope)', icon: Monitor, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Difficult airway management' },
+      { id: 'bougie', name: 'Bougie (Gum Elastic)', icon: Syringe, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Intubation aid' },
+      { id: 'lma', name: 'Laryngeal Mask Airway (LMA)', icon: Wind, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'Supraglottic airway' },
+      { id: 'king_airway', name: 'King Airway', icon: Wind, color: 'bg-green-100 text-green-700 border-green-300', description: 'Emergency airway' },
+      { id: 'ambu_bag', name: 'Ambu Bag (BVM)', icon: Wind, color: 'bg-lime-100 text-lime-700 border-lime-300', description: 'Manual ventilation' },
+      { id: 'suction_unit', name: 'Suction Unit', icon: Droplets, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'Airway clearance' }
+    ]
+  },
+  vascular_access: {
+    name: '💉 Vascular Access',
+    color: 'bg-rose-100 border-rose-300',
+    equipment: [
+      { id: 'iv_catheter', name: 'Peripheral IV Catheter', icon: Syringe, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Standard venous access' },
+      { id: 'central_line_kit', name: 'Central Line Kit', icon: Syringe, color: 'bg-red-100 text-red-700 border-red-300', description: 'IJ, subclavian, femoral' },
+      { id: 'io_drill', name: 'Intraosseous Drill (EZ-IO)', icon: Bone, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Emergency vascular access' },
+      { id: 'picc_line', name: 'PICC Line Kit', icon: Syringe, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Peripherally inserted central' },
+      { id: 'ultrasound_vascular', name: 'Ultrasound-Guided Access', icon: ScanLine, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Enhanced line placement' }
     ]
   }
 };
