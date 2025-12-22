@@ -20,6 +20,8 @@ import { generateRandomPatientHistory } from '../components/medical/PatientHisto
 import PerformanceTracker from '../components/medical/PerformanceTracker';
 import PerformanceHistory from '../components/medical/PerformanceHistory';
 import AIScribe from '../components/medical/AIScribe';
+import ComplicationAlert from '../components/medical/ComplicationAlert';
+import { generateRandomEvent, applyEventEffects } from '../components/medical/DynamicEventSystem';
 
 import TitleScreen from '../components/medical/TitleScreen';
 import GameModeSelector from '../components/medical/GameModeSelector';
@@ -61,8 +63,59 @@ export default function MedicalScenario() {
   const [initialVitals, setInitialVitals] = useState(null);
   const [performanceHistoryOpen, setPerformanceHistoryOpen] = useState(false);
   const [aiScribeOpen, setAiScribeOpen] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [eventHistory, setEventHistory] = useState([]);
+  const [lastEventTime, setLastEventTime] = useState(0);
   
   const queryClient = useQueryClient();
+
+  // Dynamic event generation system
+  useEffect(() => {
+    if (!currentScenario || !scenarioStartTime || patientDead || gameState !== 'playing') return;
+    
+    const eventCheckInterval = setInterval(() => {
+      const elapsedTime = (Date.now() - scenarioStartTime) / 1000;
+      const timeSinceLastEvent = (Date.now() - lastEventTime) / 1000;
+      
+      // Don't generate events too frequently (minimum 90 seconds between events)
+      if (timeSinceLastEvent < 90 || currentEvent) return;
+      
+      // Calculate performance score (simplified)
+      const performanceScore = equipment.length > 0 ? 70 : 40;
+      
+      const event = generateRandomEvent(
+        currentScenario,
+        equipment,
+        elapsedTime,
+        currentScenario.difficulty || 1,
+        performanceScore
+      );
+      
+      if (event) {
+        setCurrentEvent(event);
+        setLastEventTime(Date.now());
+        setEventHistory(prev => [...prev, { ...event, timestamp: Date.now() }]);
+        
+        toast.error(`⚠️ ${event.title}`, {
+          description: event.description,
+          duration: 5000
+        });
+        
+        // Auto-apply effects after timeout if not acknowledged
+        if (event.timeLimit) {
+          event.onTimeout = () => {
+            const { newVitals, affectedEquipment } = applyEventEffects(event, vitals, equipment);
+            setVitals(newVitals);
+            setEquipment(affectedEquipment);
+            setCurrentEvent(null);
+            toast.error('Event not addressed in time - patient condition worsened');
+          };
+        }
+      }
+    }, 15000); // Check every 15 seconds
+    
+    return () => clearInterval(eventCheckInterval);
+  }, [currentScenario, equipment, vitals, scenarioStartTime, patientDead, currentEvent, lastEventTime, gameState]);
 
   // Natural vitals drift - disease progression and patient response
   useEffect(() => {
@@ -797,6 +850,37 @@ export default function MedicalScenario() {
     setScenarioStartTime(null);
     setInterventionHistory([]);
     setInitialVitals(null);
+    setCurrentEvent(null);
+    setEventHistory([]);
+    setLastEventTime(0);
+  };
+  
+  const handleEventAcknowledge = () => {
+    if (currentEvent) {
+      const { newVitals, affectedEquipment } = applyEventEffects(currentEvent, vitals, equipment);
+      
+      // Apply less severe effects when acknowledged quickly
+      if (currentEvent.vitalChanges) {
+        Object.keys(currentEvent.vitalChanges).forEach(vital => {
+          if (Array.isArray(currentEvent.vitalChanges[vital])) {
+            const [min] = currentEvent.vitalChanges[vital];
+            newVitals[vital] = Math.max(0, (vitals[vital] || 0) + min * 0.5); // 50% effect when acknowledged
+          }
+        });
+      }
+      
+      setVitals(newVitals);
+      setEquipment(affectedEquipment);
+      setCurrentEvent(null);
+      
+      toast.success('Event acknowledged - responding appropriately');
+      
+      setInterventionHistory([...interventionHistory, {
+        timestamp: Date.now(),
+        type: 'event_response',
+        action: currentEvent.title
+      }]);
+    }
   };
   
   const savePerformance = async (outcome) => {
@@ -925,6 +1009,15 @@ export default function MedicalScenario() {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-4 md:p-6">
+        {/* Complication Alert Overlay */}
+        {currentEvent && (
+          <ComplicationAlert
+            event={currentEvent}
+            onDismiss={() => setCurrentEvent(null)}
+            onAcknowledge={handleEventAcknowledge}
+          />
+        )}
+        
         <div className="max-w-[1800px] mx-auto">
           {/* Header */}
           <div className="mb-6">
