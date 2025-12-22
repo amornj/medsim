@@ -120,64 +120,7 @@ const EQUIPMENT_CATEGORIES = {
     color: 'bg-green-100 border-green-300',
     equipment: [
       { id: 'pulse_ox', name: 'Pulse Oximeter', icon: Radio, color: 'bg-green-100 text-green-700 border-green-300', description: 'SpO2 monitoring' },
-      { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' },
-      { id: 'capnography', name: 'Capnography Monitor', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'End-tidal CO2 monitoring' },
-      { id: 'bispectral_index', name: 'BIS Monitor', icon: Brain, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Depth of anesthesia' },
-      { id: 'glucometer', name: 'Glucometer', icon: Droplets, color: 'bg-red-100 text-red-700 border-red-300', description: 'Blood glucose monitoring' }
-    ]
-  },
-  imaging: {
-    name: '🔬 Imaging & Diagnostics',
-    color: 'bg-indigo-100 border-indigo-300',
-    equipment: [
-      { id: 'portable_xray', name: 'Portable X-Ray', icon: ScanLine, color: 'bg-slate-100 text-slate-700 border-slate-300', description: 'Bedside radiography' },
-      { id: 'echo_machine', name: 'Echocardiogram', icon: Heart, color: 'bg-red-100 text-red-700 border-red-300', description: 'Cardiac ultrasound' },
-      { id: 'doppler_ultrasound', name: 'Doppler Ultrasound', icon: Waves, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Blood flow assessment' },
-      { id: 'ekg_machine', name: '12-Lead EKG', icon: Activity, color: 'bg-green-100 text-green-700 border-green-300', description: 'Cardiac rhythm analysis' },
-      { id: 'portable_ct', name: 'Portable CT Scanner', icon: ScanLine, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Bedside CT imaging' }
-    ]
-  },
-  airway: {
-    name: '🫁 Airway Management',
-    color: 'bg-sky-100 border-sky-300',
-    equipment: [
-      { id: 'laryngoscope', name: 'Video Laryngoscope', icon: Wind, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Intubation visualization' },
-      { id: 'bougie', name: 'Gum Elastic Bougie', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Intubation aid' },
-      { id: 'lma', name: 'Laryngeal Mask Airway', icon: Wind, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'Supraglottic airway' },
-      { id: 'ambu_bag', name: 'Bag Valve Mask (Ambu)', icon: Wind, color: 'bg-green-100 text-green-700 border-green-300', description: 'Manual ventilation' },
-      { id: 'cricothyrotomy_kit', name: 'Cricothyrotomy Kit', icon: Zap, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Emergency airway' },
-      { id: 'suction_unit', name: 'Suction Unit', icon: Droplets, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Airway clearance' }
-    ]
-  },
-  vascular_access: {
-    name: '💉 Vascular Access',
-    color: 'bg-rose-100 border-rose-300',
-    equipment: [
-      { id: 'central_line_kit', name: 'Central Line Kit', icon: Syringe, color: 'bg-red-100 text-red-700 border-red-300', description: 'Central venous access' },
-      { id: 'picc_line', name: 'PICC Line', icon: Syringe, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Peripherally inserted central' },
-      { id: 'io_drill', name: 'Intraosseous Drill', icon: Zap, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Emergency vascular access' },
-      { id: 'ultrasound_guided_iv', name: 'US-Guided IV Kit', icon: ScanLine, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Difficult IV access' }
-    ]
-  },
-  wound_care: {
-    name: '🩹 Wound Care & Drainage',
-    color: 'bg-amber-100 border-amber-300',
-    equipment: [
-      { id: 'wound_vac', name: 'Wound VAC', icon: Droplets, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Negative pressure therapy' },
-      { id: 'chest_tube', name: 'Chest Tube', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Thoracic drainage' },
-      { id: 'ng_tube', name: 'Nasogastric Tube', icon: Droplets, color: 'bg-green-100 text-green-700 border-green-300', description: 'Gastric decompression' },
-      { id: 'foley_catheter', name: 'Foley Catheter', icon: Droplets, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Urinary drainage' },
-      { id: 'jp_drain', name: 'Jackson-Pratt Drain', icon: Droplets, color: 'bg-red-100 text-red-700 border-red-300', description: 'Surgical wound drainage' }
-    ]
-  },
-  lab_testing: {
-    name: '🧪 Point-of-Care Testing',
-    color: 'bg-violet-100 border-violet-300',
-    equipment: [
-      { id: 'istat', name: 'i-STAT Analyzer', icon: Activity, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'Bedside blood gas/chemistry' },
-      { id: 'coagulation_monitor', name: 'Coagulation Monitor', icon: Droplets, color: 'bg-red-100 text-red-700 border-red-300', description: 'INR/PT monitoring' },
-      { id: 'lactate_meter', name: 'Lactate Meter', icon: Activity, color: 'bg-orange-100 text-orange-700 border-orange-300', description: 'Sepsis monitoring' },
-      { id: 'abg_machine', name: 'ABG Machine', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Arterial blood gas' }
+      { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' }
     ]
   },
   temperature_management: {
