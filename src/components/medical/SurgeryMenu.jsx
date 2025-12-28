@@ -175,6 +175,7 @@ export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
