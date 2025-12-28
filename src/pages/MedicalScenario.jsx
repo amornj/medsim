@@ -25,6 +25,7 @@ import { generateRandomEvent, applyEventEffects } from '../components/medical/Dy
 
 import TitleScreen from '../components/medical/TitleScreen';
 import GameModeSelector from '../components/medical/GameModeSelector';
+import DoctorSelector from '../components/medical/DoctorSelector';
 import FundsDisplay from '../components/medical/FundsDisplay';
 import { LanguageProvider } from '../components/LanguageContext';
 import LanguageSelector from '../components/LanguageSelector';
@@ -46,8 +47,9 @@ const EQUIPMENT_COSTS = {
 };
 
 export default function MedicalScenario() {
-  const [gameState, setGameState] = useState('title'); // 'title', 'mode_select', 'scenario_select', 'playing'
+  const [gameState, setGameState] = useState('title'); // 'title', 'mode_select', 'doctor_select', 'scenario_select', 'playing'
   const [gameMode, setGameMode] = useState(null);
+  const [selectedDoctors, setSelectedDoctors] = useState([]);
   const [funds, setFunds] = useState(0);
   const [showScenarioSelector, setShowScenarioSelector] = useState(false);
   const [currentScenario, setCurrentScenario] = useState(null);
@@ -243,12 +245,13 @@ export default function MedicalScenario() {
           }
           
           // Smoking history - impaired oxygenation
-          if (patientHistory.social_history?.smoking && patientHistory.social_history.smoking.toLowerCase().includes('pack')) {
+          const isPediatrician = selectedDoctors.some(doc => doc.id === 'pediatrician');
+          if (!isPediatrician && patientHistory.social_history?.smoking && patientHistory.social_history.smoking.toLowerCase().includes('pack')) {
             newVitals.spo2 = Math.max(90, newVitals.spo2 - 0.03);
           }
           
           // Alcohol use - affects liver metabolism and coagulation
-          if (patientHistory.social_history?.alcohol && patientHistory.social_history.alcohol.toLowerCase().includes('heavy')) {
+          if (!isPediatrician && patientHistory.social_history?.alcohol && patientHistory.social_history.alcohol.toLowerCase().includes('heavy')) {
             if (condition === 'trauma') {
               newVitals.blood_pressure_systolic = Math.max(60, newVitals.blood_pressure_systolic - 0.05);
             }
@@ -691,18 +694,24 @@ export default function MedicalScenario() {
     setVitals(scenario.vitals);
     setInitialVitals({ ...scenario.vitals });
     
-    // Handle patient history based on game mode
+    // Handle patient history based on game mode and doctor selection
     let history = scenario.patient_history;
+    const pediatricianSelected = selectedDoctors.some(doc => doc.id === 'pediatrician');
+    const historyOptions = {
+      no_smoking: pediatricianSelected,
+      no_alcohol: pediatricianSelected,
+      young_age: pediatricianSelected,
+    };
+
     if (!history) {
+      history = generateRandomPatientHistory(historyOptions);
+      
       if (gameMode.allergies === 'none' || gameMode.allergies === 'disabled') {
-        history = { ...generateRandomPatientHistory(), allergies: [] };
+        history.allergies = [];
       } else if (gameMode.allergies === 'fixed') {
-        history = generateRandomPatientHistory();
+        // Keep generated allergies
       } else if (gameMode.allergies === 'random') {
-        history = generateRandomPatientHistory();
         if (Math.random() > 0.5) history.allergies = [];
-      } else {
-        history = generateRandomPatientHistory();
       }
     }
     setPatientHistory(history);
@@ -760,8 +769,12 @@ export default function MedicalScenario() {
         return;
       }
       
-      // Check procedure failure (specialist mode)
-      if (gameMode?.id === 'specialist' && Math.random() < 0.15) {
+      // Check procedure failure (specialist mode and surgeon perk)
+      let failureChance = 0.15;
+      const surgeonPerk = selectedDoctors.find(doc => doc.id === 'surgeon')?.effect.surgeryFailureReduction || 0;
+      failureChance = Math.max(0, failureChance - surgeonPerk);
+
+      if (gameMode?.id === 'specialist' && Math.random() < failureChance) {
         toast.error('Equipment malfunction! Try again.', {
           description: 'Funds deducted but equipment failed'
         });
@@ -904,13 +917,32 @@ export default function MedicalScenario() {
       : null;
     
     // Calculate scores
-    const speedScore = timeToFirst < 30 ? 25 : timeToFirst < 60 ? 20 : timeToFirst < 120 ? 15 : 10;
-    const bestPracticesScore = Math.min(35, equipment.length * 5);
-    const resourceScore = Math.max(0, 20 - Math.abs(equipment.length - 5) * 2);
+    let speedScore = timeToFirst < 30 ? 25 : timeToFirst < 60 ? 20 : timeToFirst < 120 ? 15 : 10;
+    let bestPracticesScore = Math.min(35, equipment.length * 5);
+    let resourceScore = Math.max(0, 20 - Math.abs(equipment.length - 5) * 2);
     
     let outcomeScore = 0;
     if (outcome === 'patient_survived') outcomeScore = 20;
     else if (outcome === 'patient_died') outcomeScore = 5;
+
+    // Apply doctor-specific perks to scores
+    selectedDoctors.forEach(doctor => {
+      if (doctor.id === 'cardiologist' && currentScenario.condition?.includes('cardiac')) {
+        outcomeScore += (doctor.effect.cardiacOutcomeBonus * 20);
+      }
+      if (doctor.id === 'neurologist' && currentScenario.condition?.includes('stroke')) {
+        outcomeScore += (doctor.effect.neuroOutcomeBonus * 20);
+      }
+      if (doctor.id === 'pediatrician' && patientHistory?.social_history?.age < 18) {
+        outcomeScore += (doctor.effect.pediatricComplicationReduction * 20);
+      }
+      if (doctor.id === 'hepatologist' && currentScenario.condition?.includes('liver')) {
+        outcomeScore += (doctor.effect.liverOutcomeBonus * 20);
+      }
+      if (doctor.id === 'pulmonologist' && currentScenario.condition?.includes('respiratory')) {
+        outcomeScore += (doctor.effect.lungOutcomeBonus * 20);
+      }
+    });
     
     const totalScore = speedScore + bestPracticesScore + resourceScore + outcomeScore;
     
@@ -983,9 +1015,28 @@ export default function MedicalScenario() {
           onSelectMode={(mode) => {
             setGameMode(mode);
             setFunds(mode.funds);
-            setGameState('scenario_select');
+            setGameState('doctor_select');
           }}
           onBack={() => setGameState('title')}
+        />
+      </>
+    );
+  }
+
+  // Doctor Type Selection
+  if (gameState === 'doctor_select') {
+    return (
+      <>
+        <div className="fixed top-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
+        <DoctorSelector
+          onSelectDoctors={(doctors) => {
+            setSelectedDoctors(doctors);
+            setGameState('scenario_select');
+          }}
+          onBack={() => setGameState('mode_select')}
+          gameMode={gameMode}
         />
       </>
     );
@@ -1014,9 +1065,12 @@ export default function MedicalScenario() {
             onSelectScenario={handleSelectScenario}
             onCreateCustom={handleCreateCustom}
           />
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center flex gap-2 justify-center">
             <Button variant="outline" onClick={() => setGameState('mode_select')}>
               Change Game Mode
+            </Button>
+            <Button variant="outline" onClick={() => setGameState('doctor_select')}>
+              Change Doctor(s)
             </Button>
           </div>
         </div>
@@ -1031,6 +1085,14 @@ export default function MedicalScenario() {
         <div className="fixed top-4 right-4 z-50">
           <LanguageSelector />
         </div>
+        
+        {/* Selected Doctors Display */}
+        {selectedDoctors.length > 0 && (
+          <div className="fixed bottom-4 right-4 z-50 p-3 bg-blue-600 text-white rounded-lg shadow-lg max-w-xs">
+            <p className="font-bold text-sm mb-1">Active Doctors:</p>
+            <p className="text-xs">{selectedDoctors.map(d => d.name).join(', ')}</p>
+          </div>
+        )}
         
         {/* Complication Alert Overlay */}
         {currentEvent && (
@@ -1228,12 +1290,26 @@ export default function MedicalScenario() {
               type: `surgery_${procedureId}`,
               action: 'performed'
             }]);
-            // Improve vitals after successful surgery
+            // Apply doctor perks for vital improvement after successful surgery
+            let hrBoost = 10;
+            let bpBoost = 15;
+            let spo2Boost = 5;
+
+            selectedDoctors.forEach(doctor => {
+              if (doctor.id === 'cardiologist' && procedureId.includes('heart')) {
+                hrBoost += 5;
+                bpBoost += 5;
+              }
+              if (doctor.id === 'neurologist' && procedureId.includes('brain')) {
+                spo2Boost += 2;
+              }
+            });
+
             setVitals(prev => ({
               ...prev,
-              heart_rate: Math.min(100, prev.heart_rate + 10),
-              blood_pressure_systolic: Math.min(120, prev.blood_pressure_systolic + 15),
-              spo2: Math.min(100, prev.spo2 + 5)
+              heart_rate: Math.min(100, prev.heart_rate + hrBoost),
+              blood_pressure_systolic: Math.min(120, prev.blood_pressure_systolic + bpBoost),
+              spo2: Math.min(100, prev.spo2 + spo2Boost)
             }));
           }
         }}

@@ -47,7 +47,7 @@ const OCCUPATIONS = [
   'Healthcare administrator', 'IT professional', 'Restaurant server', 'Mechanic'
 ];
 
-export function generateRandomPatientHistory() {
+export function generateRandomPatientHistory(options = {}) {
   // Random number of conditions (0-4)
   const numConditions = Math.floor(Math.random() * 5);
   const conditions = [];
@@ -78,13 +78,29 @@ export function generateRandomPatientHistory() {
     }
   }
 
+  // Age for pediatrician
+  const age = options.young_age ? Math.floor(Math.random() * 15) + 1 : Math.floor(Math.random() * (90 - 18 + 1)) + 18;
+  
+  // Smoking status
+  let smokingStatus = SMOKING_STATUS[Math.floor(Math.random() * SMOKING_STATUS.length)];
+  if (options.no_smoking) {
+    smokingStatus = 'Never smoker';
+  }
+
+  // Alcohol use
+  let alcoholUse = ALCOHOL_USE[Math.floor(Math.random() * ALCOHOL_USE.length)];
+  if (options.no_alcohol) {
+    alcoholUse = 'Denies';
+  }
+
   return {
     past_medical: conditions,
     current_medications: medications,
     allergies: allergies,
     social_history: {
-      smoking: SMOKING_STATUS[Math.floor(Math.random() * SMOKING_STATUS.length)],
-      alcohol: ALCOHOL_USE[Math.floor(Math.random() * ALCOHOL_USE.length)],
+      age: age,
+      smoking: smokingStatus,
+      alcohol: alcoholUse,
       drugs: Math.random() > 0.9 ? 'Marijuana occasionally' : 'Denies',
       occupation: OCCUPATIONS[Math.floor(Math.random() * OCCUPATIONS.length)]
     }
