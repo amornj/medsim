@@ -8,9 +8,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Scissors, Heart, Activity, Zap, Droplets, Brain } from 'lucide-react';
+import { Scissors, Heart, Activity, Zap, Droplets, Brain, Gamepad2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import SurgicalMinigame from './SurgicalMinigame';
 
 const SURGICAL_PROCEDURES = [
   {
@@ -137,6 +138,8 @@ const SURGICAL_PROCEDURES = [
 
 export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
   const [selectedProcedure, setSelectedProcedure] = useState(null);
+  const [minigameOpen, setMinigameOpen] = useState(false);
+  const [selectedOrgan, setSelectedOrgan] = useState(null);
 
   const handlePerformSurgery = (procedure) => {
     toast.success(`Starting ${procedure.name}...`, {
@@ -155,6 +158,20 @@ export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
       }
       onClose();
     }, 2000);
+  };
+
+  const handleMinigame = (procedure) => {
+    const organKey = procedure.id.includes('craniotomy') || procedure.id.includes('burr_hole') || procedure.id.includes('ventriculostomy') ? 'brain' :
+                     procedure.id.includes('thoracotomy') || procedure.id.includes('pericardiocentesis') ? 'heart' :
+                     procedure.id.includes('lung') ? 'lungs_left' :
+                     procedure.id.includes('laparotomy') ? 'liver' : 'heart';
+    
+    setSelectedOrgan(organKey);
+    setMinigameOpen(true);
+  };
+
+  const handleMinigameComplete = () => {
+    setMinigameOpen(false);
   };
 
   return (
@@ -225,16 +242,31 @@ export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
                     </div>
                   </div>
 
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePerformSurgery(procedure);
-                    }}
-                  >
-                    Perform Procedure
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePerformSurgery(procedure);
+                      }}
+                    >
+                      Perform Procedure
+                    </Button>
+                    {['craniotomy', 'burr_hole', 'ventriculostomy', 'thoracotomy', 'pericardiocentesis', 'lung_repair', 'laparotomy'].some(o => procedure.id.includes(o)) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMinigame(procedure);
+                        }}
+                        title="Play Interactive Surgery"
+                      >
+                        <Gamepad2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
                 </Card>
               </motion.div>
             );
@@ -243,11 +275,13 @@ export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
       </DialogContent>
     </Dialog>
 
-    <SurgicalMinigame
-      open={minigameOpen}
-      onClose={handleMinigameComplete}
-      targetOrgan={selectedOrgan}
-    />
-  </>
+    {minigameOpen && (
+      <SurgicalMinigame
+        open={minigameOpen}
+        onClose={handleMinigameComplete}
+        targetOrgan={selectedOrgan}
+      />
+    )}
+    </>
   );
 }
