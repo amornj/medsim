@@ -242,5 +242,12 @@ export default function SurgeryMenu({ open, onClose, onPerformSurgery }) {
         </div>
       </DialogContent>
     </Dialog>
+
+    <SurgicalMinigame
+      open={minigameOpen}
+      onClose={handleMinigameComplete}
+      targetOrgan={selectedOrgan}
+    />
+  </>
   );
 }
