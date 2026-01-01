@@ -14,6 +14,36 @@ export const DOCTOR_TYPES = [
     effect: { cardiacOutcomeBonus: 0.15, surgerySuccessBonus: 0.05 }
   },
   {
+    id: 'interventional_cardiologist', name: 'Interventional Cardiologist', specialization: 'Heart', icon: Heart,
+    perk: 'Catheter-based procedures. +20% acute coronary intervention success, 15% lower complications.',
+    effect: { coronaryInterventionBonus: 0.20, complicationReduction: 0.15 }
+  },
+  {
+    id: 'electrophysiologist', name: 'Electrophysiologist', specialization: 'Heart', icon: Activity,
+    perk: 'Arrhythmia treatment. 25% lower arrhythmia recurrence, +20% device optimization.',
+    effect: { arrhythmiaControl: 0.25, deviceOptimization: 0.20 }
+  },
+  {
+    id: 'heart_failure_cardiologist', name: 'Heart Failure Cardiologist', specialization: 'Heart', icon: Heart,
+    perk: 'Advanced HF management. +15% survival in heart failure, 20% lower readmission.',
+    effect: { hfSurvivalBonus: 0.15, readmissionReduction: 0.20 }
+  },
+  {
+    id: 'imaging_cardiologist', name: 'Imaging Cardiologist', specialization: 'Heart', icon: Eye,
+    perk: 'Cardiac imaging expert. +30% diagnostic accuracy, 20% lower misdiagnosis risk.',
+    effect: { diagnosticAccuracy: 0.30, misdiagnosisReduction: 0.20 }
+  },
+  {
+    id: 'preventive_cardiologist', name: 'Preventive Cardiologist', specialization: 'Heart', icon: Heart,
+    perk: 'Risk reduction focus. 25% reduction in future cardiac events, +20% long-term stability.',
+    effect: { eventReduction: 0.25, longTermStability: 0.20 }
+  },
+  {
+    id: 'adult_congenital_cardiologist', name: 'Adult Congenital Cardiologist', specialization: 'Heart', icon: Heart,
+    perk: 'Congenital heart disease. +20% long-term survival, 15% lower complication rate.',
+    effect: { congenitalSurvivalBonus: 0.20, complicationReduction: 0.15 }
+  },
+  {
     id: 'dermatologist', name: 'Dermatologist', specialization: 'Skin', icon: UserCheck,
     perk: 'Reduced risk of skin-related complications from procedures.',
     effect: { skinComplicationReduction: 0.10 }
@@ -24,9 +54,69 @@ export const DOCTOR_TYPES = [
     effect: { orthoSurgerySuccessBonus: 0.10 }
   },
   {
+    id: 'trauma_orthopedist', name: 'Trauma Orthopedist', specialization: 'Bone', icon: Activity,
+    perk: 'Fractures & injuries. 20% faster bone union, +15% limb salvage rate.',
+    effect: { boneUnionSpeed: 0.20, limbSalvage: 0.15 }
+  },
+  {
+    id: 'spine_surgeon', name: 'Spine Surgeon', specialization: 'Spine', icon: Activity,
+    perk: 'Spine surgery. 20% lower nerve injury risk, +15% pain resolution.',
+    effect: { nerveInjuryReduction: 0.20, painResolution: 0.15 }
+  },
+  {
+    id: 'sports_medicine_orthopedist', name: 'Sports Medicine Orthopedist', specialization: 'Sports', icon: Activity,
+    perk: 'Athletic injuries. 30% faster return to sport, 15% reinjury reduction.',
+    effect: { recoverySpeed: 0.30, reinjuryReduction: 0.15 }
+  },
+  {
+    id: 'joint_replacement', name: 'Joint Replacement Specialist', specialization: 'Joints', icon: Activity,
+    perk: 'Hip/knee arthroplasty. 25% implant longevity, 20% faster mobility recovery.',
+    effect: { implantLongevity: 0.25, mobilityRecovery: 0.20 }
+  },
+  {
+    id: 'hand_surgeon', name: 'Hand Surgeon', specialization: 'Hand', icon: Activity,
+    perk: 'Hand & wrist surgery. +25% fine motor recovery, 15% lower stiffness rate.',
+    effect: { fineMotorRecovery: 0.25, stiffnessReduction: 0.15 }
+  },
+  {
+    id: 'pediatric_orthopedist', name: 'Pediatric Orthopedist', specialization: 'Bone', icon: UserCheck,
+    perk: 'Childrens bone disorders. 20% growth preservation, 15% deformity correction.',
+    effect: { growthPreservation: 0.20, deformityCorrection: 0.15 }
+  },
+  {
     id: 'neurologist', name: 'Neurologist', specialization: 'Brain', icon: Brain,
     perk: 'Improved outcomes for neurological scenarios. +15% neuro outcome bonus.',
     effect: { neuroOutcomeBonus: 0.15, surgerySuccessBonus: 0.05 }
+  },
+  {
+    id: 'stroke_neurologist', name: 'Stroke Neurologist', specialization: 'Brain', icon: Brain,
+    perk: 'Acute stroke care. +25% good neurological outcome, 20% faster reperfusion decisions.',
+    effect: { strokeOutcomeBonus: 0.25, reperfusionSpeed: 0.20 }
+  },
+  {
+    id: 'epileptologist', name: 'Epileptologist', specialization: 'Brain', icon: Brain,
+    perk: 'Seizure disorders. 30% seizure reduction, 15% lower medication failure.',
+    effect: { seizureReduction: 0.30, medicationFailureReduction: 0.15 }
+  },
+  {
+    id: 'neurocritical_care', name: 'Neurocritical Care Specialist', specialization: 'Brain', icon: Brain,
+    perk: 'ICU neuro patients. +20% ICU survival, 15% lower secondary brain injury.',
+    effect: { neuroIcuSurvival: 0.20, brainInjuryReduction: 0.15 }
+  },
+  {
+    id: 'movement_disorder', name: 'Movement Disorder Specialist', specialization: 'Brain', icon: Brain,
+    perk: 'Parkinsons, tremor. 25% symptom control, +15% functional mobility.',
+    effect: { symptomControl: 0.25, mobilityImprovement: 0.15 }
+  },
+  {
+    id: 'ms_specialist', name: 'MS Specialist', specialization: 'Brain', icon: Brain,
+    perk: 'Multiple sclerosis. 20% slower disease progression, +15% relapse prevention.',
+    effect: { progressionSlowing: 0.20, relapsePrevention: 0.15 }
+  },
+  {
+    id: 'dementia_specialist', name: 'Dementia Specialist', specialization: 'Brain', icon: Brain,
+    perk: 'Cognitive disorders. 15% slower cognitive decline, +10% quality-of-life preservation.',
+    effect: { cognitiveDeclineSlowing: 0.15, qualityOfLife: 0.10 }
   },
   {
     id: 'pediatrician', name: 'Pediatrician', specialization: 'Child', icon: UserCheck,
@@ -49,6 +139,41 @@ export const DOCTOR_TYPES = [
     effect: { surgeryFailureReduction: 0.15, complicationReduction: 0.05 }
   },
   {
+    id: 'general_surgeon', name: 'General Surgeon', specialization: 'Surgery', icon: Scissors,
+    perk: 'Abdominal & soft-tissue surgery. 15% lower failure, +10% faster recovery.',
+    effect: { surgeryFailureReduction: 0.15, recoverySpeed: 0.10 }
+  },
+  {
+    id: 'trauma_surgeon', name: 'Trauma Surgeon', specialization: 'Trauma', icon: Scissors,
+    perk: 'Emergency life-saving surgery. +25% survival in trauma, 20% faster hemorrhage control.',
+    effect: { traumaSurvivalBonus: 0.25, hemorrhageControl: 0.20 }
+  },
+  {
+    id: 'vascular_surgeon', name: 'Vascular Surgeon', specialization: 'Vascular', icon: Activity,
+    perk: 'Arteries & veins surgery. 20% lower ischemic complications, +15% graft patency.',
+    effect: { ischemicReduction: 0.20, graftPatency: 0.15 }
+  },
+  {
+    id: 'colorectal_surgeon', name: 'Colorectal Surgeon', specialization: 'Bowel', icon: Scissors,
+    perk: 'Colon & rectal surgery. 15% lower leak risk, +10% bowel function recovery.',
+    effect: { leakReduction: 0.15, bowelRecovery: 0.10 }
+  },
+  {
+    id: 'hepatobiliary_surgeon', name: 'Hepatobiliary Surgeon', specialization: 'Liver', icon: Droplets,
+    perk: 'Liver, pancreas, biliary surgery. 20% lower liver failure, +15% resection success.',
+    effect: { liverFailureReduction: 0.20, resectionSuccess: 0.15 }
+  },
+  {
+    id: 'cardiothoracic_surgeon', name: 'Cardiothoracic Surgeon', specialization: 'Heart/Lung', icon: Heart,
+    perk: 'Heart, lung, aorta surgery. 25% lower mortality, +20% high-risk operation success, 15% lower ICU complications.',
+    effect: { cardiacSurgeryMortalityReduction: 0.25, highRiskSuccess: 0.20, icuComplicationReduction: 0.15 }
+  },
+  {
+    id: 'minimally_invasive_surgeon', name: 'Minimally Invasive Surgeon', specialization: 'Laparoscopy', icon: Scissors,
+    perk: 'Laparoscopic/robotic surgery. 30% faster recovery, 20% lower postoperative pain.',
+    effect: { recoverySpeed: 0.30, painReduction: 0.20 }
+  },
+  {
     id: 'oncologist', name: 'Oncologist', specialization: 'Cancer', icon: FlaskConical,
     perk: 'Better management of cancer-related complications.',
     effect: { oncologyManagementBonus: 0.10 }
@@ -67,6 +192,126 @@ export const DOCTOR_TYPES = [
     id: 'pulmonologist', name: 'Pulmonologist', specialization: 'Lungs', icon: Activity,
     perk: 'Better outcomes for respiratory conditions. +15% respiratory bonus.',
     effect: { lungOutcomeBonus: 0.15 }
+  },
+  {
+    id: 'interventional_pulmonologist', name: 'Interventional Pulmonologist', specialization: 'Lungs', icon: Activity,
+    perk: 'Bronchoscopy, airway procedures. 25% diagnostic yield increase, 15% lower airway complications.',
+    effect: { diagnosticYield: 0.25, airwayComplicationReduction: 0.15 }
+  },
+  {
+    id: 'critical_care_pulmonologist', name: 'Critical Care Pulmonologist', specialization: 'Lungs', icon: Activity,
+    perk: 'ICU respiratory failure. +20% ventilator survival, 15% faster weaning success.',
+    effect: { ventilatorSurvival: 0.20, weaningSuccess: 0.15 }
+  },
+  {
+    id: 'sleep_medicine', name: 'Sleep Medicine Specialist', specialization: 'Sleep', icon: Activity,
+    perk: 'Sleep apnea. 30% symptom improvement, 20% adherence boost.',
+    effect: { symptomImprovement: 0.30, adherenceBoost: 0.20 }
+  },
+  {
+    id: 'pulmonary_hypertension', name: 'Pulmonary Hypertension Specialist', specialization: 'Lungs', icon: Heart,
+    perk: 'PAH management. 20% functional class improvement, 15% survival increase.',
+    effect: { functionalImprovement: 0.20, survivalIncrease: 0.15 }
+  },
+  {
+    id: 'ild_specialist', name: 'ILD Specialist', specialization: 'Lungs', icon: Activity,
+    perk: 'Interstitial lung disease. 15% slower fibrosis progression, +10% oxygen independence.',
+    effect: { fibrosisSlowing: 0.15, oxygenIndependence: 0.10 }
+  },
+  {
+    id: 'lung_transplant', name: 'Lung Transplant Specialist', specialization: 'Lungs', icon: Activity,
+    perk: 'Lung transplantation. 20% graft survival increase, 15% rejection reduction.',
+    effect: { graftSurvival: 0.20, rejectionReduction: 0.15 }
+  },
+  {
+    id: 'medical_dermatologist', name: 'Medical Dermatologist', specialization: 'Skin', icon: UserCheck,
+    perk: '30% diagnostic accuracy boost in skin conditions.',
+    effect: { dermatologyDiagnostic: 0.30 }
+  },
+  {
+    id: 'cosmetic_dermatologist', name: 'Cosmetic Dermatologist', specialization: 'Skin', icon: UserCheck,
+    perk: '+25% cosmetic outcome quality.',
+    effect: { cosmeticOutcome: 0.25 }
+  },
+  {
+    id: 'surgical_dermatologist', name: 'Surgical Dermatologist', specialization: 'Skin', icon: Scissors,
+    perk: '20% lower procedural complications in dermatologic surgery.',
+    effect: { dermatologySurgeryComplication: 0.20 }
+  },
+  {
+    id: 'mohs_surgeon', name: 'Mohs Surgeon', specialization: 'Skin', icon: Scissors,
+    perk: '35% cancer clearance precision.',
+    effect: { cancerClearance: 0.35 }
+  },
+  {
+    id: 'dermatopathologist', name: 'Dermatopathologist', specialization: 'Skin', icon: Eye,
+    perk: '40% histologic diagnostic accuracy.',
+    effect: { histologicAccuracy: 0.40 }
+  },
+  {
+    id: 'pediatric_dermatologist', name: 'Pediatric Dermatologist', specialization: 'Skin', icon: UserCheck,
+    perk: '20% treatment tolerability in children.',
+    effect: { pediatricTolerability: 0.20 }
+  },
+  {
+    id: 'retina_specialist', name: 'Retina Specialist', specialization: 'Eyes', icon: Eye,
+    perk: '25% vision preservation in retinal conditions.',
+    effect: { visionPreservation: 0.25 }
+  },
+  {
+    id: 'glaucoma_specialist', name: 'Glaucoma Specialist', specialization: 'Eyes', icon: Eye,
+    perk: '20% IOP control improvement.',
+    effect: { iopControl: 0.20 }
+  },
+  {
+    id: 'cornea_surgeon', name: 'Cornea Surgeon', specialization: 'Eyes', icon: Eye,
+    perk: '30% graft clarity success in corneal transplants.',
+    effect: { graftClarity: 0.30 }
+  },
+  {
+    id: 'neuro_ophthalmologist', name: 'Neuro-Ophthalmologist', specialization: 'Eyes', icon: Eye,
+    perk: '25% neurologic-vision diagnostic accuracy.',
+    effect: { neuroVisionDiagnostic: 0.25 }
+  },
+  {
+    id: 'pediatric_ophthalmologist', name: 'Pediatric Ophthalmologist', specialization: 'Eyes', icon: Eye,
+    perk: '20% amblyopia correction success.',
+    effect: { amblyopiaCorrection: 0.20 }
+  },
+  {
+    id: 'oculoplastic_surgeon', name: 'Oculoplastic Surgeon', specialization: 'Eyes', icon: Scissors,
+    perk: '25% functional-cosmetic balance in eye surgery.',
+    effect: { oculoplasticBalance: 0.25 }
+  },
+  {
+    id: 'addiction_psychiatrist', name: 'Addiction Psychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '30% relapse reduction in substance use disorders.',
+    effect: { relapseReduction: 0.30 }
+  },
+  {
+    id: 'forensic_psychiatrist', name: 'Forensic Psychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '25% assessment reliability in legal cases.',
+    effect: { assessmentReliability: 0.25 }
+  },
+  {
+    id: 'consultation_liaison', name: 'Consultation-Liaison Psychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '20% delirium resolution in medical patients.',
+    effect: { deliriumResolution: 0.20 }
+  },
+  {
+    id: 'child_psychiatrist', name: 'Child Psychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '25% symptom stabilization in pediatric mental health.',
+    effect: { pediatricStabilization: 0.25 }
+  },
+  {
+    id: 'geriatric_psychiatrist', name: 'Geriatric Psychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '20% behavioral symptom reduction in elderly.',
+    effect: { geriatricBehavioralReduction: 0.20 }
+  },
+  {
+    id: 'neuropsychiatrist', name: 'Neuropsychiatrist', specialization: 'Mind', icon: Brain,
+    perk: '30% brain-behavior correlation accuracy.',
+    effect: { brainBehaviorAccuracy: 0.30 }
   }
 ];
 
