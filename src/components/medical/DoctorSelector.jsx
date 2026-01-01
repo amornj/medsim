@@ -396,8 +396,6 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
   const [selectedDoctors, setSelectedDoctors] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const maxSelections = gameMode.id === 'specialist' ? 3 : gameMode.id === 'sandbox' ? Infinity : 1;
-
   const handleDoctorToggle = (doctor, parentCategory) => {
     const fullDoctor = {
       ...doctor,
@@ -413,16 +411,36 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
       if (prev.find(d => d.id === doctor.id)) {
         return prev.filter(d => d.id !== doctor.id);
       } else {
-        if (prev.length < maxSelections) {
-          return [...prev, fullDoctor];
-        } else {
-          if (maxSelections === 1) {
-            toast.error(`You can only select 1 doctor in ${gameMode.name} mode.`);
-          } else {
-            toast.error(`You can only select up to ${maxSelections} doctors.`);
+        // Specialist mode: max 2 categories, 3 derivatives per category
+        if (gameMode.id === 'specialist') {
+          const categoriesUsed = [...new Set(prev.map(d => d.parentId))];
+          const currentCategoryCount = prev.filter(d => d.parentId === parentCategory.id).length;
+          
+          if (!categoriesUsed.includes(parentCategory.id) && categoriesUsed.length >= 2) {
+            toast.error('Specialist mode: Maximum 2 categories allowed');
+            return prev;
           }
+          
+          if (currentCategoryCount >= 3) {
+            toast.error('Specialist mode: Maximum 3 derivatives per category');
+            return prev;
+          }
+          
+          return [...prev, fullDoctor];
+        }
+        
+        // Sandbox: unlimited
+        if (gameMode.id === 'sandbox') {
+          return [...prev, fullDoctor];
+        }
+        
+        // Other modes: 1 doctor only
+        if (prev.length >= 1) {
+          toast.error(`You can only select 1 doctor in ${gameMode.name} mode.`);
           return prev;
         }
+        
+        return [...prev, fullDoctor];
       }
     });
   };
@@ -440,8 +458,15 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
       specialization: selectedCategory.specialization
     }));
 
-    const remaining = maxSelections === Infinity ? allDerivatives : allDerivatives.slice(0, maxSelections - selectedDoctors.length);
-    setSelectedDoctors(prev => [...prev, ...remaining.filter(der => !prev.find(d => d.id === der.id))]);
+    if (gameMode.id === 'specialist') {
+      const currentCategoryCount = selectedDoctors.filter(d => d.parentId === selectedCategory.id).length;
+      const limit = 3 - currentCategoryCount;
+      const toAdd = allDerivatives.slice(0, limit).filter(der => !selectedDoctors.find(d => d.id === der.id));
+      setSelectedDoctors(prev => [...prev, ...toAdd]);
+    } else {
+      const toAdd = allDerivatives.filter(der => !selectedDoctors.find(d => d.id === der.id));
+      setSelectedDoctors(prev => [...prev, ...toAdd]);
+    }
   };
 
   const handleDeselectAll = () => {
@@ -468,12 +493,12 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
         >
           <h1 className="text-4xl font-bold text-slate-800 mb-2">Select Your Doctor(s)</h1>
           <p className="text-slate-600">Choose your medical expertise for this scenario.</p>
-          {maxSelections === Infinity ? (
+          {gameMode.id === 'sandbox' ? (
             <p className="text-sm text-slate-500">Sandbox mode: Select any number of doctors.</p>
-          ) : maxSelections === 1 ? (
-            <p className="text-sm text-slate-500">{gameMode.name} mode: Select 1 doctor.</p>
+          ) : gameMode.id === 'specialist' ? (
+            <p className="text-sm text-slate-500">Specialist mode: Select up to 2 categories, 3 derivatives per category.</p>
           ) : (
-            <p className="text-sm text-slate-500">{gameMode.name} mode: Select up to {maxSelections} doctors.</p>
+            <p className="text-sm text-slate-500">{gameMode.name} mode: Select 1 doctor.</p>
           )}
         </motion.div>
 
@@ -604,7 +629,7 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
             Back to Game Mode
           </Button>
           <Button onClick={handleConfirm}>
-            Confirm Doctor(s) ({selectedDoctors.length}{maxSelections !== Infinity ? `/${maxSelections}` : ''})
+            Confirm Doctor(s) ({selectedDoctors.length})
           </Button>
         </motion.div>
       </div>
