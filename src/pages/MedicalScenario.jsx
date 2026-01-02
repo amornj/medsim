@@ -6,6 +6,7 @@ import { Save, RotateCcw, FileText, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 
 import ScenarioSelector, { PRESET_SCENARIOS } from '../components/medical/ScenarioSelector';
 import PatientVitals from '../components/medical/PatientVitals';
