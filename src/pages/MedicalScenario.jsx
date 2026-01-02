@@ -44,7 +44,13 @@ const EQUIPMENT_COSTS = {
   ct_scanner: 25000, coronary_cta: 30000, mri_scanner: 35000, pet_ct: 40000, fluoroscopy: 20000,
   c_arm: 18000, anesthesia_workstation: 10000, tee_machine: 15000, ultrasound: 8000, bronchoscope: 6000,
   endoscope: 7000, linac: 80000, gamma_knife: 100000, apheresis: 20000, da_vinci: 150000,
-  ortho_navigation: 50000, electrocautery: 4000
+  ortho_navigation: 50000, electrocautery: 4000, fast_exam: 8000, capnography: 3000, bis_monitor: 6000,
+  nirs: 7000, bladder_scanner: 4000, portable_xray: 12000, echo_machine: 15000, vascular_ultrasound: 10000,
+  blood_gas_analyzer: 8000, glucometer: 200, coagulation_analyzer: 5000, lactate_meter: 3000,
+  troponin_assay: 2000, c_collar: 100, backboard: 200, pelvic_binder: 300, tourniquet: 50,
+  traction_splint: 500, chest_seal: 150, laryngoscope: 2000, video_laryngoscope: 8000, bougie: 300,
+  lma: 500, king_airway: 400, ambu_bag: 300, suction_unit: 1500, iv_catheter: 50, central_line_kit: 800,
+  io_drill: 4000, picc_line: 600, ultrasound_vascular: 8000
 };
 
 export default function MedicalScenario() {
