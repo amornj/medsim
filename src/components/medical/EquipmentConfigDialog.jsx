@@ -127,6 +127,125 @@ const EQUIPMENT_CONFIG_FIELDS = {
     { name: 'enabled', label: 'System Active', type: 'select', options: ['true', 'false'] },
     { name: 'sensor_type', label: 'Sensor Type', type: 'select', options: ['LiDCOplus', 'LiDCOrapid'] },
     { name: 'calibration', label: 'Calibration', type: 'select', options: ['Required', 'Not Required'] }
+  ],
+  hfov: [
+    { name: 'frequency', label: 'Frequency (Hz)', type: 'number' },
+    { name: 'amplitude', label: 'Amplitude (cmH2O)', type: 'number' },
+    { name: 'mean_airway_pressure', label: 'Mean Airway Pressure (cmH2O)', type: 'number' },
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
+  ],
+  jet_ventilator: [
+    { name: 'jet_rate', label: 'Jet Rate (/min)', type: 'number' },
+    { name: 'jet_pressure', label: 'Jet Pressure (PSI)', type: 'number' },
+    { name: 'peep', label: 'PEEP (cmH2O)', type: 'number' },
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
+  ],
+  cvvh: [
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'replacement_rate', label: 'Replacement Rate (ml/hr)', type: 'number' },
+    { name: 'ultrafiltration', label: 'Ultrafiltration (ml/hr)', type: 'number' }
+  ],
+  cvvhd: [
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'dialysate_flow', label: 'Dialysate Flow (ml/hr)', type: 'number' },
+    { name: 'ultrafiltration', label: 'Ultrafiltration (ml/hr)', type: 'number' }
+  ],
+  cvvhdf: [
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'dialysate_flow', label: 'Dialysate Flow (ml/hr)', type: 'number' },
+    { name: 'replacement_rate', label: 'Replacement Rate (ml/hr)', type: 'number' },
+    { name: 'ultrafiltration', label: 'Ultrafiltration (ml/hr)', type: 'number' }
+  ],
+  sled: [
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'dialysate_flow', label: 'Dialysate Flow (ml/min)', type: 'number' },
+    { name: 'duration', label: 'Treatment Duration (hours)', type: 'number' }
+  ],
+  plasmapheresis: [
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'plasma_volume', label: 'Plasma Volume to Exchange (L)', type: 'number' },
+    { name: 'replacement_fluid', label: 'Replacement Fluid', type: 'select', options: ['Albumin', 'FFP', 'Mixed'] }
+  ],
+  eeg_monitor: [
+    { name: 'montage', label: 'Montage', type: 'select', options: ['Full 10-20', 'Limited 8-channel', 'Bipolar', 'Referential'] },
+    { name: 'sensitivity', label: 'Sensitivity (µV/mm)', type: 'number' },
+    { name: 'filter_low', label: 'Low Frequency Filter (Hz)', type: 'number' }
+  ],
+  icp_monitor: [
+    { name: 'type', label: 'Monitor Type', type: 'select', options: ['Intraventricular', 'Intraparenchymal', 'Subdural', 'Epidural'] },
+    { name: 'alarm_threshold', label: 'Alarm Threshold (mmHg)', type: 'number' },
+    { name: 'zero_reference', label: 'Zero Reference', type: 'select', options: ['Tragus', 'External auditory meatus'] }
+  ],
+  brain_o2_monitor: [
+    { name: 'type', label: 'Monitor Type', type: 'select', options: ['PbtO2', 'NIRS', 'Jugular Bulb'] },
+    { name: 'alarm_low', label: 'Low Alarm (mmHg)', type: 'number' },
+    { name: 'site', label: 'Monitoring Site', type: 'select', options: ['Right frontal', 'Left frontal', 'Penumbra'] }
+  ],
+  tcd: [
+    { name: 'vessel', label: 'Vessel', type: 'select', options: ['MCA', 'ACA', 'PCA', 'Basilar', 'Vertebral'] },
+    { name: 'depth', label: 'Depth (mm)', type: 'number' },
+    { name: 'emboli_detection', label: 'Emboli Detection', type: 'select', options: ['On', 'Off'] }
+  ],
+  anesthesia_workstation: [
+    { name: 'agent', label: 'Volatile Agent', type: 'select', options: ['Sevoflurane', 'Desflurane', 'Isoflurane'] },
+    { name: 'concentration', label: 'Agent Concentration (%)', type: 'number' },
+    { name: 'fresh_gas_flow', label: 'Fresh Gas Flow (L/min)', type: 'number' },
+    { name: 'ventilation_mode', label: 'Ventilation Mode', type: 'select', options: ['Manual', 'Pressure Control', 'Volume Control'] }
+  ],
+  tee_machine: [
+    { name: 'probe_type', label: 'Probe Type', type: 'select', options: ['Adult', 'Pediatric', 'Multiplane'] },
+    { name: 'depth', label: 'Depth (cm)', type: 'number' },
+    { name: 'view', label: 'Current View', type: 'select', options: ['Mid-esophageal', 'Transgastric', 'Upper esophageal'] }
+  ],
+  ultrasound: [
+    { name: 'probe_type', label: 'Probe Type', type: 'select', options: ['Linear', 'Curvilinear', 'Phased Array', 'Endocavitary'] },
+    { name: 'frequency', label: 'Frequency (MHz)', type: 'number' },
+    { name: 'mode', label: 'Mode', type: 'select', options: ['B-mode', 'M-mode', 'Doppler', 'Color Flow'] }
+  ],
+  bronchoscope: [
+    { name: 'type', label: 'Bronchoscope Type', type: 'select', options: ['Flexible', 'Rigid'] },
+    { name: 'diameter', label: 'Diameter (mm)', type: 'number' },
+    { name: 'working_channel', label: 'Working Channel', type: 'select', options: ['Open', 'Occupied'] }
+  ],
+  endoscope: [
+    { name: 'type', label: 'Endoscope Type', type: 'select', options: ['Gastroscope', 'Colonoscope', 'Sigmoidoscope'] },
+    { name: 'insufflation', label: 'Insufflation', type: 'select', options: ['Air', 'CO2'] },
+    { name: 'biopsy_channel', label: 'Biopsy Channel', type: 'select', options: ['Open', 'In Use'] }
+  ],
+  linac: [
+    { name: 'energy', label: 'Energy (MV)', type: 'select', options: ['6', '10', '15', '18'] },
+    { name: 'dose_rate', label: 'Dose Rate (MU/min)', type: 'number' },
+    { name: 'treatment_site', label: 'Treatment Site', type: 'text' }
+  ],
+  gamma_knife: [
+    { name: 'collimator', label: 'Collimator Size (mm)', type: 'select', options: ['4', '8', '14', '18'] },
+    { name: 'dose', label: 'Prescription Dose (Gy)', type: 'number' },
+    { name: 'target', label: 'Target', type: 'text' }
+  ],
+  apheresis: [
+    { name: 'mode', label: 'Apheresis Mode', type: 'select', options: ['Plasma Exchange', 'Platelet Collection', 'RBC Exchange'] },
+    { name: 'blood_flow', label: 'Blood Flow (ml/min)', type: 'number' },
+    { name: 'volume_processed', label: 'Volume to Process (L)', type: 'number' }
+  ],
+  da_vinci: [
+    { name: 'mode', label: 'Surgical Mode', type: 'select', options: ['Standard', 'Single Site', 'Fluorescence'] },
+    { name: 'instruments', label: 'Active Instruments', type: 'number' },
+    { name: 'camera', label: 'Camera Type', type: 'select', options: ['Standard', 'Firefly'] }
+  ],
+  ortho_navigation: [
+    { name: 'mode', label: 'Navigation Mode', type: 'select', options: ['CT-based', 'Fluoroscopy-based', 'Hybrid'] },
+    { name: 'registration', label: 'Registration Status', type: 'select', options: ['Complete', 'In Progress', 'Not Started'] },
+    { name: 'tracking', label: 'Tracking', type: 'select', options: ['Active', 'Passive'] }
+  ],
+  electrocautery: [
+    { name: 'mode', label: 'Mode', type: 'select', options: ['Cut', 'Coag', 'Blend'] },
+    { name: 'power', label: 'Power (Watts)', type: 'number' },
+    { name: 'return_electrode', label: 'Return Electrode', type: 'select', options: ['Attached', 'Not Attached'] }
+  ],
+  fast_exam: [
+    { name: 'probe_type', label: 'Probe Type', type: 'select', options: ['Phased Array', 'Curvilinear'] },
+    { name: 'free_fluid', label: 'Free Fluid Detected', type: 'select', options: ['Yes', 'No'] },
+    { name: 'location', label: 'Fluid Location', type: 'select', options: ['Morrison\'s Pouch', 'Pelvis', 'Perisplenec', 'Pericardium', 'None'] }
   ]
 };
 
