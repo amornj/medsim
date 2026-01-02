@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles, Activity, Thermometer, ChevronDown, ChevronRight } from 'lucide-react';
+import { Heart, Wind, Droplets, Zap, Brain, AlertCircle, Plus, Sparkles, Activity, Thermometer, ChevronDown, ChevronRight, Eye } from 'lucide-react';
 import AIScenarioGenerator from './AIScenarioGenerator';
 
 const PRESET_SCENARIOS = [
