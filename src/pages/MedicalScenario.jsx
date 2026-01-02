@@ -70,8 +70,20 @@ export default function MedicalScenario() {
   const [currentEvent, setCurrentEvent] = useState(null);
   const [eventHistory, setEventHistory] = useState([]);
   const [lastEventTime, setLastEventTime] = useState(0);
+  const [showDoctorsPanel, setShowDoctorsPanel] = useState(true);
   
   const queryClient = useQueryClient();
+
+  // Auto-hide doctors panel after 4 seconds
+  useEffect(() => {
+    if (selectedDoctors.length > 0 && gameState === 'playing') {
+      setShowDoctorsPanel(true);
+      const timer = setTimeout(() => {
+        setShowDoctorsPanel(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedDoctors, gameState]);
 
   // Dynamic event generation system
   useEffect(() => {
@@ -1087,11 +1099,22 @@ export default function MedicalScenario() {
         </div>
         
         {/* Selected Doctors Display */}
-        {selectedDoctors.length > 0 && (
-          <div className="fixed bottom-4 right-4 z-50 p-3 bg-blue-600 text-white rounded-lg shadow-lg max-w-xs">
+        {selectedDoctors.length > 0 && showDoctorsPanel && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-4 right-4 z-50 p-3 bg-blue-600 text-white rounded-lg shadow-lg max-w-xs"
+          >
+            <button 
+              onClick={() => setShowDoctorsPanel(false)}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+            >
+              ×
+            </button>
             <p className="font-bold text-sm mb-1">Active Doctors:</p>
             <p className="text-xs">{selectedDoctors.map(d => d.name).join(', ')}</p>
-          </div>
+          </motion.div>
         )}
         
         {/* Complication Alert Overlay */}
