@@ -245,7 +245,105 @@ const EQUIPMENT_CONFIG_FIELDS = {
   fast_exam: [
     { name: 'probe_type', label: 'Probe Type', type: 'select', options: ['Phased Array', 'Curvilinear'] },
     { name: 'free_fluid', label: 'Free Fluid Detected', type: 'select', options: ['Yes', 'No'] },
-    { name: 'location', label: 'Fluid Location', type: 'select', options: ['Morrison\'s Pouch', 'Pelvis', 'Perisplenec', 'Pericardium', 'None'] }
+    { name: 'location', label: 'Fluid Location', type: 'select', options: ['Morrison\'s Pouch', 'Pelvis', 'Perisplenic', 'Pericardium', 'None'] }
+  ],
+  capnography: [
+    { name: 'etco2', label: 'End-Tidal CO2 (mmHg)', type: 'number' },
+    { name: 'waveform', label: 'Waveform', type: 'select', options: ['Normal', 'Shark Fin', 'Flat'] }
+  ],
+  bis_monitor: [
+    { name: 'bis_value', label: 'BIS Value', type: 'number' },
+    { name: 'emg', label: 'EMG Activity', type: 'select', options: ['Low', 'Moderate', 'High'] }
+  ],
+  nirs: [
+    { name: 'left_rso2', label: 'Left rSO2 (%)', type: 'number' },
+    { name: 'right_rso2', label: 'Right rSO2 (%)', type: 'number' }
+  ],
+  bladder_scanner: [
+    { name: 'volume', label: 'Bladder Volume (mL)', type: 'number' }
+  ],
+  portable_xray: [],
+  ct_scanner: [
+    { name: 'scan_type', label: 'Scan Type', type: 'select', options: ['Head', 'Chest', 'Abdomen/Pelvis', 'Spine', 'Extremity'] },
+    { name: 'contrast', label: 'Contrast', type: 'select', options: ['None', 'IV Only', 'Oral Only', 'IV + Oral'] }
+  ],
+  mri_scanner: [
+    { name: 'sequence', label: 'Sequence', type: 'select', options: ['T1', 'T2', 'FLAIR', 'DWI', 'MRA'] },
+    { name: 'contrast', label: 'Gadolinium Contrast', type: 'select', options: ['Yes', 'No'] }
+  ],
+  fluoroscopy: [
+    { name: 'procedure', label: 'Procedure', type: 'text' }
+  ],
+  echo_machine: [
+    { name: 'view', label: 'Current View', type: 'select', options: ['Parasternal Long', 'Parasternal Short', 'Apical 4-Chamber', 'Subcostal'] },
+    { name: 'doppler', label: 'Doppler Mode', type: 'select', options: ['Off', 'Color', 'Pulsed Wave', 'Continuous Wave'] }
+  ],
+  vascular_ultrasound: [
+    { name: 'site', label: 'Scan Site', type: 'select', options: ['Lower Extremity', 'Upper Extremity', 'Neck', 'Abdomen'] },
+    { name: 'compression', label: 'Compression', type: 'select', options: ['Compressible', 'Non-compressible'] }
+  ],
+  blood_gas_analyzer: [],
+  glucometer: [
+    { name: 'glucose', label: 'Blood Glucose (mg/dL)', type: 'number' }
+  ],
+  coagulation_analyzer: [],
+  lactate_meter: [
+    { name: 'lactate', label: 'Lactate (mmol/L)', type: 'number' }
+  ],
+  troponin_assay: [],
+  c_collar: [
+    { name: 'size', label: 'Size', type: 'select', options: ['Small', 'Medium', 'Large'] }
+  ],
+  backboard: [],
+  pelvic_binder: [
+    { name: 'applied', label: 'Applied', type: 'select', options: ['Yes', 'No'] }
+  ],
+  tourniquet: [
+    { name: 'location', label: 'Location', type: 'select', options: ['Right Arm', 'Left Arm', 'Right Leg', 'Left Leg'] },
+    { name: 'time_applied', label: 'Time Applied', type: 'text' }
+  ],
+  traction_splint: [
+    { name: 'traction_force', label: 'Traction Force (lbs)', type: 'number' }
+  ],
+  chest_seal: [
+    { name: 'side', label: 'Side', type: 'select', options: ['Left', 'Right', 'Bilateral'] }
+  ],
+  laryngoscope: [
+    { name: 'blade_size', label: 'Blade Size', type: 'select', options: ['Miller 0', 'Miller 1', 'Miller 2', 'Mac 2', 'Mac 3', 'Mac 4'] }
+  ],
+  video_laryngoscope: [
+    { name: 'blade_type', label: 'Blade Type', type: 'select', options: ['GlideScope', 'C-MAC', 'McGrath'] }
+  ],
+  bougie: [],
+  lma: [
+    { name: 'size', label: 'Size', type: 'select', options: ['1', '1.5', '2', '2.5', '3', '4', '5'] }
+  ],
+  king_airway: [
+    { name: 'size', label: 'Size', type: 'select', options: ['3', '4', '5'] }
+  ],
+  ambu_bag: [
+    { name: 'fio2', label: 'FiO2 (%)', type: 'number' }
+  ],
+  suction_unit: [
+    { name: 'pressure', label: 'Suction Pressure (mmHg)', type: 'number' }
+  ],
+  iv_catheter: [
+    { name: 'gauge', label: 'Gauge', type: 'select', options: ['14G', '16G', '18G', '20G', '22G', '24G'] },
+    { name: 'site', label: 'Site', type: 'text' }
+  ],
+  central_line_kit: [
+    { name: 'site', label: 'Insertion Site', type: 'select', options: ['IJ', 'Subclavian', 'Femoral'] },
+    { name: 'lumens', label: 'Number of Lumens', type: 'select', options: ['2', '3', '4'] }
+  ],
+  io_drill: [
+    { name: 'site', label: 'Site', type: 'select', options: ['Proximal Tibia', 'Distal Tibia', 'Proximal Humerus'] }
+  ],
+  picc_line: [
+    { name: 'arm', label: 'Arm', type: 'select', options: ['Right', 'Left'] },
+    { name: 'lumens', label: 'Lumens', type: 'select', options: ['1', '2', '3'] }
+  ],
+  ultrasound_vascular: [
+    { name: 'target', label: 'Target Vessel', type: 'select', options: ['IJ', 'Subclavian', 'Femoral', 'Radial', 'Brachial'] }
   ]
 };
 
