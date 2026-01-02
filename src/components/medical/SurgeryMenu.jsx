@@ -133,6 +133,176 @@ const SURGICAL_PROCEDURES = [
     difficulty: 'Expert',
     description: 'Surgical repair of lung puncture or laceration',
     indications: ['Lung puncture', 'Penetrating chest trauma', 'Persistent air leak']
+  },
+  {
+    id: 'splenectomy',
+    name: 'Emergency Splenectomy',
+    icon: Scissors,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '45-120 min',
+    difficulty: 'Expert',
+    description: 'Remove ruptured spleen in trauma',
+    indications: ['Splenic rupture', 'Uncontrolled hemorrhage', 'Grade IV/V injury']
+  },
+  {
+    id: 'nephrectomy',
+    name: 'Emergency Nephrectomy',
+    icon: Droplets,
+    color: 'bg-red-100 text-red-700 border-red-300',
+    duration: '60-180 min',
+    difficulty: 'Expert',
+    description: 'Remove severely damaged kidney',
+    indications: ['Renal trauma', 'Uncontrollable bleeding', 'Shattered kidney']
+  },
+  {
+    id: 'bowel_resection',
+    name: 'Bowel Resection',
+    icon: Scissors,
+    color: 'bg-orange-100 text-orange-700 border-orange-300',
+    duration: '90-180 min',
+    difficulty: 'Expert',
+    description: 'Remove necrotic or perforated bowel',
+    indications: ['Bowel perforation', 'Ischemic bowel', 'Necrotizing enterocolitis']
+  },
+  {
+    id: 'aortic_cross_clamp',
+    name: 'Aortic Cross-Clamping',
+    icon: Heart,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '5-10 min',
+    difficulty: 'Expert',
+    description: 'Clamp aorta to control hemorrhage',
+    indications: ['Uncontrolled abdominal bleeding', 'Pelvic fracture', 'Aortic injury']
+  },
+  {
+    id: 'vascular_repair',
+    name: 'Vascular Repair',
+    icon: Activity,
+    color: 'bg-red-100 text-red-700 border-red-300',
+    duration: '60-180 min',
+    difficulty: 'Expert',
+    description: 'Repair major vessel injury',
+    indications: ['Arterial laceration', 'Venous injury', 'Vascular trauma']
+  },
+  {
+    id: 'amputation',
+    name: 'Traumatic Amputation',
+    icon: Scissors,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '30-90 min',
+    difficulty: 'Advanced',
+    description: 'Surgical amputation of non-salvageable limb',
+    indications: ['Mangled extremity', 'Uncontrolled sepsis', 'Failed revascularization']
+  },
+  {
+    id: 'decompressive_laparotomy',
+    name: 'Decompressive Laparotomy',
+    icon: Scissors,
+    color: 'bg-orange-100 text-orange-700 border-orange-300',
+    duration: '20-40 min',
+    difficulty: 'Advanced',
+    description: 'Open abdomen for abdominal compartment syndrome',
+    indications: ['Abdominal compartment syndrome', 'Elevated bladder pressure', 'Organ ischemia']
+  },
+  {
+    id: 'perimortem_csection',
+    name: 'Perimortem C-Section',
+    icon: Zap,
+    color: 'bg-red-200 text-red-800 border-red-400',
+    duration: '3-5 min',
+    difficulty: 'Expert',
+    description: 'Emergency delivery during maternal cardiac arrest',
+    indications: ['Maternal arrest >20 weeks', 'CPR ineffective', 'Fetal viability']
+  },
+  {
+    id: 'needle_decompression',
+    name: 'Needle Decompression',
+    icon: Zap,
+    color: 'bg-orange-100 text-orange-700 border-orange-300',
+    duration: '1-2 min',
+    difficulty: 'Intermediate',
+    description: 'Decompress tension pneumothorax',
+    indications: ['Tension pneumothorax', 'Respiratory distress', 'Hypotension']
+  },
+  {
+    id: 'central_line',
+    name: 'Central Line Placement',
+    icon: Activity,
+    color: 'bg-blue-100 text-blue-700 border-blue-300',
+    duration: '10-20 min',
+    difficulty: 'Advanced',
+    description: 'Insert central venous catheter',
+    indications: ['Shock', 'Large volume resuscitation', 'Poor peripheral access']
+  },
+  {
+    id: 'arterial_line',
+    name: 'Arterial Line Placement',
+    icon: Activity,
+    color: 'bg-blue-100 text-blue-700 border-blue-300',
+    duration: '5-10 min',
+    difficulty: 'Intermediate',
+    description: 'Cannulate radial artery for BP monitoring',
+    indications: ['Continuous BP monitoring', 'Frequent ABGs', 'Hemodynamic instability']
+  },
+  {
+    id: 'lumbar_puncture',
+    name: 'Lumbar Puncture',
+    icon: Brain,
+    color: 'bg-purple-100 text-purple-700 border-purple-300',
+    duration: '10-20 min',
+    difficulty: 'Intermediate',
+    description: 'Sample CSF for diagnostic testing',
+    indications: ['Meningitis', 'Subarachnoid hemorrhage', 'Elevated ICP assessment']
+  },
+  {
+    id: 'thoracentesis',
+    name: 'Thoracentesis',
+    icon: Droplets,
+    color: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+    duration: '10-15 min',
+    difficulty: 'Intermediate',
+    description: 'Drain pleural fluid',
+    indications: ['Large pleural effusion', 'Empyema', 'Diagnostic sampling']
+  },
+  {
+    id: 'paracentesis',
+    name: 'Paracentesis',
+    icon: Droplets,
+    color: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+    duration: '15-20 min',
+    difficulty: 'Intermediate',
+    description: 'Drain ascitic fluid',
+    indications: ['Tense ascites', 'SBP evaluation', 'Respiratory compromise']
+  },
+  {
+    id: 'external_fixation',
+    name: 'External Fixation',
+    icon: Scissors,
+    color: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+    duration: '30-60 min',
+    difficulty: 'Advanced',
+    description: 'Stabilize pelvic or long bone fractures',
+    indications: ['Unstable pelvis', 'Open fracture', 'Damage control orthopedics']
+  },
+  {
+    id: 'cardiac_pacing',
+    name: 'Transvenous Pacing',
+    icon: Heart,
+    color: 'bg-pink-100 text-pink-700 border-pink-300',
+    duration: '15-30 min',
+    difficulty: 'Advanced',
+    description: 'Insert temporary pacing wire',
+    indications: ['Symptomatic bradycardia', 'Heart block', 'Failed transcutaneous pacing']
+  },
+  {
+    id: 'endotracheal_intubation',
+    name: 'Endotracheal Intubation',
+    icon: Activity,
+    color: 'bg-blue-100 text-blue-700 border-blue-300',
+    duration: '3-5 min',
+    difficulty: 'Advanced',
+    description: 'Secure definitive airway',
+    indications: ['Respiratory failure', 'Airway protection', 'Ventilatory support']
   }
 ];
 
