@@ -392,16 +392,39 @@ const cardVariants = {
   }
 };
 
+// Add random variation to doctor effects for each game session
+const randomizeDoctorEffect = (doctor) => {
+  const randomVariation = () => 0.85 + Math.random() * 0.3; // 85% to 115%
+  
+  const randomizedEffect = {};
+  Object.keys(doctor.effect).forEach(key => {
+    if (typeof doctor.effect[key] === 'number') {
+      randomizedEffect[key] = parseFloat((doctor.effect[key] * randomVariation()).toFixed(3));
+    } else {
+      randomizedEffect[key] = doctor.effect[key];
+    }
+  });
+  
+  return {
+    ...doctor,
+    effect: randomizedEffect,
+    originalEffect: doctor.effect
+  };
+};
+
 export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
   const [selectedDoctors, setSelectedDoctors] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleDoctorToggle = (doctor, parentCategory) => {
+    const randomizedDoctor = randomizeDoctorEffect(doctor);
+    const randomizedParent = randomizeDoctorEffect({ effect: parentCategory.effect });
+    
     const fullDoctor = {
-      ...doctor,
+      ...randomizedDoctor,
       parentId: parentCategory.id,
       parentName: parentCategory.name,
-      parentEffect: parentCategory.effect,
+      parentEffect: randomizedParent.effect,
       parentPerk: parentCategory.perk,
       icon: parentCategory.icon,
       specialization: parentCategory.specialization
@@ -608,6 +631,9 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
                             <p className="text-xs text-slate-600 bg-white/50 rounded p-2">{selectedCategory.perk}</p>
                             <div className="text-xs text-blue-700 font-semibold">+ Specialization Buff:</div>
                             <p className="text-sm text-slate-700">{doctor.perk}</p>
+                            <div className="text-xs text-purple-600 italic mt-2">
+                              ✨ Effects randomized each session (85-115%)
+                            </div>
                           </div>
                         </CardContent>
                       </Card>

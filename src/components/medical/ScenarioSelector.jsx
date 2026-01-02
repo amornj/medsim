@@ -754,6 +754,340 @@ const PRESET_SCENARIOS = [
     vitals: { heart_rate: 0, blood_pressure_systolic: 0, blood_pressure_diastolic: 0, respiratory_rate: 0, spo2: 0, temperature: 36.5, consciousness: 'Unresponsive' },
     equipment: [],
     notes: 'Immediate CPR. Defibrillation. ACLS protocol. Epinephrine. Reversible causes. ECMO consideration.'
+  },
+
+  // CARDIOLOGY SPECIALTIES
+  {
+    id: 'atrial_fibrillation_rvr',
+    name: 'Atrial Fibrillation with RVR',
+    icon: Heart,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Rapid irregular heart rate',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 155, blood_pressure_systolic: 142, blood_pressure_diastolic: 88, respiratory_rate: 22, spo2: 94, temperature: 37.2, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Rate control. Anticoagulation. Cardioversion if unstable. Electrolyte correction.'
+  },
+  {
+    id: 'chf_exacerbation',
+    name: 'CHF Exacerbation',
+    icon: Heart,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Fluid overload, dyspnea',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: { heart_rate: 102, blood_pressure_systolic: 165, blood_pressure_diastolic: 95, respiratory_rate: 28, spo2: 89, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Diuretics. Oxygen. CPAP. Afterload reduction. Monitor output.'
+  },
+  {
+    id: 'cardiogenic_shock',
+    name: 'Cardiogenic Shock',
+    icon: Heart,
+    color: 'bg-red-200 border-red-400 text-red-800',
+    description: 'Heart failure with hypoperfusion',
+    difficulty: 5,
+    difficultyLabel: 'Critical',
+    vitals: { heart_rate: 122, blood_pressure_systolic: 75, blood_pressure_diastolic: 48, respiratory_rate: 28, spo2: 88, temperature: 36.2, consciousness: 'Confused' },
+    equipment: [],
+    notes: 'Inotropes. IABP. Mechanical support consideration. Urgent cath.'
+  },
+
+  // SURGERY SPECIALTIES
+  {
+    id: 'bowel_perforation',
+    name: 'Bowel Perforation',
+    icon: AlertCircle,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Free air, peritonitis',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 118, blood_pressure_systolic: 98, blood_pressure_diastolic: 62, respiratory_rate: 24, spo2: 94, temperature: 38.5, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'NPO. Broad antibiotics. Emergent surgery. Fluid resuscitation.'
+  },
+  {
+    id: 'acute_limb_ischemia',
+    name: 'Acute Limb Ischemia',
+    icon: AlertCircle,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Cold, pulseless extremity',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 102, blood_pressure_systolic: 128, blood_pressure_diastolic: 78, respiratory_rate: 18, spo2: 97, temperature: 36.8, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Anticoagulation. Vascular surgery consult. CTA. Time-critical intervention.'
+  },
+
+  // NEUROLOGY SPECIALTIES
+  {
+    id: 'seizure_status',
+    name: 'Status Epilepticus',
+    icon: Brain,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Prolonged seizure activity',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 138, blood_pressure_systolic: 168, blood_pressure_diastolic: 98, respiratory_rate: 28, spo2: 88, temperature: 38.2, consciousness: 'Seizing' },
+    equipment: [],
+    notes: 'Benzodiazepines. Load antiepileptics. Protect airway. EEG monitoring.'
+  },
+  {
+    id: 'tia',
+    name: 'Transient Ischemic Attack',
+    icon: Brain,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Transient neuro deficit',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: { heart_rate: 88, blood_pressure_systolic: 152, blood_pressure_diastolic: 88, respiratory_rate: 16, spo2: 98, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Stroke workup. Antiplatelet. Imaging. High risk for stroke. Admit.'
+  },
+  {
+    id: 'guillain_barre',
+    name: 'Guillain-Barré Syndrome',
+    icon: Brain,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Ascending weakness',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 94, blood_pressure_systolic: 128, blood_pressure_diastolic: 78, respiratory_rate: 20, spo2: 96, temperature: 37.2, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Monitor respiratory function. IVIG or plasmapheresis. ICU monitoring.'
+  },
+
+  // ORTHOPEDIC SPECIALTIES
+  {
+    id: 'compartment_syndrome',
+    name: 'Compartment Syndrome',
+    icon: AlertCircle,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Increased limb pressure',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 108, blood_pressure_systolic: 128, blood_pressure_diastolic: 82, respiratory_rate: 18, spo2: 98, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Emergent fasciotomy. Do not elevate limb. Remove casts. Pain control.'
+  },
+  {
+    id: 'hip_fracture_elderly',
+    name: 'Hip Fracture (Elderly)',
+    icon: Heart,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Unable to bear weight',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: { heart_rate: 95, blood_pressure_systolic: 142, blood_pressure_diastolic: 82, respiratory_rate: 16, spo2: 97, temperature: 36.8, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Pain control. Orthopedic consult. Pre-op labs. DVT prophylaxis.'
+  },
+  {
+    id: 'spinal_cord_compression',
+    name: 'Spinal Cord Compression',
+    icon: Brain,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Progressive weakness, sensory loss',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 92, blood_pressure_systolic: 118, blood_pressure_diastolic: 72, respiratory_rate: 16, spo2: 98, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Urgent MRI. High-dose steroids. Neurosurgery consult. Preserve function.'
+  },
+
+  // PULMONOLOGY SPECIALTIES
+  {
+    id: 'copd_acute_on_chronic',
+    name: 'COPD Acute on Chronic',
+    icon: Wind,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Chronic respiratory failure',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 108, blood_pressure_systolic: 135, blood_pressure_diastolic: 82, respiratory_rate: 28, spo2: 88, temperature: 37.2, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'BiPAP. Bronchodilators. Steroids. Antibiotics. Target SpO2 88-92%.'
+  },
+  {
+    id: 'massive_hemoptysis',
+    name: 'Massive Hemoptysis',
+    icon: Wind,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Coughing up blood',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 125, blood_pressure_systolic: 105, blood_pressure_diastolic: 68, respiratory_rate: 26, spo2: 91, temperature: 37.5, consciousness: 'Anxious' },
+    equipment: [],
+    notes: 'Protect airway. CTA chest. Bronchoscopy. IR embolization. Reverse coagulopathy.'
+  },
+  {
+    id: 'pleural_effusion_large',
+    name: 'Large Pleural Effusion',
+    icon: Wind,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Dyspnea from fluid',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: { heart_rate: 98, blood_pressure_systolic: 122, blood_pressure_diastolic: 78, respiratory_rate: 24, spo2: 92, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Thoracentesis. Diagnostic workup. Oxygen support. Monitor reexpansion.'
+  },
+
+  // DERMATOLOGY SPECIALTIES
+  {
+    id: 'stevens_johnson',
+    name: 'Stevens-Johnson Syndrome',
+    icon: AlertCircle,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Severe skin reaction',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 115, blood_pressure_systolic: 108, blood_pressure_diastolic: 68, respiratory_rate: 20, spo2: 95, temperature: 38.5, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Stop offending drug. Burn unit. Supportive care. IVIG. Ophthalmology consult.'
+  },
+  {
+    id: 'severe_burn_30_percent',
+    name: 'Severe Burn (30% TBSA)',
+    icon: AlertCircle,
+    color: 'bg-red-200 border-red-400 text-red-800',
+    description: 'Extensive 2nd/3rd degree burns',
+    difficulty: 5,
+    difficultyLabel: 'Critical',
+    vitals: { heart_rate: 135, blood_pressure_systolic: 95, blood_pressure_diastolic: 60, respiratory_rate: 24, spo2: 94, temperature: 36.5, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Parkland formula. Burn center. Airway management. Escharotomy. Pain control.'
+  },
+
+  // OPHTHALMOLOGY SPECIALTIES  
+  {
+    id: 'retinal_detachment',
+    name: 'Retinal Detachment',
+    icon: Eye,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Vision loss, flashes',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 82, blood_pressure_systolic: 128, blood_pressure_diastolic: 78, respiratory_rate: 14, spo2: 99, temperature: 36.8, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Urgent ophthalmology. Surgery within 24-48h. Head positioning. NPO.'
+  },
+  {
+    id: 'acute_angle_glaucoma',
+    name: 'Acute Angle-Closure Glaucoma',
+    icon: Eye,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Eye pain, elevated IOP',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 102, blood_pressure_systolic: 145, blood_pressure_diastolic: 88, respiratory_rate: 18, spo2: 98, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Lower IOP urgently. Acetazolamide. Topical drops. Ophthalmology STAT. Laser iridotomy.'
+  },
+
+  // PSYCHIATRY SPECIALTIES
+  {
+    id: 'acute_psychosis',
+    name: 'Acute Psychosis',
+    icon: Brain,
+    color: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+    description: 'Agitation, delusions',
+    difficulty: 2,
+    difficultyLabel: 'Moderate',
+    vitals: { heart_rate: 108, blood_pressure_systolic: 135, blood_pressure_diastolic: 85, respiratory_rate: 20, spo2: 98, temperature: 37.2, consciousness: 'Agitated' },
+    equipment: [],
+    notes: 'Safety first. De-escalation. Chemical restraint if needed. Medical clearance. Psych eval.'
+  },
+  {
+    id: 'serotonin_syndrome',
+    name: 'Serotonin Syndrome',
+    icon: Brain,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Hyperreflexia, confusion',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 138, blood_pressure_systolic: 165, blood_pressure_diastolic: 98, respiratory_rate: 24, spo2: 96, temperature: 39.2, consciousness: 'Confused' },
+    equipment: [],
+    notes: 'Stop serotonergic drugs. Cyproheptadine. Benzodiazepines. Cooling. ICU monitoring.'
+  },
+
+  // NEPHROLOGY SPECIALTIES
+  {
+    id: 'acute_kidney_injury',
+    name: 'Acute Kidney Injury',
+    icon: Droplets,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Rising creatinine, oliguria',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 98, blood_pressure_systolic: 108, blood_pressure_diastolic: 68, respiratory_rate: 18, spo2: 96, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Identify cause. Fluid management. Avoid nephrotoxins. Electrolyte monitoring. Dialysis if indicated.'
+  },
+  {
+    id: 'hyperkalemia_severe',
+    name: 'Severe Hyperkalemia',
+    icon: Droplets,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'K+ > 7.0, ECG changes',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 52, blood_pressure_systolic: 98, blood_pressure_diastolic: 62, respiratory_rate: 16, spo2: 97, temperature: 37.0, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Calcium gluconate. Insulin+glucose. Albuterol. Dialysis. Cardiac monitoring.'
+  },
+
+  // ONCOLOGY SPECIALTIES
+  {
+    id: 'tumor_lysis_syndrome',
+    name: 'Tumor Lysis Syndrome',
+    icon: AlertCircle,
+    color: 'bg-red-100 border-red-300 text-red-700',
+    description: 'Electrolyte chaos post-chemo',
+    difficulty: 4,
+    difficultyLabel: 'Severe',
+    vitals: { heart_rate: 118, blood_pressure_systolic: 102, blood_pressure_diastolic: 65, respiratory_rate: 20, spo2: 96, temperature: 37.5, consciousness: 'Lethargic' },
+    equipment: [],
+    notes: 'Aggressive hydration. Rasburicase. Monitor electrolytes. Dialysis. Cardiac monitoring.'
+  },
+  {
+    id: 'febrile_neutropenia',
+    name: 'Febrile Neutropenia',
+    icon: Droplets,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Fever with ANC < 500',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 112, blood_pressure_systolic: 105, blood_pressure_diastolic: 68, respiratory_rate: 20, spo2: 96, temperature: 38.8, consciousness: 'Alert' },
+    equipment: [],
+    notes: 'Broad-spectrum antibiotics immediately. Cultures. Avoid delays. Oncology consult.'
+  },
+
+  // HEPATOLOGY SPECIALTIES
+  {
+    id: 'esophageal_varices_bleed',
+    name: 'Esophageal Varices Bleed',
+    icon: Droplets,
+    color: 'bg-red-200 border-red-400 text-red-800',
+    description: 'Cirrhosis with hematemesis',
+    difficulty: 5,
+    difficultyLabel: 'Critical',
+    vitals: { heart_rate: 138, blood_pressure_systolic: 82, blood_pressure_diastolic: 52, respiratory_rate: 24, spo2: 93, temperature: 36.5, consciousness: 'Confused' },
+    equipment: [],
+    notes: 'Octreotide. Ceftriaxone. Urgent endoscopy. Blood products. ICU. TIPS if refractory.'
+  },
+  {
+    id: 'hepatic_encephalopathy',
+    name: 'Hepatic Encephalopathy',
+    icon: Brain,
+    color: 'bg-orange-100 border-orange-300 text-orange-700',
+    description: 'Confusion from liver failure',
+    difficulty: 3,
+    difficultyLabel: 'Serious',
+    vitals: { heart_rate: 92, blood_pressure_systolic: 108, blood_pressure_diastolic: 68, respiratory_rate: 18, spo2: 96, temperature: 37.2, consciousness: 'Confused' },
+    equipment: [],
+    notes: 'Lactulose. Rifaximin. Find precipitant. Protein restriction. Monitor for worsening.'
   }
 ];
 
