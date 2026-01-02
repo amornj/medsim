@@ -912,27 +912,27 @@ export default function MedicalScenario() {
   
   const savePerformance = async (outcome) => {
     if (!currentScenario || !scenarioStartTime) return;
-    
+
     const endTime = Date.now();
     const duration = (endTime - scenarioStartTime) / 1000;
-    
+
     // Calculate time to first intervention
     const timeToFirst = interventionHistory.length > 0 
       ? (interventionHistory[0].timestamp - scenarioStartTime) / 1000 
       : duration;
-    
+
     // Find critical interventions
     const criticalTypes = ['defibrillator', 'lucas', 'aed', 'ecmo', 'cpb'];
     const criticalIntervention = interventionHistory.find(i => criticalTypes.includes(i.type));
     const timeToCritical = criticalIntervention 
       ? (criticalIntervention.timestamp - scenarioStartTime) / 1000
       : null;
-    
+
     // Calculate scores
     let speedScore = timeToFirst < 30 ? 25 : timeToFirst < 60 ? 20 : timeToFirst < 120 ? 15 : 10;
     let bestPracticesScore = Math.min(35, equipment.length * 5);
     let resourceScore = Math.max(0, 20 - Math.abs(equipment.length - 5) * 2);
-    
+
     let outcomeScore = 0;
     if (outcome === 'patient_survived') outcomeScore = 20;
     else if (outcome === 'patient_died') outcomeScore = 5;
@@ -955,8 +955,57 @@ export default function MedicalScenario() {
         outcomeScore += (doctor.effect.lungOutcomeBonus * 20);
       }
     });
-    
+
     const totalScore = speedScore + bestPracticesScore + resourceScore + outcomeScore;
+
+    // Award XP to all selected doctors
+    const baseXP = outcome === 'patient_survived' ? 50 : outcome === 'patient_died' ? 10 : 25;
+    const difficultyMultiplier = (currentScenario.difficulty || 1) * 0.5;
+    const scoreBonus = Math.floor(totalScore * 0.5);
+    const totalXP = Math.floor(baseXP + (baseXP * difficultyMultiplier) + scoreBonus);
+
+    for (const doctor of selectedDoctors) {
+      try {
+        const progressions = await base44.entities.DoctorProgression.filter({ doctor_id: doctor.id });
+
+        if (progressions.length > 0) {
+          const prog = progressions[0];
+          const newXP = prog.experience_points + totalXP;
+          const newLevel = Math.floor(newXP / 100) + 1;
+          const leveledUp = newLevel > prog.level;
+          const newSkillPoints = prog.skill_points + (leveledUp ? (newLevel - prog.level) : 0);
+
+          await base44.entities.DoctorProgression.update(prog.id, {
+            experience_points: newXP,
+            level: newLevel,
+            skill_points: newSkillPoints,
+            scenarios_completed: prog.scenarios_completed + 1,
+            total_score: prog.total_score + totalScore
+          });
+
+          if (leveledUp) {
+            toast.success(`${doctor.name} leveled up to Lv ${newLevel}! +${newLevel - prog.level} skill points!`);
+          }
+        } else {
+          // Create new progression
+          const level = Math.floor(totalXP / 100) + 1;
+          await base44.entities.DoctorProgression.create({
+            doctor_id: doctor.id,
+            doctor_name: doctor.name,
+            experience_points: totalXP,
+            level: level,
+            skill_points: level - 1,
+            unlocked_skills: [],
+            scenarios_completed: 1,
+            total_score: totalScore
+          });
+        }
+      } catch (err) {
+        console.error('Failed to update doctor progression:', err);
+      }
+    }
+
+    toast.success(`+${totalXP} XP awarded to all doctors!`);
     
     // Generate feedback
     const feedback = [];

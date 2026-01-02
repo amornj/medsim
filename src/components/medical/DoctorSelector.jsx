@@ -3,9 +3,13 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserCheck, Heart, Brain, Activity, Droplets, FlaskConical, Eye, Scissors } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { UserCheck, Heart, Brain, Activity, Droplets, FlaskConical, Eye, Scissors, Star, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import DoctorSkillTree from './DoctorSkillTree';
 
 export const DOCTOR_CATEGORIES = [
   {
@@ -415,6 +419,20 @@ const randomizeDoctorEffect = (doctor) => {
 export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
   const [selectedDoctors, setSelectedDoctors] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [skillTreeOpen, setSkillTreeOpen] = useState(false);
+  const [skillTreeDoctor, setSkillTreeDoctor] = useState(null);
+
+  // Load all doctor progressions
+  const { data: allProgressions = [] } = useQuery({
+    queryKey: ['allDoctorProgressions'],
+    queryFn: async () => {
+      return await base44.entities.DoctorProgression.list();
+    }
+  });
+
+  const getDoctorProgression = (doctorId) => {
+    return allProgressions.find(p => p.doctor_id === doctorId);
+  };
 
   const handleDoctorToggle = (doctor, parentCategory) => {
     const randomizedDoctor = randomizeDoctorEffect(doctor);
@@ -492,6 +510,34 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
     }
   };
 
+  const handleSelectAllDerivatives = () => {
+    // Select ALL derivatives from ALL categories
+    const allDerivatives = DOCTOR_CATEGORIES.flatMap(category => 
+      category.derivatives.map(der => ({
+        ...der,
+        parentId: category.id,
+        parentName: category.name,
+        parentEffect: category.effect,
+        parentPerk: category.perk,
+        icon: category.icon,
+        specialization: category.specialization
+      }))
+    );
+
+    if (gameMode.id === 'specialist') {
+      toast.error('Cannot select all in Specialist mode. Max 2 categories, 3 derivatives each.');
+      return;
+    }
+
+    if (gameMode.id !== 'sandbox') {
+      toast.error('Can only select all derivatives in Sandbox mode.');
+      return;
+    }
+
+    setSelectedDoctors(allDerivatives);
+    toast.success(`Selected all ${allDerivatives.length} doctor derivatives!`);
+  };
+
   const handleDeselectAll = () => {
     if (!selectedCategory) return;
     setSelectedDoctors(prev => prev.filter(d => d.parentId !== selectedCategory.id));
@@ -509,19 +555,32 @@ export default function DoctorSelector({ onSelectDoctors, onBack, gameMode }) {
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 p-6">
       <div className="max-w-6xl mx-auto">
         <motion.div 
-          className="mb-8 text-center"
+          className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Select Your Doctor(s)</h1>
-          <p className="text-slate-600">Choose your medical expertise for this scenario.</p>
-          {gameMode.id === 'sandbox' ? (
-            <p className="text-sm text-slate-500">Sandbox mode: Select any number of doctors.</p>
-          ) : gameMode.id === 'specialist' ? (
-            <p className="text-sm text-slate-500">Specialist mode: Select up to 2 categories, 3 derivatives per category.</p>
-          ) : (
-            <p className="text-sm text-slate-500">{gameMode.name} mode: Select 1 doctor.</p>
+          <div className="text-center mb-4">
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">Select Your Doctor(s)</h1>
+            <p className="text-slate-600">Choose your medical expertise for this scenario.</p>
+            {gameMode.id === 'sandbox' ? (
+              <p className="text-sm text-slate-500">Sandbox mode: Select any number of doctors.</p>
+            ) : gameMode.id === 'specialist' ? (
+              <p className="text-sm text-slate-500">Specialist mode: Select up to 2 categories, 3 derivatives per category.</p>
+            ) : (
+              <p className="text-sm text-slate-500">{gameMode.name} mode: Select 1 doctor.</p>
+            )}
+          </div>
+          {gameMode.id === 'sandbox' && (
+            <div className="flex justify-center">
+              <Button 
+                onClick={handleSelectAllDerivatives}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Select All 67+ Derivatives
+              </Button>
+            </div>
           )}
         </motion.div>
 
