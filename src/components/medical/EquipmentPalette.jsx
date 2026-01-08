@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, Waves, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight, Gauge, Eye, Scissors, Bone, Microscope, Siren, Truck, Users, Airplay, Monitor, Database } from 'lucide-react';
+import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, Stethoscope, Brain, AudioWaveform, ScanLine, Cpu, Repeat, Pill, ChevronDown, ChevronRight, Gauge, Eye, Scissors, Bone, Microscope, Siren, Truck, Users, Airplay, Monitor, Database } from 'lucide-react';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
