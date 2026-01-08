@@ -32,7 +32,7 @@ const EQUIPMENT_CATEGORIES = {
     color: 'bg-blue-100 border-blue-300',
     equipment: [
       { id: 'ventilator', name: 'Mechanical Ventilator', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'Respiratory support' },
-      { id: 'hfov', name: 'HFOV (High-Frequency Oscillatory Ventilation)', icon: Waves, color: 'bg-sky-100 text-sky-700 border-sky-300', description: 'Severe ARDS' },
+      { id: 'hfov', name: 'HFOV (High-Frequency Oscillatory Ventilation)', icon: AudioWaveform, color: 'bg-sky-100 text-sky-700 border-sky-300', description: 'Severe ARDS' },
       { id: 'bipap', name: 'BiPAP', icon: Wind, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Hypercapnic failure' },
       { id: 'cpap', name: 'CPAP', icon: Wind, color: 'bg-blue-100 text-blue-700 border-blue-300', description: 'OSA / mild respiratory failure' },
       { id: 'hfnc', name: 'High-Flow Nasal Cannula (HFNC)', icon: Wind, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'Hypoxemic respiratory failure' },
