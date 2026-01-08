@@ -121,7 +121,7 @@ const EQUIPMENT_CATEGORIES = {
     equipment: [
       { id: 'pulse_ox', name: 'Pulse Oximeter', icon: Radio, color: 'bg-green-100 text-green-700 border-green-300', description: 'SpO2 monitoring' },
       { id: 'temp_monitor', name: 'Temperature Monitor', icon: Thermometer, color: 'bg-yellow-100 text-yellow-700 border-yellow-300', description: 'Temperature monitoring' },
-      { id: 'capnography', name: 'Capnography', icon: Waves, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'End-tidal CO2 monitoring' },
+      { id: 'capnography', name: 'Capnography', icon: AudioWaveform, color: 'bg-teal-100 text-teal-700 border-teal-300', description: 'End-tidal CO2 monitoring' },
       { id: 'bis_monitor', name: 'BIS Monitor', icon: Brain, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Depth of anesthesia' },
       { id: 'nirs', name: 'NIRS (Cerebral Oximetry)', icon: Brain, color: 'bg-pink-100 text-pink-700 border-pink-300', description: 'Brain tissue oxygenation' },
       { id: 'bladder_scanner', name: 'Bladder Scanner', icon: Monitor, color: 'bg-cyan-100 text-cyan-700 border-cyan-300', description: 'Non-invasive urine volume' }
