@@ -59,7 +59,7 @@ const EQUIPMENT_CATEGORIES = {
       { id: 'eeg_monitor', name: 'EEG Monitor', icon: Brain, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Seizure detection' },
       { id: 'icp_monitor', name: 'ICP Monitor', icon: Brain, color: 'bg-indigo-100 text-indigo-700 border-indigo-300', description: 'Intracranial pressure' },
       { id: 'brain_o2_monitor', name: 'Brain Oxygen Monitor (PbtO₂)', icon: Brain, color: 'bg-violet-100 text-violet-700 border-violet-300', description: 'Cerebral hypoxia' },
-      { id: 'tcd', name: 'Transcranial Doppler', icon: Waves, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Cerebral blood flow' }
+      { id: 'tcd', name: 'Transcranial Doppler', icon: AudioWaveform, color: 'bg-purple-100 text-purple-700 border-purple-300', description: 'Cerebral blood flow' }
     ]
   },
   hemodynamic: {
