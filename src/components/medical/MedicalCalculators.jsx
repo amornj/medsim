@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Pill, Brain, Heart, Flame, Scale, Droplets, Wind, Activity } from 'lucide-react';
+import { Calculator, Pill, Brain, Heart, Flame, Scale, Droplets, Wind, Activity, Stethoscope, AlertTriangle, Zap, Shield } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Drug Dosage Calculator
 function DrugDosageCalculator() {
@@ -791,6 +792,452 @@ function AaGradientCalculator() {
   );
 }
 
+// TIMI Risk Score Calculator (for STEMI/NSTEMI)
+function TIMICalculator() {
+  const [type, setType] = useState('nstemi');
+
+  // NSTEMI/UA criteria
+  const [age65, setAge65] = useState(false);
+  const [riskFactors3, setRiskFactors3] = useState(false);
+  const [knownCAD, setKnownCAD] = useState(false);
+  const [aspirinUse, setAspirinUse] = useState(false);
+  const [anginaEpisodes, setAnginaEpisodes] = useState(false);
+  const [stChanges, setStChanges] = useState(false);
+  const [elevatedMarkers, setElevatedMarkers] = useState(false);
+
+  // STEMI criteria
+  const [ageSTE, setAgeSTE] = useState('0');
+  const [dmHtnAngina, setDmHtnAngina] = useState(false);
+  const [sbpLow, setSbpLow] = useState(false);
+  const [hrHigh, setHrHigh] = useState(false);
+  const [killipClass, setKillipClass] = useState(false);
+  const [weightLow, setWeightLow] = useState(false);
+  const [anteriorSte, setAnteriorSte] = useState(false);
+  const [timeDelay, setTimeDelay] = useState(false);
+
+  const nstemiScore = [age65, riskFactors3, knownCAD, aspirinUse, anginaEpisodes, stChanges, elevatedMarkers]
+    .filter(Boolean).length;
+
+  const stemiScore = parseInt(ageSTE) +
+    (dmHtnAngina ? 1 : 0) + (sbpLow ? 3 : 0) + (hrHigh ? 2 : 0) +
+    (killipClass ? 2 : 0) + (weightLow ? 1 : 0) + (anteriorSte ? 1 : 0) + (timeDelay ? 1 : 0);
+
+  const getNstemiRisk = () => {
+    if (nstemiScore <= 1) return { risk: '4.7%', level: 'Low', color: 'text-green-600' };
+    if (nstemiScore <= 2) return { risk: '8.3%', level: 'Low-Moderate', color: 'text-yellow-600' };
+    if (nstemiScore <= 3) return { risk: '13.2%', level: 'Moderate', color: 'text-orange-500' };
+    if (nstemiScore <= 4) return { risk: '19.9%', level: 'Moderate-High', color: 'text-orange-600' };
+    return { risk: '26.2-40.9%', level: 'High', color: 'text-red-600' };
+  };
+
+  const getStemiMortality = () => {
+    if (stemiScore === 0) return { risk: '0.8%', color: 'text-green-600' };
+    if (stemiScore <= 2) return { risk: '1.6-2.2%', color: 'text-green-600' };
+    if (stemiScore <= 4) return { risk: '4.4-7.3%', color: 'text-yellow-600' };
+    if (stemiScore <= 6) return { risk: '12-16%', color: 'text-orange-600' };
+    if (stemiScore <= 8) return { risk: '23-27%', color: 'text-red-500' };
+    return { risk: '>35%', color: 'text-red-700' };
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 mb-4">
+        <Button variant={type === 'nstemi' ? 'default' : 'outline'} size="sm" onClick={() => setType('nstemi')}>
+          NSTEMI/UA
+        </Button>
+        <Button variant={type === 'stemi' ? 'default' : 'outline'} size="sm" onClick={() => setType('stemi')}>
+          STEMI
+        </Button>
+      </div>
+
+      {type === 'nstemi' ? (
+        <div className="space-y-2">
+          {[
+            { label: 'Age ≥65', state: age65, setter: setAge65 },
+            { label: '≥3 CAD risk factors', state: riskFactors3, setter: setRiskFactors3 },
+            { label: 'Known CAD (stenosis ≥50%)', state: knownCAD, setter: setKnownCAD },
+            { label: 'ASA use in past 7 days', state: aspirinUse, setter: setAspirinUse },
+            { label: '≥2 angina episodes in 24h', state: anginaEpisodes, setter: setAnginaEpisodes },
+            { label: 'ST changes ≥0.5mm', state: stChanges, setter: setStChanges },
+            { label: 'Elevated cardiac markers', state: elevatedMarkers, setter: setElevatedMarkers },
+          ].map(({ label, state, setter }) => (
+            <label key={label} className="flex items-center gap-2 p-2 bg-slate-50 rounded cursor-pointer hover:bg-slate-100">
+              <input type="checkbox" checked={state} onChange={(e) => setter(e.target.checked)} className="w-4 h-4" />
+              <span className="text-sm">{label}</span>
+            </label>
+          ))}
+          <Card className="bg-red-50 border-red-200 mt-4">
+            <CardContent className="pt-4 text-center">
+              <p className="text-3xl font-bold text-red-800">{nstemiScore}/7</p>
+              <p className={`font-semibold mt-1 ${getNstemiRisk().color}`}>
+                {getNstemiRisk().level} Risk
+              </p>
+              <p className="text-sm text-red-600">14-day event risk: {getNstemiRisk().risk}</p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="space-y-1">
+            <Label className="text-xs">Age</Label>
+            <Select value={ageSTE} onValueChange={setAgeSTE}>
+              <SelectTrigger className="h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">&lt;65 (0 pts)</SelectItem>
+                <SelectItem value="2">65-74 (2 pts)</SelectItem>
+                <SelectItem value="3">≥75 (3 pts)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {[
+            { label: 'DM, HTN, or Angina', state: dmHtnAngina, setter: setDmHtnAngina },
+            { label: 'SBP <100 mmHg (+3)', state: sbpLow, setter: setSbpLow },
+            { label: 'HR >100 bpm (+2)', state: hrHigh, setter: setHrHigh },
+            { label: 'Killip II-IV (+2)', state: killipClass, setter: setKillipClass },
+            { label: 'Weight <67 kg', state: weightLow, setter: setWeightLow },
+            { label: 'Anterior STE or LBBB', state: anteriorSte, setter: setAnteriorSte },
+            { label: 'Time to treatment >4h', state: timeDelay, setter: setTimeDelay },
+          ].map(({ label, state, setter }) => (
+            <label key={label} className="flex items-center gap-2 p-2 bg-slate-50 rounded cursor-pointer hover:bg-slate-100">
+              <input type="checkbox" checked={state} onChange={(e) => setter(e.target.checked)} className="w-4 h-4" />
+              <span className="text-sm">{label}</span>
+            </label>
+          ))}
+          <Card className="bg-red-50 border-red-200 mt-4">
+            <CardContent className="pt-4 text-center">
+              <p className="text-3xl font-bold text-red-800">{stemiScore}/14</p>
+              <p className={`font-semibold mt-1 ${getStemiMortality().color}`}>
+                30-day mortality: {getStemiMortality().risk}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// HEART Score Calculator
+function HEARTCalculator() {
+  const [history, setHistory] = useState('0');
+  const [ekg, setEkg] = useState('0');
+  const [age, setAge] = useState('0');
+  const [riskFactors, setRiskFactors] = useState('0');
+  const [troponin, setTroponin] = useState('0');
+
+  const score = [history, ekg, age, riskFactors, troponin].reduce((sum, val) => sum + parseInt(val), 0);
+
+  const getRisk = () => {
+    if (score <= 3) return { risk: '0.9-1.7%', level: 'Low', color: 'text-green-600', action: 'Consider discharge' };
+    if (score <= 6) return { risk: '12-16.6%', level: 'Moderate', color: 'text-yellow-600', action: 'Observation, serial troponins' };
+    return { risk: '50-65%', level: 'High', color: 'text-red-600', action: 'Early invasive strategy' };
+  };
+
+  const risk = getRisk();
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <Label className="text-xs font-semibold">History</Label>
+        <Select value={history} onValueChange={setHistory}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Slightly suspicious (0)</SelectItem>
+            <SelectItem value="1">Moderately suspicious (1)</SelectItem>
+            <SelectItem value="2">Highly suspicious (2)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs font-semibold">EKG</Label>
+        <Select value={ekg} onValueChange={setEkg}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Normal (0)</SelectItem>
+            <SelectItem value="1">Non-specific changes (1)</SelectItem>
+            <SelectItem value="2">Significant ST depression (2)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs font-semibold">Age</Label>
+        <Select value={age} onValueChange={setAge}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">&lt;45 (0)</SelectItem>
+            <SelectItem value="1">45-64 (1)</SelectItem>
+            <SelectItem value="2">≥65 (2)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs font-semibold">Risk Factors</Label>
+        <Select value={riskFactors} onValueChange={setRiskFactors}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">No known risk factors (0)</SelectItem>
+            <SelectItem value="1">1-2 risk factors (1)</SelectItem>
+            <SelectItem value="2">≥3 risk factors or CAD history (2)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs font-semibold">Troponin</Label>
+        <Select value={troponin} onValueChange={setTroponin}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">≤normal limit (0)</SelectItem>
+            <SelectItem value="1">1-3x normal limit (1)</SelectItem>
+            <SelectItem value="2">&gt;3x normal limit (2)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Card className={`${score <= 3 ? 'bg-green-50 border-green-200' : score <= 6 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'}`}>
+        <CardContent className="pt-4 text-center">
+          <p className="text-3xl font-bold">{score}/10</p>
+          <p className={`font-semibold mt-1 ${risk.color}`}>{risk.level} Risk</p>
+          <p className="text-sm mt-1">6-week MACE: {risk.risk}</p>
+          <p className="text-xs mt-2 text-slate-600">{risk.action}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// CHA2DS2-VASc Score Calculator
+function CHADS2VAScCalculator() {
+  const [chf, setChf] = useState(false);
+  const [htn, setHtn] = useState(false);
+  const [age75, setAge75] = useState(false);
+  const [age65, setAge65] = useState(false);
+  const [dm, setDm] = useState(false);
+  const [stroke, setStroke] = useState(false);
+  const [vascular, setVascular] = useState(false);
+  const [female, setFemale] = useState(false);
+
+  const score = (chf ? 1 : 0) + (htn ? 1 : 0) + (age75 ? 2 : 0) + (!age75 && age65 ? 1 : 0) +
+    (dm ? 1 : 0) + (stroke ? 2 : 0) + (vascular ? 1 : 0) + (female ? 1 : 0);
+
+  const getStrokeRisk = () => {
+    const risks = ['0%', '1.3%', '2.2%', '3.2%', '4.0%', '6.7%', '9.8%', '9.6%', '6.7%', '15.2%'];
+    return risks[Math.min(score, 9)];
+  };
+
+  const getRecommendation = () => {
+    if (score === 0) return { text: 'No anticoagulation needed', color: 'text-green-600' };
+    if (score === 1 && female && !stroke && !age75) return { text: 'Consider anticoagulation', color: 'text-yellow-600' };
+    return { text: 'Anticoagulation recommended', color: 'text-red-600' };
+  };
+
+  return (
+    <div className="space-y-2">
+      {[
+        { label: 'CHF/LV dysfunction (C)', state: chf, setter: setChf, pts: 1 },
+        { label: 'Hypertension (H)', state: htn, setter: setHtn, pts: 1 },
+        { label: 'Age ≥75 (A₂)', state: age75, setter: setAge75, pts: 2 },
+        { label: 'Age 65-74', state: age65, setter: setAge65, pts: 1, disabled: age75 },
+        { label: 'Diabetes (D)', state: dm, setter: setDm, pts: 1 },
+        { label: 'Stroke/TIA/TE (S₂)', state: stroke, setter: setStroke, pts: 2 },
+        { label: 'Vascular disease (V)', state: vascular, setter: setVascular, pts: 1 },
+        { label: 'Sex female (Sc)', state: female, setter: setFemale, pts: 1 },
+      ].map(({ label, state, setter, pts, disabled }) => (
+        <label key={label} className={`flex items-center justify-between p-2 bg-slate-50 rounded cursor-pointer hover:bg-slate-100 ${disabled ? 'opacity-50' : ''}`}>
+          <div className="flex items-center gap-2">
+            <input type="checkbox" checked={state} onChange={(e) => setter(e.target.checked)} disabled={disabled} className="w-4 h-4" />
+            <span className="text-sm">{label}</span>
+          </div>
+          <Badge variant="outline" className="text-xs">+{pts}</Badge>
+        </label>
+      ))}
+      <Card className="bg-purple-50 border-purple-200 mt-4">
+        <CardContent className="pt-4 text-center">
+          <p className="text-3xl font-bold text-purple-800">{score}/9</p>
+          <p className="text-sm text-purple-600 mt-1">Annual stroke risk: {getStrokeRisk()}</p>
+          <p className={`font-semibold mt-2 ${getRecommendation().color}`}>{getRecommendation().text}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Wells Score for PE
+function WellsCalculator() {
+  const [clinicalDvt, setClinicalDvt] = useState(false);
+  const [pelikely, setPelikely] = useState(false);
+  const [hr100, setHr100] = useState(false);
+  const [immobilization, setImmobilization] = useState(false);
+  const [previousDvtPe, setPreviousDvtPe] = useState(false);
+  const [hemoptysis, setHemoptysis] = useState(false);
+  const [malignancy, setMalignancy] = useState(false);
+
+  const score = (clinicalDvt ? 3 : 0) + (pelikely ? 3 : 0) + (hr100 ? 1.5 : 0) +
+    (immobilization ? 1.5 : 0) + (previousDvtPe ? 1.5 : 0) + (hemoptysis ? 1 : 0) + (malignancy ? 1 : 0);
+
+  const getRisk = () => {
+    if (score <= 4) return { level: 'PE Unlikely', probability: '<15%', color: 'text-green-600', action: 'D-dimer, if negative rules out PE' };
+    return { level: 'PE Likely', probability: '>15%', color: 'text-red-600', action: 'CT-PA indicated' };
+  };
+
+  const risk = getRisk();
+
+  return (
+    <div className="space-y-2">
+      {[
+        { label: 'Clinical signs of DVT', state: clinicalDvt, setter: setClinicalDvt, pts: 3 },
+        { label: 'PE is #1 diagnosis or equally likely', state: pelikely, setter: setPelikely, pts: 3 },
+        { label: 'Heart rate >100', state: hr100, setter: setHr100, pts: 1.5 },
+        { label: 'Immobilization/surgery in past 4 weeks', state: immobilization, setter: setImmobilization, pts: 1.5 },
+        { label: 'Previous DVT/PE', state: previousDvtPe, setter: setPreviousDvtPe, pts: 1.5 },
+        { label: 'Hemoptysis', state: hemoptysis, setter: setHemoptysis, pts: 1 },
+        { label: 'Malignancy (treatment within 6mo)', state: malignancy, setter: setMalignancy, pts: 1 },
+      ].map(({ label, state, setter, pts }) => (
+        <label key={label} className="flex items-center justify-between p-2 bg-slate-50 rounded cursor-pointer hover:bg-slate-100">
+          <div className="flex items-center gap-2">
+            <input type="checkbox" checked={state} onChange={(e) => setter(e.target.checked)} className="w-4 h-4" />
+            <span className="text-sm">{label}</span>
+          </div>
+          <Badge variant="outline" className="text-xs">+{pts}</Badge>
+        </label>
+      ))}
+      <Card className={`${score <= 4 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} mt-4`}>
+        <CardContent className="pt-4 text-center">
+          <p className="text-3xl font-bold">{score}</p>
+          <p className={`font-semibold mt-1 ${risk.color}`}>{risk.level}</p>
+          <p className="text-sm mt-1">Pre-test probability: {risk.probability}</p>
+          <p className="text-xs mt-2 text-slate-600">{risk.action}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// MELD Score Calculator
+function MELDCalculator() {
+  const [bilirubin, setBilirubin] = useState('');
+  const [creatinine, setCreatinine] = useState('');
+  const [inr, setInr] = useState('');
+  const [sodium, setSodium] = useState('');
+  const [dialysis, setDialysis] = useState(false);
+  const [result, setResult] = useState(null);
+
+  const calculate = () => {
+    let bili = Math.max(1, parseFloat(bilirubin));
+    let cr = Math.max(1, Math.min(4, parseFloat(creatinine)));
+    if (dialysis) cr = 4;
+    let inrVal = Math.max(1, parseFloat(inr));
+    let na = Math.max(125, Math.min(137, parseFloat(sodium) || 137));
+
+    const meld = Math.round(
+      10 * (0.957 * Math.log(cr) + 0.378 * Math.log(bili) + 1.12 * Math.log(inrVal) + 0.643)
+    );
+    const meldNa = Math.round(meld + 1.32 * (137 - na) - 0.033 * meld * (137 - na));
+
+    let mortality3mo;
+    if (meldNa <= 9) mortality3mo = '1.9%';
+    else if (meldNa <= 19) mortality3mo = '6%';
+    else if (meldNa <= 29) mortality3mo = '19.6%';
+    else if (meldNa <= 39) mortality3mo = '52.6%';
+    else mortality3mo = '71.3%';
+
+    setResult({ meld: Math.min(40, Math.max(6, meld)), meldNa: Math.min(40, Math.max(6, meldNa)), mortality3mo });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Bilirubin (mg/dL)</Label>
+          <Input type="number" step="0.1" placeholder="1.2" value={bilirubin} onChange={(e) => setBilirubin(e.target.value)} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Creatinine (mg/dL)</Label>
+          <Input type="number" step="0.1" placeholder="1.0" value={creatinine} onChange={(e) => setCreatinine(e.target.value)} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">INR</Label>
+          <Input type="number" step="0.1" placeholder="1.2" value={inr} onChange={(e) => setInr(e.target.value)} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Sodium (mEq/L)</Label>
+          <Input type="number" placeholder="140" value={sodium} onChange={(e) => setSodium(e.target.value)} />
+        </div>
+      </div>
+      <label className="flex items-center gap-2 p-2 bg-slate-50 rounded cursor-pointer">
+        <input type="checkbox" checked={dialysis} onChange={(e) => setDialysis(e.target.checked)} className="w-4 h-4" />
+        <span className="text-sm">Dialysis ≥2x/week or CVVHD in past week</span>
+      </label>
+      <Button onClick={calculate} className="w-full">Calculate MELD</Button>
+      {result && (
+        <Card className="bg-amber-50 border-amber-200">
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-xs text-amber-600">MELD</p>
+                <p className="text-2xl font-bold text-amber-800">{result.meld}</p>
+              </div>
+              <div>
+                <p className="text-xs text-amber-600">MELD-Na</p>
+                <p className="text-2xl font-bold text-amber-800">{result.meldNa}</p>
+              </div>
+            </div>
+            <p className="text-center text-sm text-amber-700 mt-2">3-month mortality: {result.mortality3mo}</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// qSOFA Calculator
+function QSOFACalculator() {
+  const [alteredMental, setAlteredMental] = useState(false);
+  const [rrHigh, setRrHigh] = useState(false);
+  const [sbpLow, setSbpLow] = useState(false);
+
+  const score = (alteredMental ? 1 : 0) + (rrHigh ? 1 : 0) + (sbpLow ? 1 : 0);
+
+  const getRisk = () => {
+    if (score < 2) return { level: 'Low Risk', color: 'text-green-600', action: 'qSOFA negative, continue monitoring' };
+    return { level: 'High Risk', color: 'text-red-600', action: 'qSOFA positive - assess for organ dysfunction, consider ICU' };
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-slate-500">Quick Sepsis-related Organ Failure Assessment (outside ICU)</p>
+      {[
+        { label: 'Altered mental status (GCS <15)', state: alteredMental, setter: setAlteredMental },
+        { label: 'Respiratory rate ≥22/min', state: rrHigh, setter: setRrHigh },
+        { label: 'Systolic BP ≤100 mmHg', state: sbpLow, setter: setSbpLow },
+      ].map(({ label, state, setter }) => (
+        <label key={label} className="flex items-center gap-3 p-3 bg-slate-50 rounded cursor-pointer hover:bg-slate-100">
+          <input type="checkbox" checked={state} onChange={(e) => setter(e.target.checked)} className="w-5 h-5" />
+          <span>{label}</span>
+        </label>
+      ))}
+      <Card className={`${score < 2 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+        <CardContent className="pt-4 text-center">
+          <p className="text-4xl font-bold">{score}/3</p>
+          <p className={`font-semibold mt-2 ${getRisk().color}`}>{getRisk().level}</p>
+          <p className="text-sm mt-2 text-slate-600">{getRisk().action}</p>
+          {score >= 2 && <p className="text-xs mt-2 text-red-500">≥2 points = 3-14x higher in-hospital mortality</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // Main Medical Calculators Component
 export default function MedicalCalculators({ open, onClose }) {
   return (
@@ -807,40 +1254,66 @@ export default function MedicalCalculators({ open, onClose }) {
         </DialogHeader>
 
         <Tabs defaultValue="drug" className="w-full">
-          <TabsList className="grid grid-cols-4 lg:grid-cols-8 h-auto gap-1 bg-transparent">
-            <TabsTrigger value="drug" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Pill className="w-4 h-4" />
-              <span>Dosage</span>
-            </TabsTrigger>
-            <TabsTrigger value="gcs" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Brain className="w-4 h-4" />
-              <span>GCS</span>
-            </TabsTrigger>
-            <TabsTrigger value="sofa" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Activity className="w-4 h-4" />
-              <span>SOFA</span>
-            </TabsTrigger>
-            <TabsTrigger value="parkland" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Flame className="w-4 h-4" />
-              <span>Parkland</span>
-            </TabsTrigger>
-            <TabsTrigger value="bmi" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Scale className="w-4 h-4" />
-              <span>BMI</span>
-            </TabsTrigger>
-            <TabsTrigger value="crcl" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Droplets className="w-4 h-4" />
-              <span>CrCl</span>
-            </TabsTrigger>
-            <TabsTrigger value="labs" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Heart className="w-4 h-4" />
-              <span>Labs</span>
-            </TabsTrigger>
-            <TabsTrigger value="aa" className="flex flex-col items-center gap-1 px-2 py-2 text-xs">
-              <Wind className="w-4 h-4" />
-              <span>A-a</span>
-            </TabsTrigger>
-          </TabsList>
+          <ScrollArea className="w-full">
+            <TabsList className="inline-flex h-auto gap-1 bg-transparent p-1 w-max">
+              <TabsTrigger value="drug" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Pill className="w-4 h-4" />
+                <span>Dosage</span>
+              </TabsTrigger>
+              <TabsTrigger value="gcs" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Brain className="w-4 h-4" />
+                <span>GCS</span>
+              </TabsTrigger>
+              <TabsTrigger value="sofa" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Activity className="w-4 h-4" />
+                <span>SOFA</span>
+              </TabsTrigger>
+              <TabsTrigger value="qsofa" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <AlertTriangle className="w-4 h-4" />
+                <span>qSOFA</span>
+              </TabsTrigger>
+              <TabsTrigger value="timi" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Heart className="w-4 h-4 text-red-500" />
+                <span>TIMI</span>
+              </TabsTrigger>
+              <TabsTrigger value="heart" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Stethoscope className="w-4 h-4" />
+                <span>HEART</span>
+              </TabsTrigger>
+              <TabsTrigger value="chads" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Zap className="w-4 h-4" />
+                <span>CHA₂DS₂</span>
+              </TabsTrigger>
+              <TabsTrigger value="wells" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Shield className="w-4 h-4" />
+                <span>Wells PE</span>
+              </TabsTrigger>
+              <TabsTrigger value="meld" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Activity className="w-4 h-4 text-amber-500" />
+                <span>MELD</span>
+              </TabsTrigger>
+              <TabsTrigger value="parkland" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Flame className="w-4 h-4" />
+                <span>Parkland</span>
+              </TabsTrigger>
+              <TabsTrigger value="bmi" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Scale className="w-4 h-4" />
+                <span>BMI</span>
+              </TabsTrigger>
+              <TabsTrigger value="crcl" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Droplets className="w-4 h-4" />
+                <span>CrCl</span>
+              </TabsTrigger>
+              <TabsTrigger value="labs" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Heart className="w-4 h-4" />
+                <span>Labs</span>
+              </TabsTrigger>
+              <TabsTrigger value="aa" className="flex flex-col items-center gap-1 px-3 py-2 text-xs">
+                <Wind className="w-4 h-4" />
+                <span>A-a</span>
+              </TabsTrigger>
+            </TabsList>
+          </ScrollArea>
 
           <div className="mt-4">
             <TabsContent value="drug">
@@ -884,6 +1357,96 @@ export default function MedicalCalculators({ open, onClose }) {
                 </CardHeader>
                 <CardContent>
                   <SOFACalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="qsofa">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-orange-500" />
+                    qSOFA Score
+                  </CardTitle>
+                  <CardDescription>Quick sepsis screening for patients outside the ICU</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <QSOFACalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="timi">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-red-500" />
+                    TIMI Risk Score
+                  </CardTitle>
+                  <CardDescription>Risk stratification for STEMI and NSTEMI/UA</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TIMICalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="heart">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Stethoscope className="w-4 h-4 text-blue-500" />
+                    HEART Score
+                  </CardTitle>
+                  <CardDescription>Risk stratification for chest pain and ACS</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <HEARTCalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="chads">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-purple-500" />
+                    CHA₂DS₂-VASc Score
+                  </CardTitle>
+                  <CardDescription>Stroke risk in atrial fibrillation</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CHADS2VAScCalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="wells">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-blue-500" />
+                    Wells Score for PE
+                  </CardTitle>
+                  <CardDescription>Pre-test probability for pulmonary embolism</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <WellsCalculator />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="meld">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-amber-500" />
+                    MELD Score
+                  </CardTitle>
+                  <CardDescription>Model for End-Stage Liver Disease severity</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <MELDCalculator />
                 </CardContent>
               </Card>
             </TabsContent>
