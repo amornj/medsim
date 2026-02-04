@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Save, RotateCcw, FileText, AlertCircle } from 'lucide-react';
+import { Save, RotateCcw, FileText, AlertCircle, Calculator, Trophy, Pill, Volume2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -30,6 +30,15 @@ import DoctorSelector from '../components/medical/DoctorSelector';
 import FundsDisplay from '../components/medical/FundsDisplay';
 import { LanguageProvider } from '../components/LanguageContext';
 import LanguageSelector from '../components/LanguageSelector';
+
+// New feature imports
+import MedicalCalculators from '../components/medical/MedicalCalculators';
+import AchievementsSystem, { checkAchievements, showAchievementUnlock, getPlayerStats } from '../components/medical/AchievementsSystem';
+import StreakDisplay, { getStreakBonus, getCurrentStreak, updateStreak, StreakLostDisplay } from '../components/medical/StreakDisplay';
+import DailyChallenges, { DailyChallengesBadge, updateChallengeProgress } from '../components/medical/DailyChallenges';
+import StatisticsDashboard from '../components/medical/StatisticsDashboard';
+import DrugQuickReference, { PinnedDrugsHUD } from '../components/medical/DrugQuickReference';
+import SoundEffectsManager, { useGameplaySounds } from '../components/medical/SoundEffectsManager';
 
 // Equipment costs
 const EQUIPMENT_COSTS = {
@@ -78,7 +87,20 @@ export default function MedicalScenario() {
   const [eventHistory, setEventHistory] = useState([]);
   const [lastEventTime, setLastEventTime] = useState(0);
   const [showDoctorsPanel, setShowDoctorsPanel] = useState(true);
-  
+
+  // New feature state
+  const [calculatorsOpen, setCalculatorsOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
+  const [dailyChallengesOpen, setDailyChallengesOpen] = useState(false);
+  const [statisticsOpen, setStatisticsOpen] = useState(false);
+  const [drugReferenceOpen, setDrugReferenceOpen] = useState(false);
+  const [soundSettingsOpen, setSoundSettingsOpen] = useState(false);
+  const [showPinnedDrugs, setShowPinnedDrugs] = useState(true);
+  const [currentStreak, setCurrentStreak] = useState(getCurrentStreak());
+  const [previousStreak, setPreviousStreak] = useState(0);
+  const [showStreakLost, setShowStreakLost] = useState(false);
+  const [totalSpending, setTotalSpending] = useState(0);
+
   const queryClient = useQueryClient();
 
   // Auto-hide doctors panel after 4 seconds
@@ -815,6 +837,8 @@ export default function MedicalScenario() {
       }]);
       
       if (funds !== Infinity) setFunds(funds - cost);
+      // Track total spending for achievements
+      setTotalSpending(prev => prev + cost);
       toast.success(`Equipment added (-$${cost.toLocaleString()})`, {
         description: `Remaining: ${funds === Infinity ? '∞' : '$' + (funds - cost).toLocaleString()}`
       });
@@ -1012,8 +1036,60 @@ export default function MedicalScenario() {
       }
     }
 
-    toast.success(`+${totalXP} XP awarded to all doctors!`);
-    
+    // Apply streak bonus to XP
+    const streakBonus = getStreakBonus(currentStreak);
+    const finalXP = streakBonus ? Math.floor(totalXP * streakBonus.xpMultiplier) : totalXP;
+    const streakFundsBonus = streakBonus ? streakBonus.fundsBonus : 0;
+
+    toast.success(`+${finalXP} XP awarded to all doctors!${streakBonus ? ` (${streakBonus.xpMultiplier}x streak bonus!)` : ''}`);
+
+    // Update streak
+    const won = outcome === 'patient_survived';
+    const oldStreak = currentStreak;
+    const newStreak = updateStreak(won);
+    setCurrentStreak(newStreak);
+
+    // Check if streak was lost
+    if (!won && oldStreak >= 3) {
+      setPreviousStreak(oldStreak);
+      setShowStreakLost(true);
+    }
+
+    // Apply streak funds bonus
+    if (won && streakFundsBonus > 0 && funds !== Infinity) {
+      setFunds(prev => prev + streakFundsBonus);
+      toast.success(`Streak Bonus: +$${streakFundsBonus.toLocaleString()}!`);
+    }
+
+    // Check achievements with new system
+    const performanceData = {
+      timeToFirst,
+      equipmentCount: equipment.length,
+      score: totalScore,
+      difficulty: currentScenario.difficulty || 1,
+      outcome,
+      condition: currentScenario.condition || currentScenario.id,
+      spending: totalSpending
+    };
+
+    const unlockedAchievements = checkAchievements(performanceData);
+    unlockedAchievements.forEach(achievement => {
+      showAchievementUnlock(achievement);
+      // Apply achievement rewards
+      if (funds !== Infinity) {
+        setFunds(prev => prev + achievement.fundsReward);
+      }
+    });
+
+    // Update daily challenges
+    const challengeResult = updateChallengeProgress({
+      duration,
+      score: totalScore,
+      spending: totalSpending,
+      outcome,
+      condition: currentScenario.condition || currentScenario.id
+    });
+
     // Generate feedback
     const feedback = [];
     if (timeToFirst > 120) feedback.push('Response time was slow - try to act faster');
@@ -1021,14 +1097,10 @@ export default function MedicalScenario() {
     if (equipment.length > 10) feedback.push('Too many interventions - focus on essential equipment');
     if (outcome === 'patient_survived') feedback.push('Excellent work - patient survived!');
     if (vitals.spo2 > initialVitals.spo2) feedback.push('Successfully improved oxygenation');
-    
-    // Check achievements
-    const achievements = [];
-    if (timeToFirst < 30) achievements.push('Speed Demon');
-    if (outcome === 'patient_survived' && equipment.length <= 5) achievements.push('Minimalist Hero');
-    if (totalScore >= 90) achievements.push('Perfect Score');
-    if (outcome === 'patient_survived' && currentScenario.difficulty >= 5) achievements.push('Critical Save');
-    
+
+    // Legacy achievements array for backward compatibility
+    const achievements = unlockedAchievements.map(a => a.name);
+
     try {
       await base44.entities.ScenarioPerformance.create({
         scenario_name: currentScenario.name,
@@ -1050,13 +1122,16 @@ export default function MedicalScenario() {
         feedback,
         achievements
       });
-      
+
       toast.success(`Performance saved! Score: ${totalScore.toFixed(0)}/100`, {
         description: achievements.length > 0 ? `Achievements: ${achievements.join(', ')}` : undefined
       });
     } catch (error) {
       toast.error('Failed to save performance');
     }
+
+    // Reset spending tracker for next scenario
+    setTotalSpending(0);
   };
 
   const renderContent = () => {
@@ -1183,9 +1258,13 @@ export default function MedicalScenario() {
         )}
         
         <div className="max-w-[1800px] mx-auto">
-          {/* Header */}
-          <div className="mb-6">
+          {/* Header with Funds and Streak */}
+          <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <FundsDisplay funds={funds} gameMode={gameMode} />
+            <div className="flex items-center gap-3">
+              <StreakDisplay streak={currentStreak} compact />
+              <DailyChallengesBadge onClick={() => setDailyChallengesOpen(true)} />
+            </div>
           </div>
 
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -1196,6 +1275,32 @@ export default function MedicalScenario() {
               <p className="text-slate-600">{currentScenario?.description}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
+              {/* New Feature Buttons */}
+              <Button
+                variant="outline"
+                onClick={() => setCalculatorsOpen(true)}
+                className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100"
+              >
+                <Calculator className="w-4 h-4" />
+                Calculators
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setDrugReferenceOpen(true)}
+                className="flex items-center gap-2 bg-green-50 hover:bg-green-100"
+              >
+                <Pill className="w-4 h-4" />
+                Drug Reference
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setAchievementsOpen(true)}
+                className="flex items-center gap-2 bg-yellow-50 hover:bg-yellow-100"
+              >
+                <Trophy className="w-4 h-4" />
+                Achievements
+              </Button>
+              {/* Existing Buttons */}
               <Button
                 variant="outline"
                 onClick={() => setPerformanceHistoryOpen(true)}
@@ -1410,6 +1515,55 @@ export default function MedicalScenario() {
         }}
         currentHistory={patientHistory}
       />
+
+      {/* New Feature Dialogs */}
+      <MedicalCalculators
+        open={calculatorsOpen}
+        onClose={() => setCalculatorsOpen(false)}
+      />
+
+      <AchievementsSystem
+        open={achievementsOpen}
+        onClose={() => setAchievementsOpen(false)}
+      />
+
+      <DailyChallenges
+        open={dailyChallengesOpen}
+        onClose={() => setDailyChallengesOpen(false)}
+        onRewardClaimed={(reward) => {
+          if (funds !== Infinity) {
+            setFunds(prev => prev + reward.funds);
+          }
+        }}
+      />
+
+      <StatisticsDashboard
+        open={statisticsOpen}
+        onClose={() => setStatisticsOpen(false)}
+      />
+
+      <DrugQuickReference
+        open={drugReferenceOpen}
+        onClose={() => setDrugReferenceOpen(false)}
+      />
+
+      <SoundEffectsManager
+        open={soundSettingsOpen}
+        onClose={() => setSoundSettingsOpen(false)}
+      />
+
+      {/* Streak Lost Modal */}
+      {showStreakLost && (
+        <StreakLostDisplay
+          previousStreak={previousStreak}
+          onDismiss={() => setShowStreakLost(false)}
+        />
+      )}
+
+      {/* Pinned Drugs HUD */}
+      {showPinnedDrugs && gameState === 'playing' && (
+        <PinnedDrugsHUD onClose={() => setShowPinnedDrugs(false)} />
+      )}
     </DragDropContext>
   );
   };
