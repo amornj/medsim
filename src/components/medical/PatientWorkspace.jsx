@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, X, Settings, DollarSign } from 'lucide-react';
+import { Activity, Heart, Droplets, Zap, Wind, Thermometer, Syringe, Radio, X, Settings, DollarSign, AudioWaveform, Brain } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
