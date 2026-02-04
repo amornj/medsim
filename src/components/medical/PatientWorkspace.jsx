@@ -65,7 +65,7 @@ const EQUIPMENT_ICONS = {
   ortho_navigation: Radio,
   electrocautery: Zap,
   fast_exam: Radio,
-  capnography: Waves,
+  capnography: AudioWaveform,
   bis_monitor: Brain,
   nirs: Brain,
   bladder_scanner: Radio,
